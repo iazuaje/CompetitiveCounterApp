@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:f="clr-namespace:Fonts"
+             xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             xmlns:models="clr-namespace:CompetitiveCounterApp.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="CompetitiveCounterApp.Pages.GameDetailPage"
+             x:DataType="pageModels:GameDetailPageModel"
+             Title="Detalle del Juego">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Guardar"
+                     Command="{Binding SaveCommand}"
+                     IconImageSource="{StaticResource IconSave}" />
+        <ToolbarItem Text="Eliminar"
+                     Command="{Binding DeleteCommand}"
+                     IconImageSource="{StaticResource IconDelete}" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <!-- Selector de Icono -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Icono del Juego"
+                       FontSize="16"
+                       FontAttributes="Bold" />
+
+                <CollectionView ItemsSource="{Binding Icons}"
+                                SelectionMode="Single"
+                                SelectedItem="{Binding SelectedIcon}"
+                                HeightRequest="80">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal"
+                                         ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:IconData">
+                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                                    StrokeThickness="2"
+                                    Padding="15"
+                                    WidthRequest="60"
+                                    HeightRequest="60">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                               Binding="{Binding Icon}"
+                                               Value="{Binding Icon, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}}">
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}" 
+                                                         Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}">
+
+                                        </FontImageSource>
+                                    </Image.Source>
+                                </Image>
+                                
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <!-- Nombre del Juego -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Nombre del Juego"
+                       FontSize="16"
+                       FontAttributes="Bold" />
+                <Entry Text="{Binding Name}"
+                       Placeholder="Ej: FIFA 2024, Mario Kart, etc."
+                       FontSize="16" />
+            </VerticalStackLayout>
+
+            <!-- Descripción -->
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Descripción (Opcional)"
+                       FontSize="16"
+                       FontAttributes="Bold" />
+                <Editor Text="{Binding Description}"
+                        Placeholder="Agrega una descripción del juego..."
+                        HeightRequest="100"
+                        FontSize="14" />
+            </VerticalStackLayout>
+
+            <!-- Sección de Jugadores -->
+            <VerticalStackLayout Spacing="15">
+                <Label Text="Jugadores"
+                       FontSize="18"
+                       FontAttributes="Bold" />
+
+                <!-- Agregar Jugador -->
+                <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                        StrokeThickness="0"
+                        Padding="15">
+                    <Border.StrokeShape>
+                        <RoundRectangle CornerRadius="8" />
+                    </Border.StrokeShape>
+
+                    <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                        <Entry Grid.Column="0"
+                               Text="{Binding NewPlayerName}"
+                               Placeholder="Nombre del jugador"
+                               ReturnType="Done"
+                               ReturnCommand="{Binding AddPlayerCommand}"
+                               FontSize="14" />
+
+                        <Button Grid.Column="1"
+                                Text="Agregar"
+                                Command="{Binding AddPlayerCommand}"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                TextColor="White"
+                                Padding="15,5"
+                                FontSize="14" />
+                    </Grid>
+                </Border>
+
+                <!-- Lista de Jugadores -->
+                <VerticalStackLayout Spacing="10"
+                                   BindableLayout.ItemsSource="{Binding Players}">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="models:Player">
+                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                                    StrokeThickness="0"
+                                    Padding="15">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+
+                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="15">
+                                    <!-- Color del jugador -->
+                                    <BoxView Grid.Column="0"
+                                             BackgroundColor="Transparent"
+                                             Color="{Binding Color}"
+                                             WidthRequest="40"
+                                             HeightRequest="40"
+                                             CornerRadius="20" />
+
+                                    <!-- Nombre -->
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Name}"
+                                               FontSize="16"
+                                               FontAttributes="Bold" />
+                                        <Label FontSize="12"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}">
+                                            <Label.Text>
+                                                <MultiBinding StringFormat="Victorias: {0}">
+                                                    <Binding Path="WinCount" />
+                                                </MultiBinding>
+                                            </Label.Text>
+                                        </Label>
+                                    </VerticalStackLayout>
+
+                                    <!-- Botón eliminar -->
+                                    <ImageButton Grid.Column="2"
+                                               Source="{StaticResource IconDelete}"
+                                               Command="{Binding DeletePlayerCommand, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}" CommandParameter="{Binding .}"
+                                               WidthRequest="30"
+                                               HeightRequest="30"
+                                               BackgroundColor="Transparent"
+                                               VerticalOptions="Center" />
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                    <BindableLayout.EmptyView>
+                        <Label Text="No hay jugadores agregados aún"
+                               FontSize="14"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                               HorizontalOptions="Center"
+                               Margin="0,20" />
+                    </BindableLayout.EmptyView>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

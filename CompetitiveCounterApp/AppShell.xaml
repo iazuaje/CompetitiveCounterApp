@@ -9,6 +9,12 @@
     Title="CompetitiveCounterApp">
 
     <ShellContent
+        Title="Juegos"
+        Icon="{StaticResource IconDashboard}"
+        ContentTemplate="{DataTemplate pages:GamesPage}"
+        Route="games" />
+
+    <ShellContent
         Title="Dashboard"
         Icon="{StaticResource IconDashboard}"
         ContentTemplate="{DataTemplate pages:MainPage}"

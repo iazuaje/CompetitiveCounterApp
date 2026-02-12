@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:f="clr-namespace:Fonts"
+             xmlns:controls="clr-namespace:CompetitiveCounterApp.Pages.Controls"
+             xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             xmlns:models="clr-namespace:CompetitiveCounterApp.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="CompetitiveCounterApp.Pages.GamesPage"
+             x:DataType="pageModels:GamesPageModel"
+             x:Name="GamesPageRoot"
+             Shell.NavBarIsVisible="False">
+    
+    
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+			BindingContext="{Binding Path=BindingContext, Source={x:Reference GamesPageRoot}, x:DataType=ContentPage}"
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Header -->
+        <Grid Grid.Row="0" 
+          Padding="20,10"
+          BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+
+            <Label Text="Competitive Counter"
+               Grid.Column="0"
+               FontSize="24"
+               FontAttributes="Bold"
+               TextColor="White"
+               VerticalOptions="Center" />
+
+            <ImageButton Grid.Column="1"
+                     Source="{StaticResource IconSettings}"
+                     WidthRequest="40"
+                     HeightRequest="40"
+                     Command="{Binding OpenOptionsCommand}"
+                     BackgroundColor="Transparent"
+                     VerticalOptions="Center" />
+        </Grid>
+
+        <!-- Contenido -->
+        <RefreshView Grid.Row="1"
+                 IsRefreshing="{Binding IsRefreshing}"
+                 Command="{Binding RefreshCommand}">
+            <Grid Padding="15">
+                <CollectionView ItemsSource="{Binding Games}"
+                                SelectionMode="Single"
+                                SelectedItem="{Binding SelectedGame}"
+                                SelectionChangedCommand="{Binding NavigateToGameCommand}"
+                                SelectionChangedCommandParameter="{Binding SelectedGame}">
+                    <CollectionView.ItemsLayout>
+                        <GridItemsLayout Orientation="Vertical"
+                                       Span="2"
+                                       HorizontalItemSpacing="15"
+                                       VerticalItemSpacing="15" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Game">
+                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                                    StrokeThickness="0"
+                                    Padding="15"
+                                    HeightRequest="150">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="12" />
+                                </Border.StrokeShape>
+
+                                <Grid RowDefinitions="Auto,*,Auto">
+                                    <!-- Icono del juego -->
+                                    <Image>
+                                        <Image.Source>
+                                            <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}" 
+                                                         Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}">
+                                            </FontImageSource>
+                                        </Image.Source>
+                                    </Image>
+
+                                    <!-- Nombre del juego -->
+                                    <Label Grid.Row="1"
+                                           Text="{Binding Name}"
+                                           FontSize="16"
+                                           FontAttributes="Bold"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"
+                                           HorizontalTextAlignment="Center"
+                                           LineBreakMode="TailTruncation"
+                                           MaxLines="2" />
+
+                                    <!-- Cantidad de jugadores -->
+                                    <Label Grid.Row="2"
+                                           FontSize="12"
+                                           HorizontalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}">
+                                        <Label.Text>
+                                            <MultiBinding StringFormat="{}{0} jugador(es)">
+                                                <Binding Path="Players.Count" />
+                                            </MultiBinding>
+                                        </Label.Text>
+                                    </Label>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+
+                    <!-- Empty view cuando no hay juegos -->
+                    <CollectionView.EmptyView>
+                        <VerticalStackLayout VerticalOptions="Center"
+                                           HorizontalOptions="Center"
+                                           Spacing="10"
+                                           Padding="20">
+                            <Label Text="🎮"
+                                   FontSize="60"
+                                   HorizontalOptions="Center" />
+                            <Label Text="No hay juegos aún"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   HorizontalOptions="Center" />
+                            <Label Text="Toca el botón + para agregar tu primer juego"
+                                   FontSize="14"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                   HorizontalOptions="Center"
+                                   HorizontalTextAlignment="Center" />
+                        </VerticalStackLayout>
+                    </CollectionView.EmptyView>
+                </CollectionView>
+            </Grid>
+        </RefreshView>
+        <!-- Botón flotante para agregar juegos -->
+        <controls:AddButton Grid.Row="1" IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                            Command="{Binding AddGameCommand}"/>
+    </Grid>
+</ContentPage>

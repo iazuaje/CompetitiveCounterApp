@@ -32,18 +32,31 @@ namespace CompetitiveCounterApp
     		builder.Services.AddLogging(configure => configure.AddDebug());
 #endif
 
+            // Repositorios nuevos para juegos
+            builder.Services.AddSingleton<GameRepository>();
+            builder.Services.AddSingleton<PlayerRepository>();
+
+            // Repositorios existentes (mantener para otras pantallas)
             builder.Services.AddSingleton<ProjectRepository>();
             builder.Services.AddSingleton<TaskRepository>();
             builder.Services.AddSingleton<CategoryRepository>();
             builder.Services.AddSingleton<TagRepository>();
             builder.Services.AddSingleton<SeedDataService>();
             builder.Services.AddSingleton<ModalErrorHandler>();
+
+            // PageModels nuevos
+            builder.Services.AddSingleton<GamesPageModel>();
+
+            // PageModels existentes
             builder.Services.AddSingleton<MainPageModel>();
             builder.Services.AddSingleton<ProjectListPageModel>();
             builder.Services.AddSingleton<ManageMetaPageModel>();
 
             builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
             builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
+            
+            // Nueva ruta para GameDetail
+            builder.Services.AddTransientWithShellRoute<GameDetailPage, GameDetailPageModel>("gamedetail");
 
             return builder.Build();
         }
