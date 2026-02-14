@@ -1,10 +1,17 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using System;
 
 namespace CompetitiveCounterApp.Models
 {
-    public class IconData
+    public partial class IconData : ObservableObject
     {
-        public string? Icon { get; set; }
-        public string? Description { get; set; }
+        [ObservableProperty]
+        private string? _icon;
+
+        [ObservableProperty]
+        private string? _description;
+
+        [ObservableProperty]
+        private bool _isSelected;
     }
 }

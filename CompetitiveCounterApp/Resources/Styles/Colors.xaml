@@ -13,6 +13,9 @@
     <Color x:Key="SecondaryDarkText">#9880e5</Color>
     <Color x:Key="Tertiary">#2B0B98</Color>
 
+    <Color x:Key="EditingColorDark">#270E40</Color>
+    <Color x:Key="EditingColorLight">#270E40</Color>
+
     <Color x:Key="DarkBackground">#17171a</Color>
     <Color x:Key="LightOnDarkBackground">#C3C3C3</Color>
     <Color x:Key="LightBackground">#F2F2F2</Color>
@@ -35,6 +38,30 @@
     <Color x:Key="Gray600">#404040</Color>
     <Color x:Key="Gray900">#212121</Color>
     <Color x:Key="Gray950">#141414</Color>
+
+    <!-- Colores para juegos - Versión Light -->
+    <Color x:Key="GameColorRed">#E63946</Color>
+    <Color x:Key="GameColorBlue">#457B9D</Color>
+    <Color x:Key="GameColorGreen">#2A9D8F</Color>
+    <Color x:Key="GameColorOrange">#F77F00</Color>
+    <Color x:Key="GameColorPurple">#9B59B6</Color>
+    <Color x:Key="GameColorPink">#E91E63</Color>
+    <Color x:Key="GameColorTeal">#00BCD4</Color>
+    <Color x:Key="GameColorAmber">#FFC107</Color>
+    <Color x:Key="GameColorIndigo">#3F51B5</Color>
+    <Color x:Key="GameColorLime">#8BC34A</Color>
+
+    <!-- Colores para juegos - Versión Dark -->
+    <Color x:Key="GameColorRedDark">#FF5964</Color>
+    <Color x:Key="GameColorBlueDark">#6DA5D0</Color>
+    <Color x:Key="GameColorGreenDark">#4ECDC4</Color>
+    <Color x:Key="GameColorOrangeDark">#FFB04C</Color>
+    <Color x:Key="GameColorPurpleDark">#B57EDC</Color>
+    <Color x:Key="GameColorPinkDark">#FF4081</Color>
+    <Color x:Key="GameColorTealDark">#4DD0E1</Color>
+    <Color x:Key="GameColorAmberDark">#FFD54F</Color>
+    <Color x:Key="GameColorIndigoDark">#7986CB</Color>
+    <Color x:Key="GameColorLimeDark">#AED581</Color>
 
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>

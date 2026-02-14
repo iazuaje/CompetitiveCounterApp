@@ -7,10 +7,14 @@ namespace CompetitiveCounterApp.PageModels
     public partial class GamesPageModel : ObservableObject
     {
         private readonly GameRepository _gameRepository;
+        private readonly SessionRepository _sessionRepository;
         private readonly ModalErrorHandler _errorHandler;
 
         [ObservableProperty]
         private List<Game> _games = [];
+
+        [ObservableProperty]
+        private Dictionary<int, int> _sessionCounts = new();
 
         [ObservableProperty]
         private bool _isBusy;
@@ -18,12 +22,10 @@ namespace CompetitiveCounterApp.PageModels
         [ObservableProperty]
         private bool _isRefreshing;
 
-        [ObservableProperty]
-        private Game? _selectedGame;
-
-        public GamesPageModel(GameRepository gameRepository, ModalErrorHandler errorHandler)
+        public GamesPageModel(GameRepository gameRepository, SessionRepository sessionRepository, ModalErrorHandler errorHandler)
         {
             _gameRepository = gameRepository;
+            _sessionRepository = sessionRepository;
             _errorHandler = errorHandler;
         }
 
@@ -53,6 +55,15 @@ namespace CompetitiveCounterApp.PageModels
             {
                 IsBusy = true;
                 Games = await _gameRepository.ListAsync();
+
+                // Cargar el conteo de sesiones para cada juego
+                var sessionCountsDict = new Dictionary<int, int>();
+                foreach (var game in Games)
+                {
+                    var sessions = await _sessionRepository.ListAsync(game.ID);
+                    sessionCountsDict[game.ID] = sessions.Count;
+                }
+                SessionCounts = sessionCountsDict;
             }
             catch (Exception e)
             {
@@ -67,7 +78,7 @@ namespace CompetitiveCounterApp.PageModels
         [RelayCommand]
         private async Task AddGame()
         {
-            await Shell.Current.GoToAsync("gamedetail");
+            await Shell.Current.GoToAsync("creategame");
         }
 
         [RelayCommand]
@@ -81,6 +92,11 @@ namespace CompetitiveCounterApp.PageModels
         {
             // Por implementar
             await AppShell.DisplayToastAsync("Opciones - Por implementar");
+        }
+
+        public int GetSessionCount(int gameId)
+        {
+            return SessionCounts.TryGetValue(gameId, out var count) ? count : 0;
         }
     }
 }

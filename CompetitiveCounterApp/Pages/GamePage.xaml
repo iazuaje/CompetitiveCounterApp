@@ -58,10 +58,7 @@
                  Command="{Binding RefreshCommand}">
             <Grid Padding="15">
                 <CollectionView ItemsSource="{Binding Games}"
-                                SelectionMode="Single"
-                                SelectedItem="{Binding SelectedGame}"
-                                SelectionChangedCommand="{Binding NavigateToGameCommand}"
-                                SelectionChangedCommandParameter="{Binding SelectedGame}">
+                                SelectionMode="None">
                     <CollectionView.ItemsLayout>
                         <GridItemsLayout Orientation="Vertical"
                                        Span="2"
@@ -70,45 +67,50 @@
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:Game">
-                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
-                                    StrokeThickness="0"
+                            <Border StrokeThickness="0"
                                     Padding="15"
-                                    HeightRequest="150">
+                                    HeightRequest="150"
+                                    Background="{Binding CurrentGameColor}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="12" />
                                 </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding NavigateToGameCommand, Source={RelativeSource AncestorType={x:Type pageModels:GamesPageModel}}, x:DataType=pageModels:GamesPageModel}" 
+                                                          CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
 
                                 <Grid RowDefinitions="Auto,*,Auto">
-                                    <!-- Icono del juego -->
                                     <Image>
                                         <Image.Source>
                                             <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}" 
-                                                         Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}">
+                                                         Color="White"
+                                                         Size="40">
                                             </FontImageSource>
                                         </Image.Source>
                                     </Image>
 
-                                    <!-- Nombre del juego -->
                                     <Label Grid.Row="1"
                                            Text="{Binding Name}"
                                            FontSize="16"
                                            FontAttributes="Bold"
+                                           TextColor="White"
                                            HorizontalOptions="Center"
                                            VerticalOptions="Center"
                                            HorizontalTextAlignment="Center"
                                            LineBreakMode="TailTruncation"
                                            MaxLines="2" />
 
-                                    <!-- Cantidad de jugadores -->
                                     <Label Grid.Row="2"
                                            FontSize="12"
                                            HorizontalOptions="Center"
-                                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}">
-                                        <Label.Text>
-                                            <MultiBinding StringFormat="{}{0} jugador(es)">
-                                                <Binding Path="Players.Count" />
-                                            </MultiBinding>
-                                        </Label.Text>
+                                           TextColor="White"
+                                           Opacity="0.9">
+                                        <Label.FormattedText>
+                                            <FormattedString>
+                                                <Span Text="{Binding BindingContext.SessionCounts[ID], Source={x:Reference GamesPageRoot}, FallbackValue=0}" />
+                                                <Span Text=" sesión(es)" />
+                                            </FormattedString>
+                                        </Label.FormattedText>
                                     </Label>
                                 </Grid>
                             </Border>
@@ -121,9 +123,15 @@
                                            HorizontalOptions="Center"
                                            Spacing="10"
                                            Padding="20">
-                            <Label Text="🎮"
-                                   FontSize="60"
-                                   HorizontalOptions="Center" />
+                            <Image>
+                                <Image.Source>
+                                    <FontImageSource Glyph="{x:Static f:FluentUI.emoji_sad_slight_24_regular}"
+                                                    FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                    Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                                                    Size="50" 
+                                                     />
+                                </Image.Source>
+                            </Image>
                             <Label Text="No hay juegos aún"
                                    FontSize="18"
                                    FontAttributes="Bold"

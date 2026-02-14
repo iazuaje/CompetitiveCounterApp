@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:f="clr-namespace:Fonts"
+             xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             xmlns:models="clr-namespace:CompetitiveCounterApp.Models"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="CompetitiveCounterApp.Pages.CreateGamePage"
+             x:DataType="pageModels:CreateGamePageModel"
+             Title="Crear Nuevo Juego">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Guardar"
+                     Command="{Binding SaveCommand}"
+                     IconImageSource="{StaticResource IconSave}" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Icono del Juego"
+                       FontSize="16"
+                       FontAttributes="Bold" />
+
+                <CollectionView ItemsSource="{Binding Icons}"
+                                SelectionMode="Single"
+                                SelectedItem="{Binding SelectedIcon}"
+                                HeightRequest="80">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal"
+                                         ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:IconData">
+                            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}"
+                                    StrokeThickness="2"
+                                    Padding="15"
+                                    WidthRequest="60"
+                                    HeightRequest="60">
+                                <Border.StrokeShape>
+                                    <RoundRectangle CornerRadius="8" />
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                               Binding="{Binding Icon}"
+                                               Value="{Binding SelectedIcon.Icon, Source={RelativeSource AncestorType={x:Type ContentPage}}}">
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <Image>
+                                    <Image.Source>
+                                        <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}" 
+                                                         Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}">
+                                        </FontImageSource>
+                                    </Image.Source>
+                                </Image>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Nombre del Juego"
+                       FontSize="16"
+                       FontAttributes="Bold" />
+                <Entry Text="{Binding Name}"
+                       Placeholder="Ej: FIFA 2024, Mario Kart, etc."
+                       FontSize="16" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Descripcion (Opcional)"
+                       FontSize="16"
+                       FontAttributes="Bold" />
+                <Editor Text="{Binding Description}"
+                        Placeholder="Agrega una descripcion del juego..."
+                        HeightRequest="100"
+                        FontSize="14" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Color del Juego"
+                       FontSize="16"
+                       FontAttributes="Bold" />
+
+                <CollectionView ItemsSource="{Binding GameColors}"
+                                HeightRequest="50">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal"
+                                         ItemSpacing="10" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:GameColor">
+                            <Border Background="{Binding CurrentGameColor}"
+                                    StrokeThickness="3"
+                                    WidthRequest="50"
+                                    HeightRequest="50">
+                                <Border.StrokeShape>
+                                    <Ellipse />
+                                </Border.StrokeShape>
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border"
+                                               Binding="{Binding IsSelected}"
+                                               Value="True">
+                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border"
+                                               Binding="{Binding IsSelected}"
+                                               Value="False">
+                                        <Setter Property="Stroke" Value="Transparent" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectColorCommand, Source={RelativeSource AncestorType={x:Type pageModels:CreateGamePageModel}}, x:DataType=pageModels:CreateGamePageModel}"
+                                                          CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <Border BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                    Opacity="0.1"
+                    StrokeThickness="0"
+                    Padding="15">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8" />
+                </Border.StrokeShape>
+                <Label Text="Despues de crear el juego, podras agregar sesiones de juego con jugadores y registrar victorias."
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray900}, Dark={StaticResource Gray100}}"
+                       HorizontalTextAlignment="Center" />
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

@@ -83,7 +83,19 @@
     <FontImageSource x:Key="IconDelete"
                      Glyph="{x:Static f:FluentUI.delete_32_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                     Color="{AppThemeBinding Light={StaticResource LightOnDarkBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                     Size="{StaticResource IconSize}" />
+    
+    <FontImageSource x:Key="IconEdit"
+                     Glyph="{x:Static f:FluentUI.edit_32_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{AppThemeBinding Light={StaticResource LightOnDarkBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                     Size="{StaticResource IconSize}" />
+
+    <FontImageSource x:Key="IconSave"
+                     Glyph="{x:Static f:FluentUI.save_32_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{AppThemeBinding Light={StaticResource LightOnDarkBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource IconSize}" />
 
     <FontImageSource x:Key="IconClean"

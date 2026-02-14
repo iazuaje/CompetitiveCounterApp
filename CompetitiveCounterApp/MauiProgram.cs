@@ -35,6 +35,7 @@ namespace CompetitiveCounterApp
             // Repositorios nuevos para juegos
             builder.Services.AddSingleton<GameRepository>();
             builder.Services.AddSingleton<PlayerRepository>();
+            builder.Services.AddSingleton<SessionRepository>();
 
             // Repositorios existentes (mantener para otras pantallas)
             builder.Services.AddSingleton<ProjectRepository>();
@@ -55,7 +56,9 @@ namespace CompetitiveCounterApp
             builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
             builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
             
-            // Nueva ruta para GameDetail
+            // Rutas para juegos
+            builder.Services.AddTransientWithShellRoute<CreateGamePage, CreateGamePageModel>("creategame");
+            builder.Services.AddTransientWithShellRoute<EditGamePage, EditGamePageModel>("editgame");
             builder.Services.AddTransientWithShellRoute<GameDetailPage, GameDetailPageModel>("gamedetail");
 
             return builder.Build();
