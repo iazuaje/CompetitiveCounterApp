@@ -60,6 +60,14 @@ namespace CompetitiveCounterApp.PageModels
         }
 
         [RelayCommand]
+        private void SelectIcon(IconData selectedIcon)
+        {
+            SelectedIcon.IsSelected = false;
+            SelectedIcon = selectedIcon;
+            SelectedIcon.IsSelected = true;
+        }
+
+        [RelayCommand]
         private void SelectColor(GameColor color)
         {
             foreach (var c in GameColors)

@@ -30,8 +30,7 @@
                        FontAttributes="Bold" />
 
                 <CollectionView ItemsSource="{Binding Icons}"
-                                SelectionMode="Single"
-                                SelectedItem="{Binding SelectedIcon}"
+                                SelectionMode="None"
                                 HeightRequest="80">
                     <CollectionView.ItemsLayout>
                         <LinearItemsLayout Orientation="Horizontal"
@@ -48,12 +47,19 @@
                                     <RoundRectangle CornerRadius="8" />
                                 </Border.StrokeShape>
                                 <Border.Triggers>
-                                    <DataTrigger TargetType="Border"
-                                               Binding="{Binding Icon}"
-                                               Value="{Binding SelectedIcon.Icon, Source={RelativeSource AncestorType={x:Type ContentPage}}}">
-                                        <Setter Property="Stroke" Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                    <DataTrigger
+                                        TargetType="Border"
+                                        Binding="{Binding IsSelected}"
+                                        Value="True">
+                                        <Setter Property="Stroke"
+                                            Value="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
                                     </DataTrigger>
                                 </Border.Triggers>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding SelectIconCommand, Source={RelativeSource AncestorType={x:Type pageModels:CreateGamePageModel}}, x:DataType=pageModels:CreateGamePageModel}"
+                                                          CommandParameter="{Binding .}" />
+
+                                </Border.GestureRecognizers>
 
                                 <Image>
                                     <Image.Source>
