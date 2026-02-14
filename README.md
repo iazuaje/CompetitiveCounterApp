@@ -1,204 +1,87 @@
-# CompetitiveCounterApp
+﻿# CompetitiveCounterApp
 
 ![.NET MAUI](https://img.shields.io/badge/.NET_MAUI-9-512BD4?logo=.net)
 ![Platform](https://img.shields.io/badge/Platform-Android_|_iOS_|_macOS_|_Windows-blue)
 
-Una aplicaci�n m�vil multiplataforma desarrollada con .NET MAUI para llevar el registro de partidas competitivas entre jugadores. Perfecta para hacer seguimiento de victorias y derrotas en juegos competitivos con amigos y familiares.
+Una aplicación móvil multiplataforma desarrollada con .NET MAUI para llevar el registro de partidas competitivas entre jugadores.
 
-## ?? Caracter�sticas
+## Características
 
-### Gesti�n de Juegos
-- **Crear y personalizar juegos** con nombre, icono, descripci�n y colores personalizados (tema claro/oscuro)
-- **Vista en cuadr�cula** de todos los juegos registrados
-- **Detalles de juego** con historial de sesiones y estad�sticas
-- **Edici�n y eliminaci�n** de juegos
+- **Gestión de Juegos**: Crear y personalizar juegos con iconos, colores y descripciones
+- **Gestión de Sesiones**: Registro de partidas con fecha, notas y victorias por jugador
+- **Gestión de Jugadores**: Sistema de jugadores reutilizable entre diferentes juegos
+- **Temas**: Soporte completo para modo claro y oscuro con colores personalizados
+- **UI Moderna**: Interfaz con FluentUI Icons y diseño responsivo
 
-### Gesti�n de Sesiones
-- Registro de sesiones de juego con fecha y notas
-- Seguimiento de victorias por jugador en cada sesi�n
-- Historial completo de sesiones por juego
-- Visualizaci�n de datos agregados
+## Arquitectura
 
-### Gesti�n de Jugadores
-- Crear jugadores con nombres y colores personalizados
-- Sistema de jugadores reutilizable entre diferentes juegos
-- Estad�sticas por jugador
-
-### Caracter�sticas Adicionales
-- **Tema claro/oscuro** con soporte completo
-- **Colores personalizados** por juego adaptables al tema
-- **Iconos FluentUI** para una interfaz moderna
-- **Dise�o responsivo** para diferentes tama�os de pantalla
-- **Actualizaci�n pull-to-refresh** en las listas
-
-## ??? Arquitectura
-
-### Patr�n MVVM
-El proyecto utiliza el patr�n **Model-View-ViewModel** con:
-- **Models**: Entidades de dominio (Game, Session, Player, SessionPlayer)
-- **Views (Pages)**: Interfaces de usuario en XAML
-- **ViewModels (PageModels)**: L�gica de presentaci�n con CommunityToolkit.MVVM
-
-### Estructura del Proyecto
+El proyecto utiliza el patrón **MVVM** con CommunityToolkit.MVVM:
 
 ```
 CompetitiveCounterApp/
-??? Models/                    # Entidades de dominio
-?   ??? Game.cs               # Juego competitivo
-?   ??? Session.cs            # Sesi�n de juego
-?   ??? Player.cs             # Jugador
-?   ??? SessionPlayer.cs      # Relaci�n sesi�n-jugador con victorias
-??? Pages/                     # Vistas XAML
-?   ??? GamesPage.xaml        # Lista principal de juegos
-?   ??? GameDetailPage.xaml   # Detalles y sesiones de un juego
-?   ??? CreateGamePage.xaml   # Crear nuevo juego
-?   ??? EditGamePage.xaml     # Editar juego existente
-?   ??? Controls/             # Controles reutilizables
-??? PageModels/               # ViewModels
-?   ??? GamesPageModel.cs
-?   ??? GameDetailPageModel.cs
-?   ??? CreateGamePageModel.cs
-?   ??? EditGamePageModel.cs
-??? Data/                      # Capa de datos
-?   ??? GameRepository.cs     # Repositorio de juegos
-?   ??? SessionRepository.cs  # Repositorio de sesiones
-?   ??? PlayerRepository.cs   # Repositorio de jugadores
-?   ??? Constants.cs          # Constantes y paths de BD
-??? Services/                  # Servicios de la aplicaci�n
-??? Converters/               # Conversores XAML
-??? Resources/                # Recursos de la app
-    ??? Fonts/
-    ??? Images/
-    ??? Styles/
+├── Models/                    # Entidades de dominio
+│   ├── Game.cs
+│   ├── Session.cs
+│   ├── Player.cs
+│   └── SessionPlayer.cs
+├── Pages/                     # Vistas XAML
+│   ├── GamesPage.xaml
+│   ├── GameDetailPage.xaml
+│   ├── CreateGamePage.xaml
+│   ├── EditGamePage.xaml
+│   └── Controls/
+├── PageModels/                # ViewModels
+│   ├── GamesPageModel.cs
+│   ├── GameDetailPageModel.cs
+│   ├── CreateGamePageModel.cs
+│   └── EditGamePageModel.cs
+├── Data/                      # Repositorios SQLite
+│   ├── GameRepository.cs
+│   ├── SessionRepository.cs
+│   └── PlayerRepository.cs
+├── Services/                  # Servicios de la aplicación
+└── Resources/                 # Recursos (Fonts, Images, Styles)
 ```
 
-## ??? Tecnolog�as
+## Tecnologías
 
-### Frameworks y Librer�as
-- **.NET 9** - Framework principal
-- **.NET MAUI** - Framework multiplataforma
-- **CommunityToolkit.MVVM** (v8.3.2) - Implementaci�n MVVM
-- **CommunityToolkit.Maui** (v11.1.1) - Controles y helpers adicionales
-- **Syncfusion.Maui.Toolkit** (v1.0.6) - Componentes UI avanzados
-
-### Base de Datos
+- **.NET 9** con .NET MAUI
+- **CommunityToolkit.MVVM** (v8.3.2)
+- **CommunityToolkit.Maui** (v11.1.1)
+- **Syncfusion.Maui.Toolkit** (v1.0.6)
 - **SQLite** (Microsoft.Data.Sqlite.Core v8.0.8)
-- **SQLitePCLRaw.bundle_green** (v2.1.10)
 
-### Caracter�sticas de .NET MAUI Utilizadas
-- Shell Navigation
-- Data Binding
-- Dependency Injection
-- Platform-specific code
-- XAML Markup Extensions
+## Plataformas Soportadas
 
-## ?? Plataformas Soportadas
-
-| Plataforma | Versi�n M�nima |
+| Plataforma | Versión Mínima |
 |------------|----------------|
 | Android    | API 21 (5.0)   |
 | iOS        | 15.0           |
 | macOS      | 15.0           |
 | Windows    | 10.0.17763.0   |
 
-## ?? C�mo Ejecutar
 
-### Requisitos Previos
-- Visual Studio 2022 (v17.12 o superior)
-- Workload de .NET MAUI instalado
-- SDK de .NET 9
+## Modelo de Datos (Sujeto a cambios)
 
-### Pasos de Instalaci�n
-
-1. **Clonar el repositorio**
-   ```bash
-   git clone https://github.com/iazuaje/CompetitiveCounterApp.git
-   cd CompetitiveCounterApp
-   ```
-
-2. **Restaurar paquetes NuGet**
-   ```bash
-   dotnet restore
-   ```
-
-3. **Ejecutar la aplicaci�n**
-   ```bash
-   dotnet build
-   dotnet run
-   ```
-
-   O simplemente abrir en Visual Studio y presionar F5
-
-## ?? Modelo de Datos
-
-### Game (Juego)
 ```csharp
-- ID: int
-- Name: string
-- Icon: string (glyph de FluentUI)
-- Description: string
-- ColorLight: string (hex)
-- ColorDark: string (hex)
-- CreatedDate: DateTime
+Game
+├── ID, Name, Icon, Description
+├── ColorLight, ColorDark
+└── CreatedDate
+
+Session
+├── ID, GameID, SessionDate, Notes
+└── SessionPlayers[]
+
+Player
+├── ID, Name
+└── ColorHex
+
+SessionPlayer
+├── ID, SessionID, PlayerID
+└── Wins
 ```
 
-### Session (Sesi�n)
-```csharp
-- ID: int
-- GameID: int
-- SessionDate: DateTime
-- Notes: string
-- SessionPlayers: List<SessionPlayer>
-```
+## Licencia
 
-### Player (Jugador)
-```csharp
-- ID: int
-- Name: string
-- ColorHex: string
-```
-
-### SessionPlayer (Relaci�n)
-```csharp
-- ID: int
-- SessionID: int
-- PlayerID: int
-- Wins: int (victorias en esa sesi�n)
-```
-
-## ?? Dise�o
-
-- **Tema**: Soporte completo para modo claro y oscuro
-- **Colores**: Sistema de colores personalizados por juego
-- **Iconos**: FluentUI System Icons
-- **Fuentes**: Open Sans, Segoe UI Semibold
-- **Layout**: Dise�o responsivo con grids y colecciones
-
-## ?? Gesti�n de Estado
-
-- **Dependency Injection** para repositorios y servicios
-- **Observable Properties** con CommunityToolkit.MVVM
-- **Commands** para interacciones del usuario
-- **Shell Navigation** para navegaci�n entre p�ginas
-
-## ?? Pr�ximas Mejoras
-
-- [ ] Estad�sticas avanzadas por jugador
-- [ ] Gr�ficos de rendimiento
-- [ ] Exportaci�n de datos
-- [ ] Sincronizaci�n en la nube
-- [ ] Notificaciones de recordatorios
-- [ ] Soporte para torneos
-
-## ????? Autor
-
-**iazuaje**
-- GitHub: [@iazuaje](https://github.com/iazuaje)
-
-## ?? Licencia
-
-Este proyecto est� bajo la Licencia MIT - ver el archivo LICENSE para m�s detalles.
-
----
-
-? Si te gusta este proyecto, �dale una estrella en GitHub!
+MIT License - ver el archivo LICENSE para más detalles.
