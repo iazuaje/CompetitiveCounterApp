@@ -10,33 +10,6 @@ namespace CompetitiveCounterApp.Data
         public SessionRepository()
         {
             _connectionString = Constants.DatabasePath;
-            InitializeDatabase();
-        }
-
-        private void InitializeDatabase()
-        {
-            using var connection = new SqliteConnection(_connectionString);
-            connection.Open();
-
-            var command = connection.CreateCommand();
-            command.CommandText = @"
-                CREATE TABLE IF NOT EXISTS Sessions (
-                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    GameID INTEGER NOT NULL,
-                    SessionDate TEXT NOT NULL,
-                    Notes TEXT,
-                    FOREIGN KEY (GameID) REFERENCES Games(ID) ON DELETE CASCADE
-                );
-
-                CREATE TABLE IF NOT EXISTS SessionPlayers (
-                    ID INTEGER PRIMARY KEY AUTOINCREMENT,
-                    SessionID INTEGER NOT NULL,
-                    PlayerID INTEGER NOT NULL,
-                    Wins INTEGER DEFAULT 0,
-                    FOREIGN KEY (SessionID) REFERENCES Sessions(ID) ON DELETE CASCADE,
-                    FOREIGN KEY (PlayerID) REFERENCES Players(ID) ON DELETE CASCADE
-                );";
-            command.ExecuteNonQuery();
         }
 
         public async Task<List<Session>> ListAsync(int? gameId = null)
@@ -49,7 +22,7 @@ namespace CompetitiveCounterApp.Data
                 connection.Open();
 
                 var command = connection.CreateCommand();
-                
+
                 if (gameId.HasValue)
                 {
                     command.CommandText = @"
@@ -180,7 +153,6 @@ namespace CompetitiveCounterApp.Data
 
                         command.ExecuteNonQuery();
 
-                        // Eliminar los SessionPlayers existentes antes de insertar los nuevos
                         command = connection.CreateCommand();
                         command.Transaction = transaction;
                         command.CommandText = "DELETE FROM SessionPlayers WHERE SessionID = @sessionId";
@@ -188,7 +160,6 @@ namespace CompetitiveCounterApp.Data
                         command.ExecuteNonQuery();
                     }
 
-                    // Insertar SessionPlayers
                     foreach (var sessionPlayer in session.SessionPlayers)
                     {
                         command = connection.CreateCommand();

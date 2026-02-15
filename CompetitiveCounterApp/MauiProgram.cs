@@ -32,6 +32,8 @@ namespace CompetitiveCounterApp
     		builder.Services.AddLogging(configure => configure.AddDebug());
 #endif
 
+            builder.Services.AddSingleton<DatabaseInitializer>();
+
             // Repositorios nuevos para juegos
             builder.Services.AddSingleton<GameRepository>();
             builder.Services.AddSingleton<PlayerRepository>();
@@ -61,7 +63,11 @@ namespace CompetitiveCounterApp
             builder.Services.AddTransientWithShellRoute<EditGamePage, EditGamePageModel>("editgame");
             builder.Services.AddTransientWithShellRoute<GameDetailPage, GameDetailPageModel>("gamedetail");
 
-            return builder.Build();
+            var app = builder.Build();
+
+            app.Services.GetRequiredService<DatabaseInitializer>().Initialize();
+
+            return app;
         }
     }
 }
