@@ -90,6 +90,7 @@ namespace CompetitiveCounterApp.PageModels
                 Name = _game.Name;
                 Description = _game.Description;
                 SelectedIcon = Icons.FirstOrDefault(i => i.Icon == _game.Icon) ?? Icons[0];
+                SelectedIcon.IsSelected = true;
                 
                 var matchingColor = GameColors.FirstOrDefault(c => 
                     c.ColorLight == _game.ColorLight && c.ColorDark == _game.ColorDark);
@@ -113,6 +114,14 @@ namespace CompetitiveCounterApp.PageModels
             {
                 IsBusy = false;
             }
+        }
+
+        [RelayCommand]
+        private void SelectIcon(IconData selectedIcon)
+        {
+            SelectedIcon.IsSelected = false;
+            SelectedIcon = selectedIcon;
+            SelectedIcon.IsSelected = true;
         }
 
         [RelayCommand]

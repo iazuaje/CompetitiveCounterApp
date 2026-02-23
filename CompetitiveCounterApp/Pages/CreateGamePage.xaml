@@ -23,12 +23,23 @@
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Imagen del juego" FontSize="16" FontAttributes="Bold"/>
+                <Button Text="Seleccionar imagen" ImageSource="{StaticResource IconImage}" 
+                        FontSize="18"
+                        FontAttributes="Bold"
+                        HeightRequest="56"
+                        CornerRadius="12"
+                        HorizontalOptions="Start"
+                        Command="{Binding SelectImageCommand}"
+                    />
 
+            </VerticalStackLayout>
             <VerticalStackLayout Spacing="10">
                 <Label Text="Icono del Juego"
                        FontSize="16"
                        FontAttributes="Bold" />
-
+                
                 <CollectionView ItemsSource="{Binding Icons}"
                                 SelectionMode="None"
                                 HeightRequest="80">

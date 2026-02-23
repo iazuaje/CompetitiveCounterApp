@@ -483,3 +483,4 @@ $RECYCLE.BIN/
 # Vim temporary swap files
 *.swp
 /git_changes.txt
+/CompetitiveCounterApp/git_changes.txt

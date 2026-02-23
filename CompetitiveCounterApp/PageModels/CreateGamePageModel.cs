@@ -19,6 +19,9 @@ namespace CompetitiveCounterApp.PageModels
         private IconData _selectedIcon;
 
         [ObservableProperty]
+        private ImageSource _selectedImage;
+
+        [ObservableProperty]
         private List<IconData> _icons = new List<IconData>
         {
             new IconData { Icon = FluentUI.games_24_regular, Description = "Games Icon" },
@@ -57,6 +60,21 @@ namespace CompetitiveCounterApp.PageModels
             _selectedIcon = _icons[0];
             _selectedColor = _gameColors[0];
             _selectedColor.IsSelected = true;
+        }
+
+        [RelayCommand]
+        private async Task SelectImage()
+        {
+            if (!MediaPicker.Default.IsCaptureSupported)
+                return;
+
+            var result = await MediaPicker.Default.PickPhotoAsync();
+
+            if (result == null)
+                return;
+
+            using var stream = await result.OpenReadAsync();
+            SelectedImage = ImageSource.FromStream(() => stream);
         }
 
         [RelayCommand]
