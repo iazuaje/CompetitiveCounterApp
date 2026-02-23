@@ -34,6 +34,9 @@ namespace CompetitiveCounterApp
 
             builder.Services.AddSingleton<DatabaseInitializer>();
 
+            builder.Services.AddSingleton<GameDataService>();
+            builder.Services.AddTransient<GameOperationsService>();
+
             // Repositorios nuevos para juegos
             builder.Services.AddSingleton<GameRepository>();
             builder.Services.AddSingleton<PlayerRepository>();

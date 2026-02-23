@@ -9,6 +9,7 @@ namespace CompetitiveCounterApp.PageModels
         private readonly GameRepository _gameRepository;
         private readonly SessionRepository _sessionRepository;
         private readonly ModalErrorHandler _errorHandler;
+        private readonly GameOperationsService _gameOperations;
 
         [ObservableProperty]
         private Game? _game;
@@ -23,15 +24,7 @@ namespace CompetitiveCounterApp.PageModels
         private IconData _selectedIcon;
 
         [ObservableProperty]
-        private List<IconData> _icons = new List<IconData>
-        {
-            new IconData { Icon = FluentUI.games_24_regular, Description = "Games Icon" },
-            new IconData { Icon = FluentUI.trophy_24_regular, Description = "Trophy Icon" },
-            new IconData { Icon = FluentUI.target_24_regular, Description = "Target Icon" },
-            new IconData { Icon = FluentUI.sport_24_regular, Description = "Sport Icon" },
-            new IconData { Icon = FluentUI.xbox_controller_28_regular, Description = "Controller Icon" },
-            new IconData { Icon = FluentUI.puzzle_piece_24_regular, Description = "Puzzle Icon" }
-        };
+        private List<IconData> _icons;
 
         [ObservableProperty]
         private List<Session> _sessions = new();
@@ -42,12 +35,18 @@ namespace CompetitiveCounterApp.PageModels
         [ObservableProperty]
         private bool _isLoadingGame = true;
 
-        public GameDetailPageModel(GameRepository gameRepository, SessionRepository sessionRepository, ModalErrorHandler errorHandler)
+        public GameDetailPageModel(
+            GameRepository gameRepository, 
+            SessionRepository sessionRepository, 
+            ModalErrorHandler errorHandler,
+            GameOperationsService gameOperations)
         {
             _gameRepository = gameRepository;
             _sessionRepository = sessionRepository;
             _errorHandler = errorHandler;
-            _selectedIcon = _icons[0];
+            _gameOperations = gameOperations;
+            _icons = GameDataService.GetIcons();
+            _selectedIcon = GameDataService.GetDefaultIcon();
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -81,7 +80,7 @@ namespace CompetitiveCounterApp.PageModels
 
                 Name = Game.Name;
                 Description = Game.Description;
-                SelectedIcon = Icons.FirstOrDefault(i => i.Icon == Game.Icon) ?? Icons[0];
+                SelectedIcon = Icons.FirstOrDefault(i => i.Icon == Game.Icon) ?? GameDataService.GetDefaultIcon();
                 
                 Sessions = await _sessionRepository.ListAsync(Game.ID);
             }
@@ -129,30 +128,10 @@ namespace CompetitiveCounterApp.PageModels
         [RelayCommand]
         private async Task Delete()
         {
-            if (Game.IsNullOrNew())
-            {
-                await Shell.Current.GoToAsync("..");
-                return;
-            }
-
-            bool confirm = await Shell.Current.DisplayAlert(
-                "Eliminar Juego",
-                $"¿Estás seguro de eliminar '{Game.Name}'? Esto eliminará todas las sesiones asociadas.",
-                "Sí",
-                "No");
-
-            if (!confirm) return;
-
             try
             {
                 IsBusy = true;
-                await _gameRepository.DeleteItemAsync(Game);
-                await Shell.Current.GoToAsync("..");
-                await AppShell.DisplayToastAsync("Juego eliminado exitosamente");
-            }
-            catch (Exception e)
-            {
-                _errorHandler.HandleError(e);
+                await _gameOperations.DeleteGameAsync(Game, _errorHandler);
             }
             finally
             {
