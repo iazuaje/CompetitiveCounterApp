@@ -7,4 +7,9 @@ public partial class CreateGamePage : ContentPage
 		InitializeComponent();
 		BindingContext = createGamePageModel;
 	}
+
+    private void SfSegmentedControl_SelectionChanged(object sender, Syncfusion.Maui.Toolkit.SegmentedControl.SelectionChangedEventArgs e)
+    {
+		//Do something
+    }
 }
