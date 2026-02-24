@@ -46,14 +46,13 @@ public abstract partial class GameFormPageModelBase : ObservableObject
     [RelayCommand]
     private void SelectIcon(IconData selectedIcon)
     {
-        if (selectedIcon == null)
-            return;
+        foreach(var i in Icons)
+        {
+            i.IsSelected = false;
+        }
 
-        if (SelectedIcon != null)
-            SelectedIcon.IsSelected = false;
-
+        selectedIcon.IsSelected = true;
         SelectedIcon = selectedIcon;
-        SelectedIcon.IsSelected = true;
     }
 
     [RelayCommand]

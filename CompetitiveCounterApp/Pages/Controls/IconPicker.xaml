@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:f="clr-namespace:Fonts"
+             x:Class="CompetitiveCounterApp.Pages.Controls.IconPicker"
+             x:Name="this">
+    <VerticalStackLayout Spacing="10" Margin="5">
+        <Label Text="Ícono del juego" FontAttributes="Bold"></Label>
+        <Border>
+            <CollectionView ItemsSource="{Binding Source={x:Reference this}, Path=ItemsSource}"
+                    SelectionMode="None">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical" VerticalItemSpacing="10"
+                           Span="4" 
+                           />
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Button Clicked="OnItemTapped"
+                        BorderWidth="1"
+                        CornerRadius="50"
+                        HeightRequest="60"
+                        WidthRequest="60">
+                            <Button.ImageSource>
+                                <FontImageSource Glyph="{Binding Icon}"
+                                       FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                       Size="32"
+                                       Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                                       >
+                                </FontImageSource>
+
+                            </Button.ImageSource>
+
+                            <Button.Shadow>
+                                <Shadow Opacity="0.2" Radius="3"/>
+                            </Button.Shadow>
+
+                            <Button.Triggers>
+                                <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="True">
+                                    <Setter Property="BorderColor" Value="{Binding Source={x:Reference this}, Path=SelectedColor.CurrentGameColor}"/>
+                                    <Setter Property="BorderWidth" Value="3"></Setter>
+                                </DataTrigger>
+                            </Button.Triggers>
+                        </Button>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </Border>
+    </VerticalStackLayout>
+</ContentView>

@@ -4,6 +4,7 @@
              xmlns:f="clr-namespace:Fonts"
              xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
              xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             xmlns:controls="clr-namespace:CompetitiveCounterApp.Pages.Controls"
              xmlns:models="clr-namespace:CompetitiveCounterApp.Models"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="CompetitiveCounterApp.Pages.CreateGamePage"
@@ -118,7 +119,9 @@
                     <Border HeightRequest="150">
                         <Grid>
                             <Image IsVisible="{Binding SelectedImage, Converter={toolkit:IsNullConverter}}" Source="{StaticResource IconNoImage}" HeightRequest="50" VerticalOptions="End" HorizontalOptions="End"></Image>
-                            <Button Text="Cargar Imagen" VerticalOptions="Start" HorizontalOptions="Start" ImageSource="{StaticResource IconAddImage}">
+                            <Button Text="Cargar Imagen" VerticalOptions="Start" 
+                                    Command="{Binding SelectImageCommand}"
+                                    HorizontalOptions="Start" ImageSource="{StaticResource IconAddImage}">
                                 <Button.Shadow>
                                     <Shadow Offset="0,4" Opacity="0.2" Radius="10"/>
                                 </Button.Shadow>
@@ -126,7 +129,12 @@
                         </Grid>
                     </Border>
                 </Grid>
-                <VerticalStackLayout Spacing="10">
+                <controls:IconPicker x:Name="selectorIcon"
+                                     ItemsSource="{Binding Icons}" 
+                                     SelectedItem="{Binding SelectedIcon}"
+                                     SelectedColor="{Binding SelectedColor}"
+                                     ItemCommand="{Binding SelectIconCommand}"></controls:IconPicker>
+                <!--<VerticalStackLayout Spacing="10">
                     <Label Text="Icono del Juego"
                        FontSize="16"
                        FontAttributes="Bold" />
@@ -174,7 +182,7 @@
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
                     </CollectionView>
-                </VerticalStackLayout>
+                </VerticalStackLayout>-->
 
             </VerticalStackLayout>
         </Border>
