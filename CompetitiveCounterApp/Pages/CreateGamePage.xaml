@@ -23,7 +23,6 @@
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="Auto, *" BackgroundColor="{Binding SelectedColor.CurrentGameColor}">
-        
         <VerticalStackLayout Spacing="10" HorizontalOptions="Center" Margin="10">
             <Label Text="Nombre del Juego" HorizontalTextAlignment="Center"
                        TextColor="{StaticResource White}"
@@ -77,9 +76,11 @@
                 </Image>
             </Border>
             <Label Text="Icono" HorizontalTextAlignment="Center" TextColor="White" FontAttributes="Bold"/>
-
-
-
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="10">
+                <Image Source="{StaticResource IconWarning}" />
+                <Label Text="No se ha cargado una imagen" VerticalOptions="Center" TextColor="White" HorizontalOptions="Center" FontSize="12"></Label>
+                <Image Source="{StaticResource IconWarning}" />
+            </HorizontalStackLayout>
         </VerticalStackLayout>
         <Border Grid.Row="1" Background="White" Padding="10">
             <Border.StrokeShape>
@@ -88,7 +89,7 @@
             <Border.Shadow>
                 <Shadow Offset="0,-10" Radius="10" Opacity="0.2"/>
             </Border.Shadow>
-            <VerticalStackLayout>
+            <VerticalStackLayout Spacing="10">
                 <Grid>
                     <sf:SfSegmentedControl SelectedIndex="0" ShowSeparator="False" SegmentCornerRadius="10" AutoScrollToSelectedSegment="True" 
                                            BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}}"
@@ -114,9 +115,16 @@
                     </sf:SfSegmentedControl>
                 </Grid>
                 <Grid>
-                    <Button Text="Cargar Imagen" CornerRadius="50">
-                        
-                    </Button>
+                    <Border HeightRequest="150" x:Name="Foto">
+                        <Grid>
+                            <Image Source="{StaticResource IconNoImage}" HeightRequest="50" VerticalOptions="End" HorizontalOptions="End"></Image>
+                            <Button Text="Cargar Imagen" VerticalOptions="Start" HorizontalOptions="Start" ImageSource="{StaticResource IconAddImage}">
+                                <Button.Shadow>
+                                    <Shadow Offset="0,4" Opacity="0.2" Radius="10"/>
+                                </Button.Shadow>
+                            </Button>
+                        </Grid>
+                    </Border>
                 </Grid>
             </VerticalStackLayout>
         </Border>
