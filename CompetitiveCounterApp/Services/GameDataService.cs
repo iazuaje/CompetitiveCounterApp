@@ -9,7 +9,7 @@ public class GameDataService
 
     public static List<IconData> GetIcons()
     {
-        return _icons ??= new List<IconData>
+        List<IconData> icons = _icons ??= new List<IconData>
         {
             new IconData { Icon = FluentUI.games_24_regular, Description = "Games Icon" },
             new IconData { Icon = FluentUI.trophy_24_regular, Description = "Trophy Icon" },
@@ -18,6 +18,13 @@ public class GameDataService
             new IconData { Icon = FluentUI.xbox_controller_28_regular, Description = "Controller Icon" },
             new IconData { Icon = FluentUI.puzzle_piece_24_regular, Description = "Puzzle Icon" }
         };
+
+        foreach (var item in icons)
+        {
+            item.IsSelected = false;
+        }
+
+        return icons;
     }
 
     public static List<GameColor> GetGameColors()

@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CompetitiveCounterApp.Models;
+using System.Collections.ObjectModel;
 
 namespace CompetitiveCounterApp.PageModels;
 
@@ -20,7 +21,7 @@ public abstract partial class GameFormPageModelBase : ObservableObject
     private IconData _selectedIcon;
 
     [ObservableProperty]
-    private List<IconData> _icons;
+    private ObservableCollection<IconData> _icons;
 
     [ObservableProperty]
     private GameColor _selectedColor;
@@ -35,7 +36,7 @@ public abstract partial class GameFormPageModelBase : ObservableObject
     {
         _gameRepository = gameRepository;
         _errorHandler = errorHandler;
-        _icons = GameDataService.GetIcons();
+        _icons = new ObservableCollection<IconData>(GameDataService.GetIcons());
         _gameColors = GameDataService.GetGameColors();
         _selectedIcon = GameDataService.GetDefaultIcon();
         _selectedColor = GameDataService.GetDefaultColor();
@@ -45,7 +46,12 @@ public abstract partial class GameFormPageModelBase : ObservableObject
     [RelayCommand]
     private void SelectIcon(IconData selectedIcon)
     {
-        SelectedIcon.IsSelected = false;
+        if (selectedIcon == null)
+            return;
+
+        if (SelectedIcon != null)
+            SelectedIcon.IsSelected = false;
+
         SelectedIcon = selectedIcon;
         SelectedIcon.IsSelected = true;
     }
