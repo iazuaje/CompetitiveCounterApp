@@ -9,6 +9,8 @@ namespace CompetitiveCounterApp.PageModels
         [ObservableProperty]
         private ImageSource _selectedImage;
 
+        private string _temporaryImagePath;
+
         public CreateGamePageModel(GameRepository gameRepository, ModalErrorHandler errorHandler)
             : base(gameRepository, errorHandler)
         {
@@ -25,8 +27,15 @@ namespace CompetitiveCounterApp.PageModels
             if (result == null)
                 return;
 
-            using var stream = await result.OpenReadAsync();
-            SelectedImage = ImageSource.FromStream(() => stream);
+            // Guardar en una ubicación temporal
+            var tempPath = Path.Combine(FileSystem.CacheDirectory, $"temp_{Guid.NewGuid()}{Path.GetExtension(result.FileName)}");
+
+            using var sourceStream = await result.OpenReadAsync();
+            using var fileStream = File.Create(tempPath);
+            await sourceStream.CopyToAsync(fileStream);
+
+            _temporaryImagePath = tempPath;
+            SelectedImage = ImageSource.FromFile(_temporaryImagePath);
         }
 
         [RelayCommand]
@@ -49,6 +58,19 @@ namespace CompetitiveCounterApp.PageModels
 
                 UpdateGameFromForm(game);
 
+                // Si hay imagen seleccionada, moverla a la ubicación permanente
+                if (!string.IsNullOrEmpty(_temporaryImagePath) && File.Exists(_temporaryImagePath))
+                {
+                    var imagesDirectory = Path.Combine(FileSystem.AppDataDirectory, "GameImages");
+                    Directory.CreateDirectory(imagesDirectory);
+
+                    var fileName = $"game_{Guid.NewGuid()}{Path.GetExtension(_temporaryImagePath)}";
+                    var permanentPath = Path.Combine(imagesDirectory, fileName);
+
+                    File.Move(_temporaryImagePath, permanentPath);
+                    game.ImagePath = permanentPath;
+                }
+
                 await _gameRepository.SaveItemAsync(game);
 
                 await Shell.Current.GoToAsync("..");
@@ -57,6 +79,12 @@ namespace CompetitiveCounterApp.PageModels
             catch (Exception e)
             {
                 _errorHandler.HandleError(e);
+
+                // Limpiar archivo temporal en caso de error
+                if (!string.IsNullOrEmpty(_temporaryImagePath) && File.Exists(_temporaryImagePath))
+                {
+                    File.Delete(_temporaryImagePath);
+                }
             }
             finally
             {

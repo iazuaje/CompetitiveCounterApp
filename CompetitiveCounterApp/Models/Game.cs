@@ -5,6 +5,7 @@ namespace CompetitiveCounterApp.Models
         public int ID { get; set; }
         public string Name { get; set; } = string.Empty;
         public string Icon { get; set; } = string.Empty;
+        public string ImagePath { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public string ColorLight { get; set; } = "#E63946";
         public string ColorDark { get; set; } = "#FF5964";
@@ -21,6 +22,10 @@ namespace CompetitiveCounterApp.Models
                 return theme == AppTheme.Dark ? GameColorDark : GameColorLight;
             }
         }
+
+        public ImageSource GameImage => !string.IsNullOrEmpty(ImagePath) && File.Exists(ImagePath) 
+            ? ImageSource.FromFile(ImagePath) 
+            : null;
 
         public override string ToString() => Name;
     }

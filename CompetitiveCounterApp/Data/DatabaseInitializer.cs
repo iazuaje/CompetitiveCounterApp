@@ -104,6 +104,7 @@ namespace CompetitiveCounterApp.Data
             // Centraliza aquí cualquier ALTER/índices/etc.
             EnsureColumnExists(connection, "Games", "ColorLight", "TEXT DEFAULT '#E63946'");
             EnsureColumnExists(connection, "Games", "ColorDark", "TEXT DEFAULT '#FF5964'");
+            EnsureColumnExists(connection, "Games", "ImagePath", "TEXT DEFAULT NULL");
             EnsureColumnExists(connection, "Players", "ColorHex", "TEXT DEFAULT '#FF6B6B'");
         }
 
