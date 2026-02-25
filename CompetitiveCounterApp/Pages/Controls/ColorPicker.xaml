@@ -4,7 +4,7 @@
              x:Class="CompetitiveCounterApp.Pages.Controls.ColorPicker"
              x:Name="this">
     <VerticalStackLayout Spacing="10" Margin="5">
-        <Label Text="Ícono del juego" FontAttributes="Bold"></Label>
+        <Label Text="Color del juego" FontAttributes="Bold"></Label>
         <Border>
             <CollectionView ItemsSource="{Binding Source={x:Reference this}, Path=ItemsSource}"
                     SelectionMode="None">
@@ -20,9 +20,9 @@
                         CornerRadius="50"
                         HeightRequest="60"
                         WidthRequest="60"
-                                BackgroundColor="{Binding Color.CurrentGameColor}">
+                                BackgroundColor="{Binding CurrentGameColor}">
                             <Button.Background>
-                                <SolidColorBrush Color="{Binding Color.CurrentGameColor}"/>
+                                <SolidColorBrush Color="{Binding CurrentGameColor}"/>
                             </Button.Background>
                             <Button.Shadow>
                                 <Shadow Opacity="0.2" Radius="3"/>
