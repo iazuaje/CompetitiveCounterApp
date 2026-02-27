@@ -22,7 +22,7 @@ namespace CompetitiveCounterApp.Data
                 connection.Open();
 
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT ID, Name, Icon, Description, ColorLight, ColorDark, CreatedDate FROM Games ORDER BY CreatedDate DESC";
+                command.CommandText = "SELECT ID, Name, Icon, Description, ColorLight, ColorDark, ImagePath, CreatedDate FROM Games ORDER BY CreatedDate DESC";
 
                 using var reader = command.ExecuteReader();
                 while (reader.Read())
@@ -35,7 +35,8 @@ namespace CompetitiveCounterApp.Data
                         Description = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
                         ColorLight = reader.IsDBNull(4) ? "#E63946" : reader.GetString(4),
                         ColorDark = reader.IsDBNull(5) ? "#FF5964" : reader.GetString(5),
-                        CreatedDate = reader.IsDBNull(6) ? DateTime.Now : DateTime.Parse(reader.GetString(6))
+                        ImagePath = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+                        CreatedDate = reader.IsDBNull(7) ? DateTime.Now : DateTime.Parse(reader.GetString(7))
                     };
 
                     games.Add(game);
@@ -53,7 +54,7 @@ namespace CompetitiveCounterApp.Data
                 connection.Open();
 
                 var command = connection.CreateCommand();
-                command.CommandText = "SELECT ID, Name, Icon, Description, ColorLight, ColorDark, CreatedDate FROM Games WHERE ID = @id";
+                command.CommandText = "SELECT ID, Name, Icon, Description, ColorLight, ColorDark, ImagePath, CreatedDate FROM Games WHERE ID = @id";
                 command.Parameters.AddWithValue("@id", id);
 
                 using var reader = command.ExecuteReader();
@@ -67,7 +68,8 @@ namespace CompetitiveCounterApp.Data
                         Description = reader.IsDBNull(3) ? string.Empty : reader.GetString(3),
                         ColorLight = reader.IsDBNull(4) ? "#E63946" : reader.GetString(4),
                         ColorDark = reader.IsDBNull(5) ? "#FF5964" : reader.GetString(5),
-                        CreatedDate = reader.IsDBNull(6) ? DateTime.Now : DateTime.Parse(reader.GetString(6))
+                        ImagePath = reader.IsDBNull(6) ? string.Empty : reader.GetString(6),
+                        CreatedDate = reader.IsDBNull(7) ? DateTime.Now : DateTime.Parse(reader.GetString(7))
                     };
 
                     return game;
@@ -89,14 +91,15 @@ namespace CompetitiveCounterApp.Data
                 if (game.ID == 0)
                 {
                     command.CommandText = @"
-                        INSERT INTO Games (Name, Icon, Description, ColorLight, ColorDark, CreatedDate)
-                        VALUES (@name, @icon, @description, @colorLight, @colorDark, @createdDate);
+                        INSERT INTO Games (Name, Icon, Description, ColorLight, ColorDark, ImagePath, CreatedDate)
+                        VALUES (@name, @icon, @description, @colorLight, @colorDark, @imagePath, @createdDate);
                         SELECT last_insert_rowid();";
                     command.Parameters.AddWithValue("@name", game.Name);
                     command.Parameters.AddWithValue("@icon", game.Icon);
                     command.Parameters.AddWithValue("@description", game.Description);
                     command.Parameters.AddWithValue("@colorLight", game.ColorLight);
                     command.Parameters.AddWithValue("@colorDark", game.ColorDark);
+                    command.Parameters.AddWithValue("@imagePath", game.ImagePath);
                     command.Parameters.AddWithValue("@createdDate", game.CreatedDate.ToString("o"));
 
                     game.ID = Convert.ToInt32(command.ExecuteScalar());
@@ -106,7 +109,7 @@ namespace CompetitiveCounterApp.Data
                     command.CommandText = @"
                         UPDATE Games 
                         SET Name = @name, Icon = @icon, Description = @description, 
-                            ColorLight = @colorLight, ColorDark = @colorDark, CreatedDate = @createdDate
+                            ColorLight = @colorLight, ColorDark = @colorDark, ImagePath = @imagePath, CreatedDate = @createdDate
                         WHERE ID = @id";
                     command.Parameters.AddWithValue("@id", game.ID);
                     command.Parameters.AddWithValue("@name", game.Name);
@@ -115,6 +118,7 @@ namespace CompetitiveCounterApp.Data
                     command.Parameters.AddWithValue("@colorLight", game.ColorLight);
                     command.Parameters.AddWithValue("@colorDark", game.ColorDark);
                     command.Parameters.AddWithValue("@createdDate", game.CreatedDate.ToString("o"));
+                    command.Parameters.AddWithValue("@imagePath", game.ImagePath);
 
                     command.ExecuteNonQuery();
                 }
