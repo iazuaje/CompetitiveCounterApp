@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CompetitiveCounterApp.Pages.Controls.ColorPicker"
              x:Name="this">
-    <VerticalStackLayout Spacing="10" Margin="5">
+    <VerticalStackLayout Spacing="10" >
         <Label Text="Color del juego" FontAttributes="Bold"></Label>
         <Border>
             <CollectionView ItemsSource="{Binding Source={x:Reference this}, Path=ItemsSource}"
@@ -18,8 +18,8 @@
                         <Button Clicked="OnItemTapped"
                         BorderWidth="1"
                         CornerRadius="50"
-                        HeightRequest="60"
-                        WidthRequest="60"
+                        HeightRequest="30"
+                        WidthRequest="30"
                                 BackgroundColor="{Binding CurrentGameColor}">
                             <Button.Background>
                                 <SolidColorBrush Color="{Binding CurrentGameColor}"/>
