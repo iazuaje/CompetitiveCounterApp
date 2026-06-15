@@ -4,17 +4,13 @@
              xmlns:f="clr-namespace:Fonts"
              x:Class="CompetitiveCounterApp.Pages.Controls.IconPicker"
              x:Name="this">
-    <VerticalStackLayout Spacing="10" Margin="5">
+    <VerticalStackLayout Spacing="10">
         <Label Text="Ícono del juego" FontAttributes="Bold"></Label>
         <Border>
-            <CollectionView ItemsSource="{Binding Source={x:Reference this}, Path=ItemsSource}"
-                    SelectionMode="None">
+            <CollectionView ItemsSource="{Binding Source={x:Reference this}, Path=ItemsSource}" SelectionMode="None">
                 <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical" VerticalItemSpacing="10"
-                           Span="4" 
-                           />
+                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
                 </CollectionView.ItemsLayout>
-
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Button Clicked="OnItemTapped"

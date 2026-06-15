@@ -9,17 +9,15 @@
             <CollectionView ItemsSource="{Binding Source={x:Reference this}, Path=ItemsSource}"
                     SelectionMode="None">
                 <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical" VerticalItemSpacing="10"
-                           Span="5"  
-                            />
+                    <LinearItemsLayout Orientation="Horizontal" ItemSpacing="5"/>
                 </CollectionView.ItemsLayout>
                 <CollectionView.ItemTemplate>
                     <DataTemplate>
                         <Button Clicked="OnItemTapped"
                         BorderWidth="1"
                         CornerRadius="50"
-                        HeightRequest="30"
-                        WidthRequest="30"
+                        HeightRequest="50"
+                        WidthRequest="50"
                                 BackgroundColor="{Binding CurrentGameColor}">
                             <Button.Background>
                                 <SolidColorBrush Color="{Binding CurrentGameColor}"/>
