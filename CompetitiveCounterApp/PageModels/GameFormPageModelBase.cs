@@ -43,6 +43,61 @@ public abstract partial class GameFormPageModelBase : ObservableObject
         _selectedColor.IsSelected = true;
     }
 
+    // Imagen seleccionada y manejo temporal (compartido)
+    [ObservableProperty]
+    private ImageSource? _selectedImage;
+
+    protected string? _temporaryImagePath;
+
+    [RelayCommand]
+    public async Task SelectImage()
+    {
+        try
+        {
+            var result = await MediaPicker.Default.PickPhotoAsync();
+            if (result == null) return;
+
+            if (!string.IsNullOrEmpty(_temporaryImagePath) && File.Exists(_temporaryImagePath))
+                File.Delete(_temporaryImagePath);
+
+            var tempPath = Path.Combine(FileSystem.CacheDirectory, $"temp_{Guid.NewGuid()}{Path.GetExtension(result.FileName)}");
+            using var sourceStream = await result.OpenReadAsync();
+            using var fileStream = File.Create(tempPath);
+            await sourceStream.CopyToAsync(fileStream);
+
+            _temporaryImagePath = tempPath;
+            SelectedImage = ImageSource.FromFile(_temporaryImagePath);
+        }
+        catch (Exception e)
+        {
+            _errorHandler.HandleError(e);
+        }
+    }
+
+    protected string? MoveTemporaryImageToPermanent()
+    {
+        if (string.IsNullOrEmpty(_temporaryImagePath) || !File.Exists(_temporaryImagePath))
+            return null;
+
+        var imagesDirectory = Path.Combine(FileSystem.AppDataDirectory, "GameImages");
+        Directory.CreateDirectory(imagesDirectory);
+
+        var fileName = $"game_{Guid.NewGuid()}{Path.GetExtension(_temporaryImagePath)}";
+        var permanentPath = Path.Combine(imagesDirectory, fileName);
+
+        File.Move(_temporaryImagePath, permanentPath);
+        _temporaryImagePath = null;
+        return permanentPath;
+    }
+
+    protected void SetSelectedImageFromPath(string? path)
+    {
+        if (!string.IsNullOrEmpty(path) && File.Exists(path))
+            SelectedImage = ImageSource.FromFile(path);
+        else
+            SelectedImage = null;
+    }
+
     [RelayCommand]
     private void SelectIcon(IconData selectedIcon)
     {

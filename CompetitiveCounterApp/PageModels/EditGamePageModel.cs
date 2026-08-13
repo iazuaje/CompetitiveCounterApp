@@ -47,6 +47,7 @@ public partial class EditGamePageModel : GameFormPageModelBase, IQueryAttributab
             }
 
             ApplyGameData(_game);
+            SetSelectedImageFromPath(_game.ImagePath);
         }
         catch (Exception e)
         {
@@ -73,19 +74,42 @@ public partial class EditGamePageModel : GameFormPageModelBase, IQueryAttributab
             return;
         }
 
+        string? previousImagePath = null;
+        string? newImagePath = null;
+        bool gameSaved = false;
+
         try
         {
             IsBusy = true;
 
             UpdateGameFromForm(_game);
+
+            newImagePath = MoveTemporaryImageToPermanent();
+            if (!string.IsNullOrEmpty(newImagePath))
+            {
+                previousImagePath = _game.ImagePath;
+                _game.ImagePath = newImagePath;
+            }
             
             await _gameRepository.SaveItemAsync(_game);
+            gameSaved = true;
+
+            if (!string.IsNullOrEmpty(previousImagePath) && File.Exists(previousImagePath))
+                File.Delete(previousImagePath);
 
             await Shell.Current.GoToAsync("..");
             await AppShell.DisplayToastAsync("Juego actualizado exitosamente");
         }
         catch (Exception e)
         {
+            if (!gameSaved && !string.IsNullOrEmpty(newImagePath))
+            {
+                _game.ImagePath = previousImagePath ?? string.Empty;
+                if (File.Exists(newImagePath))
+                    File.Delete(newImagePath);
+                SetSelectedImageFromPath(previousImagePath);
+            }
+
             _errorHandler.HandleError(e);
         }
         finally

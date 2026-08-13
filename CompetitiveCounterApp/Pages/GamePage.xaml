@@ -80,14 +80,20 @@
                                 </Border.GestureRecognizers>
 
                                 <Grid RowDefinitions="Auto,*,Auto">
-                                    <Image>
-                                        <Image.Source>
-                                            <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}" 
-                                                         Color="White"
-                                                         Size="40">
-                                            </FontImageSource>
-                                        </Image.Source>
-                                    </Image>
+                                    <Grid>
+                                        <Image IsVisible="{Binding GameImage, Converter={toolkit:IsNotNullConverter}}"
+                                               Source="{Binding GameImage}"
+                                               Aspect="AspectFill"
+                                               HeightRequest="80"
+                                               WidthRequest="80" />
+                                        <Image IsVisible="{Binding GameImage, Converter={toolkit:IsNullConverter}}">
+                                            <Image.Source>
+                                                <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}" 
+                                                             Color="White"
+                                                             Size="40" />
+                                            </Image.Source>
+                                        </Image>
+                                    </Grid>
 
                                     <Label Grid.Row="1"
                                            Text="{Binding Name}"

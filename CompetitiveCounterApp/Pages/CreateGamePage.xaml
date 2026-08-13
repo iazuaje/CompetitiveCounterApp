@@ -73,7 +73,7 @@
                 <Image Source="{StaticResource IconWarning}" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
-        <Border Grid.Row="1" Background="White" Padding="10">
+        <Border Grid.Row="1" Background="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}" Padding="10">
             <Border.StrokeShape>
                 <RoundRectangle CornerRadius="30,30,0,0"></RoundRectangle>
             </Border.StrokeShape>
