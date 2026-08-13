@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Messages;
 using CompetitiveCounterApp.Models;
 using System.Collections.ObjectModel;
 
@@ -41,6 +43,17 @@ public abstract partial class GameFormPageModelBase : ObservableObject
         _selectedIcon = GameDataService.GetDefaultIcon();
         _selectedColor = GameDataService.GetDefaultColor();
         _selectedColor.IsSelected = true;
+
+        WeakReferenceMessenger.Default.Register<AppThemeChangedMessage>(this, static (r, _) =>
+            ((GameFormPageModelBase)r).NotifyThemeChanged());
+    }
+
+    private void NotifyThemeChanged()
+    {
+        foreach (var color in GameColors)
+            color.NotifyThemeChanged();
+
+        SelectedColor?.NotifyThemeChanged();
     }
 
     // Imagen seleccionada y manejo temporal (compartido)
@@ -149,8 +162,16 @@ public abstract partial class GameFormPageModelBase : ObservableObject
         }
         else
         {
-            SelectedColor = GameDataService.GetDefaultColor();
-            SelectedColor.IsSelected = true;
+            var existingColor = new GameColor
+            {
+                Name = "Color actual",
+                ColorLight = game.ColorLight,
+                ColorDark = game.ColorDark,
+                IsSelected = true
+            };
+
+            GameColors.Insert(0, existingColor);
+            SelectedColor = existingColor;
         }
     }
 

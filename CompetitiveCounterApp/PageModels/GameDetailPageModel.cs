@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Messages;
 using CompetitiveCounterApp.Models;
 
 namespace CompetitiveCounterApp.PageModels
@@ -47,6 +49,9 @@ namespace CompetitiveCounterApp.PageModels
             _gameOperations = gameOperations;
             _icons = GameDataService.GetIcons();
             _selectedIcon = GameDataService.GetDefaultIcon();
+
+            WeakReferenceMessenger.Default.Register<AppThemeChangedMessage>(this, static (r, _) =>
+                ((GameDetailPageModel)r).Game?.NotifyThemeChanged());
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)

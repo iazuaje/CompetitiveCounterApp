@@ -11,18 +11,15 @@ namespace CompetitiveCounterApp.Models
         [ObservableProperty]
         private bool _isSelected;
 
-        public Color LightColor => Color.FromArgb(ColorLight);
-        public Color DarkColor => Color.FromArgb(ColorDark);
+        public ThemeColorPair ThemeColors => new(ColorLight, ColorDark);
+
+        public Color LightColor => ThemeColors.LightThemeColor;
+        public Color DarkColor => ThemeColors.DarkThemeColor;
 
         public override string ToString() => Name;
 
-        public Color CurrentGameColor
-        {
-            get
-            {
-                var theme = Application.Current?.RequestedTheme ?? AppTheme.Light;
-                return theme == AppTheme.Dark ? DarkColor : LightColor;
-            }
-        }
+        public Color CurrentGameColor => ThemeColors.CurrentColor;
+
+        public void NotifyThemeChanged() => OnPropertyChanged(nameof(CurrentGameColor));
     }
 }

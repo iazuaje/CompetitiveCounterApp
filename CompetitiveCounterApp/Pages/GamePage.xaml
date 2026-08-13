@@ -9,7 +9,10 @@
              x:Class="CompetitiveCounterApp.Pages.GamesPage"
              x:DataType="pageModels:GamesPageModel"
              x:Name="GamesPageRoot"
-             Shell.NavBarIsVisible="False">
+             Title="Juegos"
+             Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+             Shell.ForegroundColor="{StaticResource White}"
+             Shell.TitleColor="{StaticResource White}">
     
     
     <ContentPage.Behaviors>
@@ -25,36 +28,15 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
-
-    <Grid RowDefinitions="Auto,*">
-        <!-- Header -->
-        <Grid Grid.Row="0" 
-          Padding="20,10"
-          BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-
-            <Label Text="Competitive Counter"
-               Grid.Column="0"
-               FontSize="24"
-               FontAttributes="Bold"
-               TextColor="White"
-               VerticalOptions="Center" />
-
-            <ImageButton Grid.Column="1"
-                     Source="{StaticResource IconSettings}"
-                     WidthRequest="40"
-                     HeightRequest="40"
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Opciones"
                      Command="{Binding OpenOptionsCommand}"
-                     BackgroundColor="Transparent"
-                     VerticalOptions="Center" />
-        </Grid>
+                     IconImageSource="{StaticResource IconSettings}" />
+    </ContentPage.ToolbarItems>
 
+    <Grid>
         <!-- Contenido -->
-        <RefreshView Grid.Row="1"
-                 IsRefreshing="{Binding IsRefreshing}"
+        <RefreshView IsRefreshing="{Binding IsRefreshing}"
                  Command="{Binding RefreshCommand}">
             <Grid Padding="15">
                 <CollectionView ItemsSource="{Binding Games}"
@@ -68,8 +50,8 @@
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:Game">
                             <Border StrokeThickness="0"
-                                    Padding="15"
-                                    HeightRequest="150"
+                                    Padding="0"
+                                    HeightRequest="200"
                                     Background="{Binding CurrentGameColor}">
                                 <Border.StrokeShape>
                                     <RoundRectangle CornerRadius="12" />
@@ -79,24 +61,38 @@
                                                           CommandParameter="{Binding .}"/>
                                 </Border.GestureRecognizers>
 
-                                <Grid RowDefinitions="Auto,*,Auto">
+                                <Grid RowDefinitions="*,Auto,Auto">
                                     <Grid>
-                                        <Image IsVisible="{Binding GameImage, Converter={toolkit:IsNotNullConverter}}"
-                                               Source="{Binding GameImage}"
-                                               Aspect="AspectFill"
-                                               HeightRequest="80"
-                                               WidthRequest="80" />
-                                        <Image IsVisible="{Binding GameImage, Converter={toolkit:IsNullConverter}}">
-                                            <Image.Source>
-                                                <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}" 
-                                                             Color="White"
-                                                             Size="40" />
-                                            </Image.Source>
-                                        </Image>
+                                        <Image Source="{Binding GameImage}"
+                                               Aspect="AspectFill" />
+                                        
+                                        <Border WidthRequest="64"
+                                                HeightRequest="64"
+                                                Padding="0"
+                                                HorizontalOptions="Center"
+                                                VerticalOptions="Center"
+                                                StrokeThickness="2"
+                                                Stroke="{StaticResource White}"
+                                                Background="{Binding IconSurfaceColor}">
+                                            <Border.StrokeShape>
+                                                <Ellipse />
+                                            </Border.StrokeShape>
+                                            <Border.Shadow>
+                                                <Shadow Offset="0,2" Radius="6" Opacity="0.4" />
+                                            </Border.Shadow>
+                                            <Image HeightRequest="32">
+                                                <Image.Source>
+                                                    <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}" 
+                                                             Color="{Binding IconGlyphColor}"
+                                                             Size="36" />
+                                                </Image.Source>
+                                            </Image>
+                                        </Border>
                                     </Grid>
 
                                     <Label Grid.Row="1"
                                            Text="{Binding Name}"
+                                           Margin="10,8,10,0"
                                            FontSize="16"
                                            FontAttributes="Bold"
                                            TextColor="White"
@@ -107,6 +103,7 @@
                                            MaxLines="2" />
 
                                     <Label Grid.Row="2"
+                                           Margin="10,0,10,10"
                                            FontSize="12"
                                            HorizontalOptions="Center"
                                            TextColor="White"
@@ -153,7 +150,7 @@
             </Grid>
         </RefreshView>
         <!-- Botón flotante para agregar juegos -->
-        <controls:AddButton Grid.Row="1" IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+        <controls:AddButton IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                             Command="{Binding AddGameCommand}"/>
     </Grid>
 </ContentPage>

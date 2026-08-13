@@ -5,7 +5,9 @@ alwaysApply: true
 
 # Mensajes de commit
 
-Los mensajes van en inglés. Al crear un commit, usa este formato y no otro.
+Nunca crees un commit. Si piden un mensaje de commit, solo redacta el texto y muéstralo. No ejecutes `git commit`, `git add` ni interpretes “haz un mensaje de commit” como autorización para commitear.
+
+Los mensajes van en inglés. Usa este formato y no otro.
 
 ## Título
 
