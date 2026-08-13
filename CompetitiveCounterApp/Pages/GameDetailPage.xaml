@@ -27,8 +27,8 @@
                      IconImageSource="{StaticResource IconDelete}" />
     </ContentPage.ToolbarItems>
 
-    <Grid RowDefinitions="0.2*, auto" BackgroundColor="{Binding Game.CurrentGameColor}">
-        <Image Source="{Binding Game.GameImage}" Aspect="AspectFill" HeightRequest="500" />
+    <Grid RowDefinitions="0.4*, *" BackgroundColor="{Binding Game.CurrentGameColor}">
+        <Image Source="{Binding Game.GameImage}" Aspect="AspectFill" />
         <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center" Margin="10">
             <Border Background="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
                     StrokeThickness="2"

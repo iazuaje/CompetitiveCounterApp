@@ -1,0 +1,30 @@
+---
+description: Premisa mobile-first — diseño y validación orientados a teléfono/Android
+alwaysApply: true
+---
+
+# Mobile-first
+
+El producto es exclusivamente móvil. Windows y macOS en `TargetFrameworks` son solo conveniencia de desarrollo, no destinos de entrega.
+
+## Diseño y UX
+
+- Razonar layouts sobre pantalla de teléfono: alto útil reducido, interacción táctil, contenido desplazable.
+- En pantallas de juegos (`CreateGamePage`, `EditGamePage`, `GameDetailPage`) usar encabezado + panel inferior con filas proporcionales:
+
+```xml
+<Grid RowDefinitions="0.4*, *">
+```
+
+- No usar `auto` en la fila del panel inferior: en pantallas cortas comprime el encabezado y hace que el tamaño de imagen varíe entre pantallas.
+- El panel inferior lleva `ScrollView`. La imagen del encabezado usa `Aspect="AspectFill"` sin `HeightRequest`.
+
+## Validación
+
+- La compilación que valida un cambio es Android:
+
+```powershell
+dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net9.0-android
+```
+
+- Compilar solo para Windows no basta; sirve como chequeo rápido de C#/XAML, pero el resultado debe confirmarse en Android.
