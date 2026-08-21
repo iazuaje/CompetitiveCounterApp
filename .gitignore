@@ -6,6 +6,10 @@
 # dotenv files
 .env
 
+# EF Core design-time database
+competitivecounter-design.db
+competitivecounter-design.db-*
+
 # User-specific files
 *.rsuser
 *.suo

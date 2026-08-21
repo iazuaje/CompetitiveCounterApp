@@ -6,8 +6,7 @@ namespace CompetitiveCounterApp.Models
         public int GameID { get; set; }
         public DateTime SessionDate { get; set; } = DateTime.Now;
         public string Notes { get; set; } = string.Empty;
-        
-        // Navigation properties
+
         public Game? Game { get; set; }
         public List<SessionPlayer> SessionPlayers { get; set; } = [];
 

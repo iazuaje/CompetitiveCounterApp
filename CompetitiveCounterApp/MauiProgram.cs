@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Syncfusion.Maui.Toolkit.Hosting;
 
@@ -32,36 +33,21 @@ namespace CompetitiveCounterApp
     		builder.Services.AddLogging(configure => configure.AddDebug());
 #endif
 
+            builder.Services.AddDbContextFactory<AppDbContext>(options =>
+                options.UseSqlite(Constants.DatabasePath));
+
             builder.Services.AddSingleton<DatabaseInitializer>();
 
             builder.Services.AddSingleton<GameDataService>();
             builder.Services.AddTransient<GameOperationsService>();
 
-            // Repositorios nuevos para juegos
             builder.Services.AddSingleton<GameRepository>();
             builder.Services.AddSingleton<PlayerRepository>();
             builder.Services.AddSingleton<SessionRepository>();
-
-            // Repositorios existentes (mantener para otras pantallas)
-            builder.Services.AddSingleton<ProjectRepository>();
-            builder.Services.AddSingleton<TaskRepository>();
-            builder.Services.AddSingleton<CategoryRepository>();
-            builder.Services.AddSingleton<TagRepository>();
-            builder.Services.AddSingleton<SeedDataService>();
             builder.Services.AddSingleton<ModalErrorHandler>();
 
-            // PageModels nuevos
             builder.Services.AddSingleton<GamesPageModel>();
 
-            // PageModels existentes
-            builder.Services.AddSingleton<MainPageModel>();
-            builder.Services.AddSingleton<ProjectListPageModel>();
-            builder.Services.AddSingleton<ManageMetaPageModel>();
-
-            builder.Services.AddTransientWithShellRoute<ProjectDetailPage, ProjectDetailPageModel>("project");
-            builder.Services.AddTransientWithShellRoute<TaskDetailPage, TaskDetailPageModel>("task");
-            
-            // Rutas para juegos
             builder.Services.AddTransientWithShellRoute<CreateGamePage, CreateGamePageModel>("creategame");
             builder.Services.AddTransientWithShellRoute<EditGamePage, EditGamePageModel>("editgame");
             builder.Services.AddTransientWithShellRoute<GameDetailPage, GameDetailPageModel>("gamedetail");

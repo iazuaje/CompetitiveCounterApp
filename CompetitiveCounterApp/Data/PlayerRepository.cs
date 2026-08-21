@@ -1,117 +1,51 @@
 using CompetitiveCounterApp.Models;
-using Microsoft.Data.Sqlite;
+using Microsoft.EntityFrameworkCore;
 
 namespace CompetitiveCounterApp.Data
 {
     public class PlayerRepository
     {
-        private readonly string _connectionString;
+        private readonly IDbContextFactory<AppDbContext> _dbContextFactory;
 
-        public PlayerRepository()
+        public PlayerRepository(IDbContextFactory<AppDbContext> dbContextFactory)
         {
-            _connectionString = Constants.DatabasePath;
+            _dbContextFactory = dbContextFactory;
         }
 
         public async Task<List<Player>> ListAsync()
         {
-            var players = new List<Player>();
-
-            await Task.Run(() =>
-            {
-                using var connection = new SqliteConnection(_connectionString);
-                connection.Open();
-
-                var command = connection.CreateCommand();
-                command.CommandText = "SELECT ID, Name, ColorHex FROM Players ORDER BY Name";
-
-                using var reader = command.ExecuteReader();
-                while (reader.Read())
-                {
-                    players.Add(new Player
-                    {
-                        ID = reader.GetInt32(0),
-                        Name = reader.GetString(1),
-                        ColorHex = reader.GetString(2)
-                    });
-                }
-            });
-
-            return players;
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            return await db.Players
+                .AsNoTracking()
+                .OrderBy(p => p.Name)
+                .ToListAsync();
         }
 
         public async Task<Player?> GetAsync(int id)
         {
-            return await Task.Run(() =>
-            {
-                using var connection = new SqliteConnection(_connectionString);
-                connection.Open();
-
-                var command = connection.CreateCommand();
-                command.CommandText = "SELECT ID, Name, ColorHex FROM Players WHERE ID = @id";
-                command.Parameters.AddWithValue("@id", id);
-
-                using var reader = command.ExecuteReader();
-                if (reader.Read())
-                {
-                    return new Player
-                    {
-                        ID = reader.GetInt32(0),
-                        Name = reader.GetString(1),
-                        ColorHex = reader.GetString(2)
-                    };
-                }
-
-                return null;
-            });
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            return await db.Players
+                .AsNoTracking()
+                .FirstOrDefaultAsync(p => p.ID == id);
         }
 
         public async Task SaveItemAsync(Player player)
         {
-            await Task.Run(() =>
-            {
-                using var connection = new SqliteConnection(_connectionString);
-                connection.Open();
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
 
-                var command = connection.CreateCommand();
+            if (player.ID == 0)
+                db.Players.Add(player);
+            else
+                db.Players.Update(player);
 
-                if (player.ID == 0)
-                {
-                    command.CommandText = @"
-                        INSERT INTO Players (Name, ColorHex)
-                        VALUES (@name, @colorHex);
-                        SELECT last_insert_rowid();";
-                    command.Parameters.AddWithValue("@name", player.Name);
-                    command.Parameters.AddWithValue("@colorHex", player.ColorHex);
-
-                    player.ID = Convert.ToInt32(command.ExecuteScalar());
-                }
-                else
-                {
-                    command.CommandText = @"
-                        UPDATE Players 
-                        SET Name = @name, ColorHex = @colorHex
-                        WHERE ID = @id";
-                    command.Parameters.AddWithValue("@id", player.ID);
-                    command.Parameters.AddWithValue("@name", player.Name);
-                    command.Parameters.AddWithValue("@colorHex", player.ColorHex);
-
-                    command.ExecuteNonQuery();
-                }
-            });
+            await db.SaveChangesAsync();
         }
 
         public async Task DeleteItemAsync(Player player)
         {
-            await Task.Run(() =>
-            {
-                using var connection = new SqliteConnection(_connectionString);
-                connection.Open();
-
-                var command = connection.CreateCommand();
-                command.CommandText = "DELETE FROM Players WHERE ID = @id";
-                command.Parameters.AddWithValue("@id", player.ID);
-                command.ExecuteNonQuery();
-            });
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            db.Players.Remove(player);
+            await db.SaveChangesAsync();
         }
     }
 }

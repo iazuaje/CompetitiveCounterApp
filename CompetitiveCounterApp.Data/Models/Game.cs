@@ -22,9 +22,9 @@ namespace CompetitiveCounterApp.Models
         public Color SurfaceColor => ThemeColors.SurfaceColor;
         public Color OnSurfaceColor => ThemeColors.OnSurfaceColor;
 
-        public ImageSource GameImage => !string.IsNullOrEmpty(ImagePath) && File.Exists(ImagePath) 
-            ? ImageSource.FromFile(ImagePath) 
-            : null;
+        public ImageSource GameImage => !string.IsNullOrEmpty(ImagePath) && File.Exists(ImagePath)
+            ? ImageSource.FromFile(ImagePath)
+            : null!;
 
         public void NotifyThemeChanged()
         {

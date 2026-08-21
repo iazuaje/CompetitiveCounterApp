@@ -11,46 +11,10 @@
                      Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource IconSize}" />
 
-    <FontImageSource x:Key="IconProjects"
-                     Glyph="{x:Static f:FluentUI.list_24_regular}"
-                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
-                     Size="{StaticResource IconSize}" />
-
-    <FontImageSource x:Key="IconMeta"
-                     Glyph="{x:Static f:FluentUI.info_24_regular}"
-                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
-                     Size="{StaticResource IconSize}" />
-
-    <FontImageSource x:Key="IconRibbon"
-                     Glyph="{x:Static f:FluentUI.ribbon_20_regular}"
-                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
-                     Size="{StaticResource IconSize}" />
-
     <FontImageSource x:Key="IconAdd"
                      Glyph="{x:Static f:FluentUI.add_32_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
                      Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource LightOnDarkBackground}}"
-                     Size="{StaticResource IconSize}" />
-
-    <FontImageSource x:Key="IconDelete"
-                     Glyph="{x:Static f:FluentUI.delete_32_regular}"
-                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
-                     Size="{StaticResource IconSize}" />
-    
-    <FontImageSource x:Key="IconEdit"
-                     Glyph="{x:Static f:FluentUI.edit_32_regular}"
-                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
-                     Size="{StaticResource IconSize}" />
-
-    <FontImageSource x:Key="IconSave"
-                     Glyph="{x:Static f:FluentUI.save_32_regular}"
-                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource IconSize}" />
 
     <FontImageSource x:Key="IconDeleteShell"
@@ -83,12 +47,6 @@
                      Color="{AppThemeBinding Light={StaticResource LightOnDarkBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource IconSize}" />
 
-    <FontImageSource x:Key="IconClean"
-                     Glyph="{x:Static f:FluentUI.broom_32_regular}"
-                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
-                     Size="{StaticResource size240}" />
-
     <FontImageSource x:Key="IconLight"
                      Glyph="{x:Static f:FluentUI.weather_sunny_28_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
@@ -100,21 +58,9 @@
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
                      Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource size240}" />
-    
-    <FontImageSource x:Key="IconSettings"
-                    Glyph="{x:Static f:FluentUI.more_vertical_28_regular}"
-                    FontFamily="{x:Static f:FluentUI.FontFamily}"
-                    Color="{AppThemeBinding Light={StaticResource LightOnDarkBackground}, Dark={StaticResource DarkOnLightBackground}}"
-                    Size="{StaticResource size240}" />
-    
+
     <FontImageSource x:Key="IconAddImage"
                      Glyph="{x:Static f:FluentUI.image_add_24_regular}"
-                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
-                     Size="{StaticResource size240}" />
-
-    <FontImageSource x:Key="IconAddIcon"
-                     Glyph="{x:Static f:FluentUI.sticker_add_24_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
                      Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource size240}" />
@@ -130,6 +76,5 @@
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
                      Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource size240}" />
-
 
 </ResourceDictionary>

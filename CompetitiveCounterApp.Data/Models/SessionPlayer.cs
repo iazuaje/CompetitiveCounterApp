@@ -7,7 +7,6 @@ namespace CompetitiveCounterApp.Models
         public int PlayerID { get; set; }
         public int Wins { get; set; }
 
-        // Navigation properties
         public Session? Session { get; set; }
         public Player? Player { get; set; }
 
