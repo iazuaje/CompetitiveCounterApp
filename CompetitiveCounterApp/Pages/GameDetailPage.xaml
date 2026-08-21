@@ -21,20 +21,20 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Editar"
                      Command="{Binding EditCommand}"
-                     IconImageSource="{StaticResource IconEdit}" />
+                     IconImageSource="{StaticResource IconEditShell}" />
         <ToolbarItem Text="Eliminar"
                      Command="{Binding DeleteCommand}"
-                     IconImageSource="{StaticResource IconDelete}" />
+                     IconImageSource="{StaticResource IconDeleteShell}" />
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="0.4*, *" BackgroundColor="{Binding Game.CurrentGameColor}">
         <Image Source="{Binding Game.GameImage}" Aspect="AspectFill" Margin="0,0,0,-30" />
         <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center" Margin="10">
-            <Border Background="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
+            <Border Background="{Binding Game.SurfaceColor}"
                     StrokeThickness="2"
                     StrokeShape="RoundRectangle 50"
                     Padding="40,10"
-                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource PrimaryDark}}">
+                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource White}}">
                 <Border.Shadow>
                     <Shadow Offset="0,4" Radius="8" Opacity="0.5"/>
                 </Border.Shadow>
@@ -42,13 +42,14 @@
                     <Label Text="{Binding Name}"
                            HorizontalTextAlignment="Center"
                            FontSize="20"
+                           TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource White}}"
                            FontAttributes="Bold" />
                     <BoxView HeightRequest="1" Color="Gray" />
                     <Image>
                         <Image.Source>
                             <FontImageSource Glyph="{Binding SelectedIcon.Icon}"
                                              FontFamily="{Static f:FluentUI.FontFamily}"
-                                             Color="{Binding Game.CurrentGameColor}"
+                                             Color="{Binding Game.OnSurfaceColor}"
                                              Size="40" />
                         </Image.Source>
                     </Image>

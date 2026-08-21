@@ -19,18 +19,8 @@ namespace CompetitiveCounterApp.Models
         public Color GameColorDark => ThemeColors.DarkThemeColor;
         public Color CurrentGameColor => ThemeColors.CurrentColor;
 
-        public Color IconSurfaceColor => IsDarkTheme
-            ? CurrentGameColor
-            : GetResourceColor("LightBackground", Colors.White);
-
-        public Color IconGlyphColor => IsDarkTheme ? Colors.White : CurrentGameColor;
-
-        private static bool IsDarkTheme => (Application.Current?.RequestedTheme ?? AppTheme.Light) == AppTheme.Dark;
-
-        private static Color GetResourceColor(string key, Color fallback) =>
-            Application.Current?.Resources.TryGetValue(key, out var value) == true && value is Color color
-                ? color
-                : fallback;
+        public Color SurfaceColor => ThemeColors.SurfaceColor;
+        public Color OnSurfaceColor => ThemeColors.OnSurfaceColor;
 
         public ImageSource GameImage => !string.IsNullOrEmpty(ImagePath) && File.Exists(ImagePath) 
             ? ImageSource.FromFile(ImagePath) 
@@ -39,8 +29,8 @@ namespace CompetitiveCounterApp.Models
         public void NotifyThemeChanged()
         {
             OnPropertyChanged(nameof(CurrentGameColor));
-            OnPropertyChanged(nameof(IconSurfaceColor));
-            OnPropertyChanged(nameof(IconGlyphColor));
+            OnPropertyChanged(nameof(SurfaceColor));
+            OnPropertyChanged(nameof(OnSurfaceColor));
         }
 
         public override string ToString() => Name;

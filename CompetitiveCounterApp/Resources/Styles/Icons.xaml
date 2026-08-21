@@ -38,20 +38,44 @@
     <FontImageSource x:Key="IconDelete"
                      Glyph="{x:Static f:FluentUI.delete_32_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource LightOnDarkBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource IconSize}" />
     
     <FontImageSource x:Key="IconEdit"
                      Glyph="{x:Static f:FluentUI.edit_32_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource LightOnDarkBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource IconSize}" />
 
     <FontImageSource x:Key="IconSave"
                      Glyph="{x:Static f:FluentUI.save_32_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource LightOnDarkBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource IconSize}" />
+
+    <FontImageSource x:Key="IconDeleteShell"
+                     Glyph="{x:Static f:FluentUI.delete_32_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{StaticResource White}"
+                     Size="{StaticResource IconSize}" />
+
+    <FontImageSource x:Key="IconEditShell"
+                     Glyph="{x:Static f:FluentUI.edit_32_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{StaticResource White}"
+                     Size="{StaticResource IconSize}" />
+
+    <FontImageSource x:Key="IconSaveShell"
+                     Glyph="{x:Static f:FluentUI.save_32_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{StaticResource White}"
+                     Size="{StaticResource IconSize}" />
+
+    <FontImageSource x:Key="IconSettingsShell"
+                     Glyph="{x:Static f:FluentUI.more_vertical_28_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{StaticResource White}"
+                     Size="{StaticResource size240}" />
     
     <FontImageSource x:Key="IconImage"
                      Glyph="{x:Static f:FluentUI.image_add_24_regular}"
@@ -98,7 +122,7 @@
 	<FontImageSource x:Key="IconWarning"
 					 Glyph="{x:Static f:FluentUI.warning_28_regular}"
 					 FontFamily="{x:Static f:FluentUI.FontFamily}"
-                     Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Black}}"
+                     Color="{StaticResource White}"
                      Size="{StaticResource size240}" />
 
     <FontImageSource x:Key="IconNoImage"

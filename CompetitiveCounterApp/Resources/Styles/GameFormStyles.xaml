@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<?xaml-comp compile="true" ?>
+<ResourceDictionary
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:f="clr-namespace:Fonts"
+    xmlns:converters="clr-namespace:CompetitiveCounterApp.Converters"
+    xmlns:segmented="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit">
+
+    <converters:SegmentItemGlyphConverter x:Key="SegmentItemGlyphConverter" />
+    <converters:SegmentForegroundConverter x:Key="SegmentForegroundConverter" />
+
+    <DataTemplate x:Key="GameMediaSegmentTemplate">
+        <HorizontalStackLayout Spacing="6"
+                               HorizontalOptions="Center"
+                               VerticalOptions="Center"
+                               Padding="8,4">
+            <Image HeightRequest="18"
+                   WidthRequest="18">
+                <Image.Source>
+                    <FontImageSource FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                     Size="18"
+                                     Glyph="{Binding Text, Converter={StaticResource SegmentItemGlyphConverter}}">
+                        <FontImageSource.Color>
+                            <MultiBinding Converter="{StaticResource SegmentForegroundConverter}">
+                                <Binding Path="SelectedIndex"
+                                         Source="{RelativeSource AncestorType={x:Type segmented:SfSegmentedControl}}" />
+                                <Binding Path="Text" />
+                            </MultiBinding>
+                        </FontImageSource.Color>
+                    </FontImageSource>
+                </Image.Source>
+            </Image>
+            <Label Text="{Binding Text}"
+                   FontSize="14">
+                <Label.TextColor>
+                    <MultiBinding Converter="{StaticResource SegmentForegroundConverter}">
+                        <Binding Path="SelectedIndex"
+                                 Source="{RelativeSource AncestorType={x:Type segmented:SfSegmentedControl}}" />
+                        <Binding Path="Text" />
+                    </MultiBinding>
+                </Label.TextColor>
+            </Label>
+        </HorizontalStackLayout>
+    </DataTemplate>
+
+</ResourceDictionary>

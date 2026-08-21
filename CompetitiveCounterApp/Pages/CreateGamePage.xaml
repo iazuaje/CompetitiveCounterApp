@@ -9,7 +9,10 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="CompetitiveCounterApp.Pages.CreateGamePage"
              x:DataType="pageModels:CreateGamePageModel"
-             Title="Crear Nuevo Juego">
+             Title="Crear Nuevo Juego"
+             Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+             Shell.ForegroundColor="{StaticResource White}"
+             Shell.TitleColor="{StaticResource White}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -20,21 +23,22 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Guardar"
                      Command="{Binding SaveCommand}"
-                     IconImageSource="{StaticResource IconSave}" />
+                     IconImageSource="{StaticResource IconSaveShell}" />
     </ContentPage.ToolbarItems>
 
     <Grid RowDefinitions="0.4*, *" BackgroundColor="{Binding SelectedColor.CurrentGameColor}">
         <Image Source="{Binding SelectedImage}" Aspect="AspectFill" Margin="0,0,0,-30"></Image>
         <VerticalStackLayout Spacing="10" HorizontalOptions="Center" VerticalOptions="Center" Margin="10">
-            <Border Background="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
+            <Border Background="{Binding SelectedColor.SurfaceColor}"
                         StrokeThickness="2"
-                        StrokeShape="RoundRectangle 50" Padding="40,10" Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource PrimaryDark}}">
+                        StrokeShape="RoundRectangle 50" Padding="40,10" Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource White}}">
                 <Border.Shadow>
                     <Shadow Offset="0,4" Radius="8" Opacity="0.5"/>
                 </Border.Shadow>
                 <VerticalStackLayout Spacing="5">
                     <Label Text="Nombre del Juego" HorizontalTextAlignment="Center"
                             FontSize="16"
+                            TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource White}}"
                             FontAttributes="Bold">
                     </Label>
                     <BoxView HeightRequest="1" Color="Gray"></BoxView>
@@ -43,14 +47,14 @@
                             <Image.Source>
                                 <FontImageSource Glyph="{Binding SelectedIcon.Icon}" 
                             FontFamily="{Static f:FluentUI.FontFamily}" 
-                            Color="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                            Color="{Binding SelectedColor.OnSurfaceColor}"
                             Size="40">
                                 </FontImageSource>
                             </Image.Source>
                         </Image>
                         <Entry Text="{Binding Name}"
                         MinimumWidthRequest="200"
-                        TextColor="{Binding SelectedColor.CurrentGameColor}"
+                        TextColor="{Binding SelectedColor.OnSurfaceColor}"
                         ClearButtonVisibility="WhileEditing"
                         Placeholder=""
                         HorizontalTextAlignment="Center"
@@ -80,19 +84,21 @@
             <Border.Shadow>
                 <Shadow Offset="0,-10" Radius="10" Opacity="0.2"/>
             </Border.Shadow>
-            <ScrollView>
-                <VerticalStackLayout Spacing="10">
-                    <Grid>
-                        <sf:SfSegmentedControl SelectedIndex="0" ShowSeparator="False" SegmentCornerRadius="10" AutoScrollToSelectedSegment="True" 
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}}"
-                                        SelectionChanged="SfSegmentedControl_SelectionChanged"
+            <Grid RowDefinitions="Auto, *, Auto" RowSpacing="10">
+                    <Grid Grid.Row="0">
+                        <sf:SfSegmentedControl SelectedIndex="{Binding MediaSegmentIndex, Mode=TwoWay}" ShowSeparator="False" SegmentCornerRadius="10" AutoScrollToSelectedSegment="True"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+                                        SegmentBackground="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                        StrokeThickness="1"
+                                        SelectionChanged="MediaSegment_SelectionChanged"
+                                        SegmentTemplate="{StaticResource GameMediaSegmentTemplate}"
                                         >
                             <sf:SfSegmentedControl.SelectionIndicatorSettings>
-                                <sf:SelectionIndicatorSettings SelectionIndicatorPlacement="Fill" 
-                                                        Background="{Binding SelectedColor.CurrentGameColor, 
+                                <sf:SelectionIndicatorSettings SelectionIndicatorPlacement="Fill"
+                                                        Background="{Binding SelectedColor.CurrentGameColor,
                                                         Source={RelativeSource AncestorType={x:Type pageModels:CreateGamePageModel}}, x:DataType=pageModels:CreateGamePageModel}"
-                                                        StrokeThickness="10"
-                                                        Stroke="Black"
+                                                        StrokeThickness="0"
                                                         >
                                 </sf:SelectionIndicatorSettings>
 
@@ -100,16 +106,21 @@
 
                             <sf:SfSegmentedControl.ItemsSource>
                                 <x:Array Type="{x:Type sf:SfSegmentItem}">
-                                    <sf:SfSegmentItem ImageSource="{StaticResource IconAddImage}" Text="Imagen"/>
-                                    <sf:SfSegmentItem ImageSource="{StaticResource IconAddIcon}" Text="Icono"/>
+                                    <sf:SfSegmentItem Text="Imagen"/>
+                                    <sf:SfSegmentItem Text="Icono"/>
                                 </x:Array>
                             </sf:SfSegmentedControl.ItemsSource>
                         </sf:SfSegmentedControl>
                     </Grid>
-                    <Grid x:Name="selectorImagen" >
+                    <ScrollView Grid.Row="1">
+                <VerticalStackLayout Spacing="10">
+                    <Grid x:Name="selectorImagen" IsVisible="{Binding IsImageSegmentSelected}">
                         <VerticalStackLayout Spacing="10">
                             <Label Text="Descripción" FontAttributes="Bold"/>
-                            <Border Padding="0" HeightRequest="100">
+                            <Border Padding="0" HeightRequest="100"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                    StrokeThickness="1"
+                                    Background="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkSecondaryBackground}}">
                                 <Grid>
                                     <Image IsVisible="{Binding SelectedImage, Converter={toolkit:IsNullConverter}}" Source="{StaticResource IconNoImage}" HeightRequest="30" Margin="10" VerticalOptions="End" HorizontalOptions="End"></Image>
                                     <Image Aspect="AspectFill" IsVisible="{Binding SelectedImage, Converter={toolkit:IsNotNullConverter}}" Source="{Binding SelectedImage}" ></Image>
@@ -125,6 +136,7 @@
                         </VerticalStackLayout>
                     </Grid>
                     <controls:IconPicker x:Name="selectorIcon"
+                                    IsVisible="{Binding IsIconSegmentSelected}"
                                     ItemsSource="{Binding Icons}" 
                                     SelectedItem="{Binding SelectedIcon}"
                                     SelectedColor="{Binding SelectedColor}"
@@ -141,7 +153,10 @@
                     FontSize="14" />
                         </VerticalStackLayout>
                     </Border>
-                    <Button Text="Crear Juego"
+                </VerticalStackLayout>
+                    </ScrollView>
+                    <Button Grid.Row="2"
+                    Text="Crear Juego"
                     Command="{Binding SaveCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                     TextColor="White"
@@ -149,11 +164,9 @@
                     FontAttributes="Bold"
                     HeightRequest="56"
                     CornerRadius="12"
-                    Margin="0,20,0,0"
                     HorizontalOptions="Fill"
-                    ImageSource="{StaticResource IconSave}" />
-                </VerticalStackLayout>
-            </ScrollView>
+                    ImageSource="{StaticResource IconSaveShell}" />
+            </Grid>
         </Border>
     </Grid>
 

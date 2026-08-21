@@ -20,6 +20,14 @@ namespace CompetitiveCounterApp.Models
 
         public Color CurrentGameColor => ThemeColors.CurrentColor;
 
-        public void NotifyThemeChanged() => OnPropertyChanged(nameof(CurrentGameColor));
+        public Color SurfaceColor => ThemeColors.SurfaceColor;
+        public Color OnSurfaceColor => ThemeColors.OnSurfaceColor;
+
+        public void NotifyThemeChanged()
+        {
+            OnPropertyChanged(nameof(CurrentGameColor));
+            OnPropertyChanged(nameof(SurfaceColor));
+            OnPropertyChanged(nameof(OnSurfaceColor));
+        }
     }
 }

@@ -31,7 +31,7 @@
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Opciones"
                      Command="{Binding OpenOptionsCommand}"
-                     IconImageSource="{StaticResource IconSettings}" />
+                     IconImageSource="{StaticResource IconSettingsShell}" />
     </ContentPage.ToolbarItems>
 
     <Grid>
@@ -73,7 +73,7 @@
                                                 VerticalOptions="Center"
                                                 StrokeThickness="2"
                                                 Stroke="{StaticResource White}"
-                                                Background="{Binding IconSurfaceColor}">
+                                                Background="{Binding SurfaceColor}">
                                             <Border.StrokeShape>
                                                 <Ellipse />
                                             </Border.StrokeShape>
@@ -83,7 +83,7 @@
                                             <Image HeightRequest="32">
                                                 <Image.Source>
                                                     <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}" 
-                                                             Color="{Binding IconGlyphColor}"
+                                                             Color="{Binding OnSurfaceColor}"
                                                              Size="36" />
                                                 </Image.Source>
                                             </Image>

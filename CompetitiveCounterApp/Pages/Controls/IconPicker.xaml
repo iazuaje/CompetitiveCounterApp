@@ -17,7 +17,9 @@
                         BorderWidth="1"
                         CornerRadius="50"
                         HeightRequest="60"
-                        WidthRequest="60">
+                        WidthRequest="60"
+                        BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+                        BorderColor="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}">
                             <Button.ImageSource>
                                 <FontImageSource Glyph="{Binding Icon}"
                                        FontFamily="{x:Static f:FluentUI.FontFamily}"

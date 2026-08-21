@@ -32,6 +32,13 @@ public abstract partial class GameFormPageModelBase : ObservableObject
     private List<GameColor> _gameColors;
 
     [ObservableProperty]
+    private int _mediaSegmentIndex;
+
+    public bool IsImageSegmentSelected => MediaSegmentIndex == 0;
+
+    public bool IsIconSegmentSelected => MediaSegmentIndex == 1;
+
+    [ObservableProperty]
     private bool _isBusy;
 
     protected GameFormPageModelBase(GameRepository gameRepository, ModalErrorHandler errorHandler)
@@ -54,6 +61,12 @@ public abstract partial class GameFormPageModelBase : ObservableObject
             color.NotifyThemeChanged();
 
         SelectedColor?.NotifyThemeChanged();
+    }
+
+    partial void OnMediaSegmentIndexChanged(int value)
+    {
+        OnPropertyChanged(nameof(IsImageSegmentSelected));
+        OnPropertyChanged(nameof(IsIconSegmentSelected));
     }
 
     // Imagen seleccionada y manejo temporal (compartido)
