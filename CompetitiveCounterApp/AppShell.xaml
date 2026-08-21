@@ -16,9 +16,18 @@
 
     <Shell.FlyoutFooter>
         <Grid Padding="15">
-            <sf:SfSegmentedControl x:Name="ThemeSegmentedControl" 
+            <sf:SfSegmentedControl x:Name="ThemeSegmentedControl"
                 VerticalOptions="Center" HorizontalOptions="Center" SelectionChanged="SfSegmentedControl_SelectionChanged"
-                SegmentWidth="40" SegmentHeight="40">
+                SegmentWidth="40" SegmentHeight="40"
+                BackgroundColor="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+                SegmentBackground="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+                Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                StrokeThickness="1">
+                <sf:SfSegmentedControl.SelectionIndicatorSettings>
+                    <sf:SelectionIndicatorSettings SelectionIndicatorPlacement="Fill"
+                                                   Background="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                   StrokeThickness="0" />
+                </sf:SfSegmentedControl.SelectionIndicatorSettings>
                 <sf:SfSegmentedControl.ItemsSource>
                     <x:Array Type="{x:Type sf:SfSegmentItem}">
                         <sf:SfSegmentItem ImageSource="{StaticResource IconLight}"/>

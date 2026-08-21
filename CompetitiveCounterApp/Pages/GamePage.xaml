@@ -49,7 +49,8 @@
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:Game">
-                            <Border StrokeThickness="0"
+                            <Border StrokeThickness="1"
+                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
                                     Padding="0"
                                     HeightRequest="200"
                                     Background="{Binding CurrentGameColor}">

@@ -144,11 +144,11 @@
                     <controls:ColorPicker x:Name="selectorColor" ItemsSource="{Binding GameColors}" SelectedItem="{Binding SelectedColor}" ItemCommand="{Binding SelectColorCommand}"/>
                     <Border>
                         <VerticalStackLayout Spacing="10">
-                            <Label Text="Descripcion (Opcional)"
+                            <Label Text="Descripción (Opcional)"
                             FontSize="16"
                             FontAttributes="Bold" />
                             <Editor Text="{Binding Description}"
-                    Placeholder="Agrega una descripcion del juego..."
+                    Placeholder="Agrega una descripción del juego..."
                     HeightRequest="100"
                     FontSize="14" />
                         </VerticalStackLayout>
