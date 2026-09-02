@@ -29,6 +29,30 @@ namespace CompetitiveCounterApp.Data
                 .FirstOrDefaultAsync(p => p.ID == id);
         }
 
+        public async Task<bool> HasParticipationsAsync(int playerId)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            return await db.SessionPlayers.AnyAsync(sp => sp.PlayerID == playerId);
+        }
+
+        /// <summary>
+        /// Jugadores del catálogo que aún no están en la sesión.
+        /// </summary>
+        public async Task<List<Player>> ListAvailableForSessionAsync(int sessionId)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+
+            var inSession = db.SessionPlayers
+                .Where(sp => sp.SessionID == sessionId)
+                .Select(sp => sp.PlayerID);
+
+            return await db.Players
+                .AsNoTracking()
+                .Where(p => !inSession.Contains(p.ID))
+                .OrderBy(p => p.Name)
+                .ToListAsync();
+        }
+
         public async Task SaveItemAsync(Player player)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -44,6 +68,11 @@ namespace CompetitiveCounterApp.Data
         public async Task DeleteItemAsync(Player player)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
+
+            if (await db.SessionPlayers.AnyAsync(sp => sp.PlayerID == player.ID))
+                throw new InvalidOperationException(
+                    "No se puede eliminar el jugador porque participa en sesiones.");
+
             db.Players.Remove(player);
             await db.SaveChangesAsync();
         }

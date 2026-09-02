@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             xmlns:models="clr-namespace:CompetitiveCounterApp.Models;assembly=CompetitiveCounterApp.Data"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="CompetitiveCounterApp.Pages.SessionDetailPage"
+             x:DataType="pageModels:SessionDetailPageModel"
+             x:Name="SessionDetailRoot"
+             Title="{Binding Title}"
+             Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+             Shell.ForegroundColor="{StaticResource White}"
+             Shell.TitleColor="{StaticResource White}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference SessionDetailRoot}, x:DataType=ContentPage}"
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*,Auto" Padding="15" RowSpacing="12">
+        <VerticalStackLayout Spacing="6">
+            <Label Text="{Binding SessionDateText}"
+                   FontSize="16"
+                   FontAttributes="Bold" />
+            <Label Text="{Binding Notes}"
+                   FontSize="14"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+            <Label Text="Clasificación"
+                   FontSize="18"
+                   FontAttributes="Bold"
+                   Margin="0,10,0,0" />
+        </VerticalStackLayout>
+
+        <CollectionView Grid.Row="1"
+                        ItemsSource="{Binding Leaderboard}"
+                        SelectionMode="None">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:SessionPlayer">
+                    <Border StrokeThickness="0"
+                            Padding="12"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
+                        <Border.StrokeShape>
+                            <RoundRectangle CornerRadius="12" />
+                        </Border.StrokeShape>
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10" RowDefinitions="Auto,Auto">
+                            <Border WidthRequest="36"
+                                    HeightRequest="36"
+                                    StrokeThickness="0"
+                                    BackgroundColor="{Binding Player.Color}"
+                                    VerticalOptions="Center">
+                                <Border.StrokeShape>
+                                    <Ellipse />
+                                </Border.StrokeShape>
+                            </Border>
+
+                            <Label Grid.Column="1"
+                                   Text="{Binding Player.Name}"
+                                   FontSize="16"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"
+                                   LineBreakMode="TailTruncation" />
+
+                            <Label Grid.Column="2"
+                                   Text="{Binding Wins}"
+                                   FontSize="20"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center"
+                                   HorizontalTextAlignment="End"
+                                   MinimumWidthRequest="36">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding BindingContext.EditWinsCommand, Source={x:Reference SessionDetailRoot}}"
+                                        CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
+
+                            <HorizontalStackLayout Grid.Row="1"
+                                                   Grid.Column="0"
+                                                   Grid.ColumnSpan="3"
+                                                   Spacing="10"
+                                                   Margin="0,8,0,0"
+                                                   IsVisible="{Binding BindingContext.IsActive, Source={x:Reference SessionDetailRoot}}">
+                                <Button Text="−1"
+                                        Command="{Binding BindingContext.DecrementWinsCommand, Source={x:Reference SessionDetailRoot}}"
+                                        CommandParameter="{Binding .}"
+                                        HeightRequest="44"
+                                        WidthRequest="72"
+                                        CornerRadius="8"
+                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
+                                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+                                <Button Text="+1"
+                                        Command="{Binding BindingContext.IncrementWinsCommand, Source={x:Reference SessionDetailRoot}}"
+                                        CommandParameter="{Binding .}"
+                                        HeightRequest="44"
+                                        WidthRequest="72"
+                                        CornerRadius="8"
+                                        BackgroundColor="{StaticResource Primary}"
+                                        TextColor="White" />
+                                <Button Text="Editar"
+                                        Command="{Binding BindingContext.EditWinsCommand, Source={x:Reference SessionDetailRoot}}"
+                                        CommandParameter="{Binding .}"
+                                        HeightRequest="44"
+                                        CornerRadius="8"
+                                        BackgroundColor="Transparent"
+                                        TextColor="{StaticResource Primary}" />
+                            </HorizontalStackLayout>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+            <CollectionView.EmptyView>
+                <Label Text="Agregá jugadores para armar la clasificación"
+                       FontSize="14"
+                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                       HorizontalOptions="Center"
+                       Margin="0,30" />
+            </CollectionView.EmptyView>
+        </CollectionView>
+
+        <VerticalStackLayout Grid.Row="2" Spacing="10">
+            <Button Text="Agregar jugador"
+                    Command="{Binding AddPlayerCommand}"
+                    IsVisible="{Binding IsActive}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    HeightRequest="48"
+                    CornerRadius="10" />
+            <Button Text="Cerrar sesión"
+                    Command="{Binding CloseSessionCommand}"
+                    IsVisible="{Binding IsActive}"
+                    IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                    BackgroundColor="Transparent"
+                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                    HeightRequest="44" />
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

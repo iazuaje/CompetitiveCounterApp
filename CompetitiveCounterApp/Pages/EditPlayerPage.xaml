@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:controls="clr-namespace:CompetitiveCounterApp.Pages.Controls"
+             xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             x:Class="CompetitiveCounterApp.Pages.EditPlayerPage"
+             x:DataType="pageModels:EditPlayerPageModel"
+             Title="Editar jugador"
+             Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+             Shell.ForegroundColor="{StaticResource White}"
+             Shell.TitleColor="{StaticResource White}">
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Eliminar"
+                     Command="{Binding DeleteCommand}"
+                     IconImageSource="{StaticResource IconDeleteShell}" />
+        <ToolbarItem Text="Guardar"
+                     Command="{Binding SaveCommand}"
+                     IconImageSource="{StaticResource IconSaveShell}" />
+    </ContentPage.ToolbarItems>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Nombre"
+                       FontAttributes="Bold"
+                       FontSize="16" />
+                <Entry Text="{Binding Name}"
+                       Placeholder="Nombre del jugador"
+                       ClearButtonVisibility="WhileEditing"
+                       FontSize="18" />
+            </VerticalStackLayout>
+
+            <controls:ColorPicker Title="Color del jugador"
+                                  ItemsSource="{Binding PlayerColors}"
+                                  SelectedItem="{Binding SelectedColor}"
+                                  ItemCommand="{Binding SelectColorCommand}" />
+
+            <Button Text="Guardar cambios"
+                    Command="{Binding SaveCommand}"
+                    BackgroundColor="{StaticResource Primary}"
+                    TextColor="White"
+                    HeightRequest="48"
+                    CornerRadius="10" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

@@ -12,6 +12,7 @@ namespace CompetitiveCounterApp.PageModels
         private readonly SessionRepository _sessionRepository;
         private readonly ModalErrorHandler _errorHandler;
         private readonly GameOperationsService _gameOperations;
+        private int _gameId;
 
         [ObservableProperty]
         private Game? _game;
@@ -32,14 +33,20 @@ namespace CompetitiveCounterApp.PageModels
         private List<Session> _sessions = new();
 
         [ObservableProperty]
+        private Session? _activeSession;
+
+        [ObservableProperty]
+        private bool _hasActiveSession;
+
+        [ObservableProperty]
         private bool _isBusy;
 
         [ObservableProperty]
         private bool _isLoadingGame = true;
 
         public GameDetailPageModel(
-            GameRepository gameRepository, 
-            SessionRepository sessionRepository, 
+            GameRepository gameRepository,
+            SessionRepository sessionRepository,
             ModalErrorHandler errorHandler,
             GameOperationsService gameOperations)
         {
@@ -58,13 +65,20 @@ namespace CompetitiveCounterApp.PageModels
         {
             if (query.ContainsKey("id"))
             {
-                int id = Convert.ToInt32(query["id"]);
-                LoadData(id).FireAndForgetSafeAsync(_errorHandler);
+                _gameId = Convert.ToInt32(query["id"]);
+                LoadData(_gameId).FireAndForgetSafeAsync(_errorHandler);
             }
             else
             {
                 Shell.Current.GoToAsync("..").FireAndForgetSafeAsync(_errorHandler);
             }
+        }
+
+        [RelayCommand]
+        private async Task Appearing()
+        {
+            if (_gameId > 0)
+                await LoadData(_gameId);
         }
 
         private async Task LoadData(int id)
@@ -86,8 +100,10 @@ namespace CompetitiveCounterApp.PageModels
                 Name = Game.Name;
                 Description = Game.Description;
                 SelectedIcon = Icons.FirstOrDefault(i => i.Icon == Game.Icon) ?? GameDataService.GetDefaultIcon();
-                
+
                 Sessions = await _sessionRepository.ListAsync(Game.ID);
+                ActiveSession = Sessions.FirstOrDefault(s => s.IsActive);
+                HasActiveSession = ActiveSession is not null;
             }
             catch (Exception e)
             {
@@ -113,6 +129,18 @@ namespace CompetitiveCounterApp.PageModels
         }
 
         [RelayCommand]
+        private async Task ContinueSession()
+        {
+            if (ActiveSession is null)
+            {
+                await AppShell.DisplayToastAsync("No hay una sesión activa");
+                return;
+            }
+
+            await Shell.Current.GoToAsync($"sessiondetail?id={ActiveSession.ID}");
+        }
+
+        [RelayCommand]
         private async Task AddSession()
         {
             if (Game.IsNullOrNew())
@@ -121,7 +149,44 @@ namespace CompetitiveCounterApp.PageModels
                 return;
             }
 
-            await Shell.Current.GoToAsync($"sessiondetail?gameId={Game.ID}");
+            if (HasActiveSession)
+            {
+                bool confirm = await Shell.Current.DisplayAlert(
+                    "Nueva sesión",
+                    "Hay una sesión activa. Al crear una nueva se cerrará la actual. ¿Continuar?",
+                    "Crear",
+                    "Cancelar");
+
+                if (!confirm)
+                    return;
+            }
+
+            var notes = await Shell.Current.DisplayPromptAsync(
+                "Nueva sesión",
+                "Descripción opcional",
+                "Crear",
+                "Cancelar",
+                maxLength: 120,
+                keyboard: Keyboard.Text);
+
+            // Cancelar devuelve null; Enter vacío es string vacío (permitido).
+            if (notes is null)
+                return;
+
+            try
+            {
+                IsBusy = true;
+                var session = await _sessionRepository.CreateAsync(Game.ID, notes);
+                await Shell.Current.GoToAsync($"sessiondetail?id={session.ID}");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleError(e);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
         }
 
         [RelayCommand]

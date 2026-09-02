@@ -7,10 +7,18 @@
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="CompetitiveCounterApp.Pages.GameDetailPage"
              x:DataType="pageModels:GameDetailPageModel"
+             x:Name="GameDetailRoot"
              Title="{Binding Name}"
              Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
              Shell.ForegroundColor="{StaticResource White}"
              Shell.TitleColor="{StaticResource White}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference GameDetailRoot}, x:DataType=ContentPage}"
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -78,20 +86,27 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <HorizontalStackLayout Spacing="10" VerticalOptions="Center">
-                        <Label Text="Sesiones de Juego"
-                               FontSize="18"
-                               FontAttributes="Bold"
-                               VerticalOptions="Center"
-                               HorizontalOptions="Start" />
-                        <Button Text="+ Nueva Sesión"
+                    <Label Text="Sesiones de Juego"
+                           FontSize="18"
+                           FontAttributes="Bold" />
+
+                    <VerticalStackLayout Spacing="8">
+                        <Button Text="Continuar sesión"
+                                Command="{Binding ContinueSessionCommand}"
+                                IsVisible="{Binding HasActiveSession}"
+                                BackgroundColor="{Binding Game.CurrentGameColor}"
+                                TextColor="White"
+                                Padding="10,12"
+                                FontSize="14"
+                                CornerRadius="8" />
+                        <Button Text="+ Nueva sesión"
                                 Command="{Binding AddSessionCommand}"
                                 BackgroundColor="{Binding Game.CurrentGameColor}"
                                 TextColor="White"
-                                Padding="10,5"
+                                Padding="10,12"
                                 FontSize="14"
                                 CornerRadius="8" />
-                    </HorizontalStackLayout>
+                    </VerticalStackLayout>
 
                     <VerticalStackLayout Spacing="10"
                                          BindableLayout.ItemsSource="{Binding Sessions}">
@@ -109,15 +124,29 @@
                                     </Border.GestureRecognizers>
 
                                     <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="5">
-                                        <Label Grid.Row="0"
-                                               FontSize="16"
-                                               FontAttributes="Bold">
-                                            <Label.Text>
-                                                <MultiBinding StringFormat="{}{0:dd/MM/yyyy HH:mm}">
-                                                    <Binding Path="SessionDate" />
-                                                </MultiBinding>
-                                            </Label.Text>
-                                        </Label>
+                                        <Grid ColumnDefinitions="*,Auto">
+                                            <Label FontSize="16"
+                                                   FontAttributes="Bold">
+                                                <Label.Text>
+                                                    <MultiBinding StringFormat="{}{0:dd/MM/yyyy HH:mm}">
+                                                        <Binding Path="SessionDate" />
+                                                    </MultiBinding>
+                                                </Label.Text>
+                                            </Label>
+                                            <Border Grid.Column="1"
+                                                    IsVisible="{Binding IsActive}"
+                                                    BackgroundColor="{StaticResource Primary}"
+                                                    Padding="8,2"
+                                                    StrokeThickness="0">
+                                                <Border.StrokeShape>
+                                                    <RoundRectangle CornerRadius="8" />
+                                                </Border.StrokeShape>
+                                                <Label Text="Activa"
+                                                       TextColor="White"
+                                                       FontSize="11"
+                                                       FontAttributes="Bold" />
+                                            </Border>
+                                        </Grid>
 
                                         <Label Grid.Row="1"
                                                FontSize="14"

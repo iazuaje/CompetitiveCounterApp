@@ -47,10 +47,14 @@ namespace CompetitiveCounterApp
             builder.Services.AddSingleton<ModalErrorHandler>();
 
             builder.Services.AddSingleton<GamesPageModel>();
+            builder.Services.AddSingleton<PlayersPageModel>();
 
             builder.Services.AddTransientWithShellRoute<CreateGamePage, CreateGamePageModel>("creategame");
             builder.Services.AddTransientWithShellRoute<EditGamePage, EditGamePageModel>("editgame");
             builder.Services.AddTransientWithShellRoute<GameDetailPage, GameDetailPageModel>("gamedetail");
+            builder.Services.AddTransientWithShellRoute<CreatePlayerPage, CreatePlayerPageModel>("createplayer");
+            builder.Services.AddTransientWithShellRoute<EditPlayerPage, EditPlayerPageModel>("editplayer");
+            builder.Services.AddTransientWithShellRoute<SessionDetailPage, SessionDetailPageModel>("sessiondetail");
 
             var app = builder.Build();
 
