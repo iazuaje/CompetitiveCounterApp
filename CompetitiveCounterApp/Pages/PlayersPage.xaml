@@ -38,12 +38,7 @@
                     </CollectionView.ItemsLayout>
                     <CollectionView.ItemTemplate>
                         <DataTemplate x:DataType="models:Player">
-                            <Border StrokeThickness="0"
-                                    Padding="15"
-                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray100}, Dark={StaticResource Gray900}}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="12" />
-                                </Border.StrokeShape>
+                            <Border>
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer
                                         Command="{Binding NavigateToPlayerCommand, Source={RelativeSource AncestorType={x:Type pageModels:PlayersPageModel}}, x:DataType=pageModels:PlayersPageModel}"
@@ -54,11 +49,8 @@
                                             HeightRequest="40"
                                             StrokeThickness="2"
                                             Stroke="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray100}}"
-                                            Background="{Binding CurrentColor}">
-                                        <Border.StrokeShape>
-                                            <Ellipse />
-                                        </Border.StrokeShape>
-                                    </Border>
+                                            Background="{Binding CurrentColor}"
+                                            StrokeShape="Ellipse" />
                                     <Label Grid.Column="1"
                                            Text="{Binding Name}"
                                            FontSize="18"

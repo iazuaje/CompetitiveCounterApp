@@ -53,10 +53,8 @@
                                     Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
                                     Padding="0"
                                     HeightRequest="200"
-                                    Background="{Binding CurrentGameColor}">
-                                <Border.StrokeShape>
-                                    <RoundRectangle CornerRadius="12" />
-                                </Border.StrokeShape>
+                                    Background="{Binding CurrentGameColor}"
+                                    StrokeShape="RoundRectangle 20">
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer Command="{Binding NavigateToGameCommand, Source={RelativeSource AncestorType={x:Type pageModels:GamesPageModel}}, x:DataType=pageModels:GamesPageModel}" 
                                                           CommandParameter="{Binding .}"/>
@@ -108,14 +106,8 @@
                                            FontSize="12"
                                            HorizontalOptions="Center"
                                            TextColor="White"
-                                           Opacity="0.9">
-                                        <Label.FormattedText>
-                                            <FormattedString>
-                                                <Span Text="{Binding BindingContext.SessionCounts[ID], Source={x:Reference GamesPageRoot}, FallbackValue=0}" />
-                                                <Span Text=" sesión(es)" />
-                                            </FormattedString>
-                                        </Label.FormattedText>
-                                    </Label>
+                                           Opacity="0.9"
+                                           Text="{Binding SessionCount, StringFormat='{}{0} sesión(es)'}" />
                                 </Grid>
                             </Border>
                         </DataTemplate>

@@ -19,6 +19,9 @@ namespace CompetitiveCounterApp.PageModels
         private Session? _session;
 
         [ObservableProperty]
+        private Game? _game;
+
+        [ObservableProperty]
         private ObservableCollection<SessionPlayer> _leaderboard = [];
 
         [ObservableProperty]
@@ -47,7 +50,9 @@ namespace CompetitiveCounterApp.PageModels
 
             WeakReferenceMessenger.Default.Register<AppThemeChangedMessage>(this, static (r, _) =>
             {
-                foreach (var row in ((SessionDetailPageModel)r).Leaderboard)
+                var vm = (SessionDetailPageModel)r;
+                vm.Game?.NotifyThemeChanged();
+                foreach (var row in vm.Leaderboard)
                     row.Player?.NotifyThemeChanged();
             });
         }
@@ -104,6 +109,7 @@ namespace CompetitiveCounterApp.PageModels
             Notes = string.IsNullOrWhiteSpace(session.Notes) ? "Sin descripción" : session.Notes;
             SessionDateText = session.SessionDateLocal.ToString("dd/MM/yyyy HH:mm");
             Title = IsActive ? "Sesión activa" : "Sesión cerrada";
+            Game = session.Game;
 
             Leaderboard = new ObservableCollection<SessionPlayer>(
                 session.SessionPlayers.OrderByDescending(sp => sp.Wins));

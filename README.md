@@ -103,6 +103,8 @@ dotnet ef migrations add PlayerThemeColors -p CompetitiveCounterApp.Data -s Comp
 
 Datos existentes de sesiones: las sesiones actuales quedan con `ClosedAt = null` (activas). Si hubiera más de una por juego, el índice filtrado fallará al aplicar; cerrar las sobrantes antes de migrar.
 
+`SessionDate`/`ClosedAt` usan hora local del dispositivo (`LocalDateTimeConverter`). Sesiones guardadas antes como UTC pueden verse corridas; conviene recrearlas para verificar.
+
 ## Licencia
 
 MIT License - ver el archivo LICENSE para más detalles.

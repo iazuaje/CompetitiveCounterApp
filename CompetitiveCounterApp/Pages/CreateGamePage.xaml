@@ -10,7 +10,7 @@
              x:Class="CompetitiveCounterApp.Pages.CreateGamePage"
              x:DataType="pageModels:CreateGamePageModel"
              Title="Crear Nuevo Juego"
-             Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+             Shell.BackgroundColor="{Binding SelectedColor.ToolbarColor}"
              Shell.ForegroundColor="{StaticResource White}"
              Shell.TitleColor="{StaticResource White}">
 

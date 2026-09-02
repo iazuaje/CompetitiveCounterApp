@@ -4,7 +4,7 @@ namespace CompetitiveCounterApp.Models
     {
         public int ID { get; set; }
         public int GameID { get; set; }
-        public DateTime SessionDate { get; set; } = DateTime.UtcNow;
+        public DateTime SessionDate { get; set; } = DateTime.Now;
         public string Notes { get; set; } = string.Empty;
 
         /// <summary>
@@ -17,19 +17,16 @@ namespace CompetitiveCounterApp.Models
 
         public bool IsActive => ClosedAt is null;
 
-        /// <summary>Fecha de creación en zona horaria local del dispositivo.</summary>
-        public DateTime SessionDateLocal => ToLocal(SessionDate);
+        /// <summary>Suma de victorias de todos los jugadores de la sesión.</summary>
+        public int TotalWins => SessionPlayers?.Sum(sp => sp.Wins) ?? 0;
 
-        public DateTime? ClosedAtLocal => ClosedAt is null ? null : ToLocal(ClosedAt.Value);
+        public int PlayerCount => SessionPlayers?.Count ?? 0;
+
+        /// <summary>Fecha para UI: hora local del dispositivo (sin conversión UTC).</summary>
+        public DateTime SessionDateLocal => SessionDate;
+
+        public DateTime? ClosedAtLocal => ClosedAt;
 
         public override string ToString() => $"{Game?.Name ?? "Unknown"} - {SessionDateLocal:dd/MM/yyyy}";
-
-        /// <summary>
-        /// SQLite/EF suelen materializar DateTime como UTC o Unspecified (tratado como UTC).
-        /// </summary>
-        private static DateTime ToLocal(DateTime value) =>
-            value.Kind == DateTimeKind.Local
-                ? value
-                : DateTime.SpecifyKind(value, DateTimeKind.Utc).ToLocalTime();
     }
 }

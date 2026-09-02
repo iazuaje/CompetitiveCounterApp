@@ -32,6 +32,11 @@ namespace CompetitiveCounterApp.PageModels
         [ObservableProperty]
         private List<Session> _sessions = new();
 
+        public bool HasSessions => Sessions.Count > 0;
+
+        partial void OnSessionsChanged(List<Session> value) =>
+            OnPropertyChanged(nameof(HasSessions));
+
         [ObservableProperty]
         private Session? _activeSession;
 
@@ -190,8 +195,11 @@ namespace CompetitiveCounterApp.PageModels
         }
 
         [RelayCommand]
-        private async Task NavigateToSession(Session session)
+        private async Task NavigateToSession(Session? session)
         {
+            if (session is null || session.ID == 0)
+                return;
+
             await Shell.Current.GoToAsync($"sessiondetail?id={session.ID}");
         }
 

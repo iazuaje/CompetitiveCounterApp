@@ -39,5 +39,6 @@ La imagen del encabezado usa `Aspect="AspectFill"` sin `HeightRequest`: rellena 
 
 - `Session.ClosedAt`: `null` = activa; con valor = cerrada. Como máximo una activa por `GameID` (`IX_Sessions_GameID_Active`).
 - `SessionPlayer`: único `(SessionID, PlayerID)`. Métrica actual: solo `Wins`.
+- `Session.SessionDate` / `ClosedAt` se guardan como hora local del dispositivo (sin UTC) vía `LocalDateTimeConverter`.
 - `Player` usa `ColorLight` / `ColorDark` (mismo patrón temático que `Game`), no un solo hex.
 - No generar ni editar migraciones EF desde el agente; tras cambiar entidades/Fluent API, el desarrollador crea la migración a mano.

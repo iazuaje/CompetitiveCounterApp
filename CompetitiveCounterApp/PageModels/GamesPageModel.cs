@@ -16,9 +16,6 @@ namespace CompetitiveCounterApp.PageModels
         private List<Game> _games = [];
 
         [ObservableProperty]
-        private Dictionary<int, int> _sessionCounts = new();
-
-        [ObservableProperty]
         private bool _isBusy;
 
         [ObservableProperty]
@@ -64,14 +61,8 @@ namespace CompetitiveCounterApp.PageModels
                 IsBusy = true;
                 Games = await _gameRepository.ListAsync();
 
-                // Cargar el conteo de sesiones para cada juego
-                var sessionCountsDict = new Dictionary<int, int>();
                 foreach (var game in Games)
-                {
-                    var sessions = await _sessionRepository.ListAsync(game.ID);
-                    sessionCountsDict[game.ID] = sessions.Count;
-                }
-                SessionCounts = sessionCountsDict;
+                    game.SessionCount = await _sessionRepository.CountByGameIdAsync(game.ID);
             }
             catch (Exception e)
             {
@@ -100,11 +91,6 @@ namespace CompetitiveCounterApp.PageModels
         {
             // Por implementar
             await AppShell.DisplayToastAsync("Opciones - Por implementar");
-        }
-
-        public int GetSessionCount(int gameId)
-        {
-            return SessionCounts.TryGetValue(gameId, out var count) ? count : 0;
         }
     }
 }

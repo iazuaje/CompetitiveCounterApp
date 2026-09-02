@@ -33,6 +33,12 @@ namespace CompetitiveCounterApp.Data
                 .ToListAsync();
         }
 
+        public async Task<int> CountByGameIdAsync(int gameId)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            return await db.Sessions.CountAsync(s => s.GameID == gameId);
+        }
+
         public async Task<Session?> GetAsync(int id)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
@@ -67,12 +73,12 @@ namespace CompetitiveCounterApp.Data
                 .FirstOrDefaultAsync(s => s.GameID == gameId && s.ClosedAt == null);
 
             if (active is not null)
-                active.ClosedAt = DateTime.UtcNow;
+                active.ClosedAt = DateTime.Now;
 
             var session = new Session
             {
                 GameID = gameId,
-                SessionDate = DateTime.UtcNow,
+                SessionDate = DateTime.Now,
                 Notes = notes?.Trim() ?? string.Empty,
                 ClosedAt = null
             };
@@ -94,7 +100,7 @@ namespace CompetitiveCounterApp.Data
             if (session.ClosedAt is not null)
                 throw new InvalidOperationException("La sesión ya está cerrada.");
 
-            session.ClosedAt = DateTime.UtcNow;
+            session.ClosedAt = DateTime.Now;
             await db.SaveChangesAsync();
         }
 

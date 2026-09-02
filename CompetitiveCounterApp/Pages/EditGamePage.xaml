@@ -10,7 +10,7 @@
              x:Class="CompetitiveCounterApp.Pages.EditGamePage"
              x:DataType="pageModels:EditGamePageModel"
              Title="{Binding Name, StringFormat='Editando {0}'}"
-             Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+             Shell.BackgroundColor="{Binding SelectedColor.ToolbarColor}"
              Shell.ForegroundColor="{StaticResource White}"
              Shell.TitleColor="{StaticResource White}">
 

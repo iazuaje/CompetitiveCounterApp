@@ -5,6 +5,9 @@ namespace CompetitiveCounterApp.Data
 {
     public class AppDbContext : DbContext
     {
+        private static readonly LocalDateTimeConverter LocalDateTimeConverter = new();
+        private static readonly NullableLocalDateTimeConverter NullableLocalDateTimeConverter = new();
+
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
@@ -33,9 +36,11 @@ namespace CompetitiveCounterApp.Data
                 entity.Ignore(e => e.GameColorLight);
                 entity.Ignore(e => e.GameColorDark);
                 entity.Ignore(e => e.CurrentGameColor);
+                entity.Ignore(e => e.ToolbarColor);
                 entity.Ignore(e => e.SurfaceColor);
                 entity.Ignore(e => e.OnSurfaceColor);
                 entity.Ignore(e => e.GameImage);
+                entity.Ignore(e => e.SessionCount);
             });
 
             modelBuilder.Entity<Player>(entity =>
@@ -53,10 +58,15 @@ namespace CompetitiveCounterApp.Data
             {
                 entity.ToTable("Sessions");
                 entity.HasKey(e => e.ID);
-                entity.Property(e => e.SessionDate).IsRequired();
+                entity.Property(e => e.SessionDate)
+                    .IsRequired()
+                    .HasConversion(LocalDateTimeConverter);
                 entity.Property(e => e.Notes).HasDefaultValue(string.Empty);
-                entity.Property(e => e.ClosedAt);
+                entity.Property(e => e.ClosedAt)
+                    .HasConversion(NullableLocalDateTimeConverter);
                 entity.Ignore(e => e.IsActive);
+                entity.Ignore(e => e.TotalWins);
+                entity.Ignore(e => e.PlayerCount);
                 entity.Ignore(e => e.SessionDateLocal);
                 entity.Ignore(e => e.ClosedAtLocal);
 

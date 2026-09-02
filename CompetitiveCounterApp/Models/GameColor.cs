@@ -19,6 +19,7 @@ namespace CompetitiveCounterApp.Models
         public override string ToString() => Name;
 
         public Color CurrentGameColor => ThemeColors.CurrentColor;
+        public Color ToolbarColor => ThemeColors.ToolbarColor;
 
         public Color SurfaceColor => ThemeColors.SurfaceColor;
         public Color OnSurfaceColor => ThemeColors.OnSurfaceColor;
@@ -26,6 +27,7 @@ namespace CompetitiveCounterApp.Models
         public void NotifyThemeChanged()
         {
             OnPropertyChanged(nameof(CurrentGameColor));
+            OnPropertyChanged(nameof(ToolbarColor));
             OnPropertyChanged(nameof(SurfaceColor));
             OnPropertyChanged(nameof(OnSurfaceColor));
         }
