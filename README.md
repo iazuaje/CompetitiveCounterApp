@@ -75,7 +75,7 @@ Session
 └── SessionPlayers[]
 
 Player
-├── ID, Name
+├── ID, Name, Icon
 ├── ColorLight, ColorDark
 
 SessionPlayer
@@ -96,6 +96,7 @@ Cambios pendientes de migrar (si aún no están en BD):
 
 1. `Session.ClosedAt` + índices `IX_Sessions_GameID_Active` y `IX_SessionPlayers_SessionID_PlayerID`
 2. `Player`: reemplazar `ColorHex` por `ColorLight` / `ColorDark` (mismo patrón que `Game`). Al migrar, copiar `ColorHex` a `ColorLight` y asignar un `ColorDark` por defecto (p. ej. el de la paleta o `#EF9A9A`).
+3. `Player.Icon` (texto, default vacío): ícono FluentUI del jugador.
 
 ```powershell
 dotnet ef migrations add PlayerThemeColors -p CompetitiveCounterApp.Data -s CompetitiveCounterApp

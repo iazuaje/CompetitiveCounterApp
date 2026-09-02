@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:f="clr-namespace:Fonts"
              xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
              xmlns:models="clr-namespace:CompetitiveCounterApp.Models;assembly=CompetitiveCounterApp.Data"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
@@ -34,6 +35,7 @@
                    FontSize="16"
                    FontAttributes="Bold" />
             <Label Text="{Binding Notes}"
+                   IsVisible="{Binding HasNotes}"
                    FontSize="14"
                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
             <Label Text="Clasificación"
@@ -57,7 +59,19 @@
                                     StrokeThickness="0"
                                     Background="{Binding Player.CurrentColor}"
                                     VerticalOptions="Center"
-                                    StrokeShape="Ellipse" />
+                                    StrokeShape="Ellipse"
+                                    Padding="0">
+                                <Image HeightRequest="18" WidthRequest="18"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource Glyph="{Binding Player.Icon}"
+                                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                         Color="White"
+                                                         Size="18" />
+                                    </Image.Source>
+                                </Image>
+                            </Border>
 
                             <Label Grid.Column="1"
                                    Text="{Binding Player.Name}"
@@ -87,24 +101,83 @@
                                                    Spacing="10"
                                                    Margin="0,8,0,0"
                                                    IsVisible="{Binding IsActive, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}">
-                                <Button Text="−1"
-                                        Command="{Binding DecrementWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
-                                        CommandParameter="{Binding .}"
-                                        WidthRequest="72"
-                                        BackgroundColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
-                                        TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
-                                <Button Text="+1"
-                                        Command="{Binding IncrementWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
-                                        CommandParameter="{Binding .}"
-                                        WidthRequest="72"
-                                        BackgroundColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
-                                        TextColor="White" />
-                                <Button Text="Editar"
-                                        Command="{Binding EditWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
-                                        CommandParameter="{Binding .}"
-                                        BackgroundColor="Transparent"
-                                        BorderWidth="0"
-                                        TextColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}" />
+                                <Border WidthRequest="32"
+                                        HeightRequest="32"
+                                        Padding="0"
+                                        Background="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
+                                        StrokeThickness="0"
+                                        VerticalOptions="Center"
+                                        SemanticProperties.Description="Restar victoria">
+                                    <Border.StrokeShape>
+                                        <Ellipse />
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding DecrementWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="−"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
+                                </Border>
+
+                                <Border WidthRequest="32"
+                                        HeightRequest="32"
+                                        Padding="0"
+                                        Background="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
+                                        StrokeThickness="0"
+                                        VerticalOptions="Center"
+                                        SemanticProperties.Description="Sumar victoria">
+                                    <Border.StrokeShape>
+                                        <Ellipse />
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding IncrementWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Label Text="+"
+                                           TextColor="White"
+                                           FontSize="20"
+                                           FontAttributes="Bold"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"
+                                           HorizontalTextAlignment="Center"
+                                           VerticalTextAlignment="Center" />
+                                </Border>
+
+                                <Border WidthRequest="32"
+                                        HeightRequest="32"
+                                        Padding="0"
+                                        Background="Transparent"
+                                        StrokeThickness="0"
+                                        VerticalOptions="Center"
+                                        SemanticProperties.Description="Editar victorias">
+                                    <Border.StrokeShape>
+                                        <Ellipse />
+                                    </Border.StrokeShape>
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer
+                                            Command="{Binding EditWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
+                                            CommandParameter="{Binding .}" />
+                                    </Border.GestureRecognizers>
+                                    <Image HeightRequest="18"
+                                           WidthRequest="18"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource Glyph="{x:Static f:FluentUI.edit_24_regular}"
+                                                             FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                             Color="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
+                                                             Size="18" />
+                                        </Image.Source>
+                                    </Image>
+                                </Border>
                             </HorizontalStackLayout>
                         </Grid>
                     </Border>

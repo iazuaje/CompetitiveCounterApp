@@ -90,21 +90,34 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <Label Text="Sesiones de Juego"
-                               FontSize="18"
-                               FontAttributes="Bold" />
-
-                        <VerticalStackLayout Spacing="8">
-                            <Button Text="Continuar sesión"
-                                    Command="{Binding ContinueSessionCommand}"
-                                    IsVisible="{Binding HasActiveSession}"
-                                    BackgroundColor="{Binding Game.CurrentGameColor}"
-                                    TextColor="White" />
-                            <Button Text="+ Nueva sesión"
-                                    Command="{Binding AddSessionCommand}"
-                                    BackgroundColor="{Binding Game.CurrentGameColor}"
-                                    TextColor="White" />
-                        </VerticalStackLayout>
+                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                            <Label Text="Sesiones de Juego"
+                                   FontSize="18"
+                                   FontAttributes="Bold"
+                                   VerticalOptions="Center" />
+                            <Border WidthRequest="32"
+                                    HeightRequest="32"
+                                    Padding="0"
+                                    Background="{Binding Game.CurrentGameColor}"
+                                    StrokeThickness="0"
+                                    VerticalOptions="Center"
+                                    SemanticProperties.Description="Nueva sesión">
+                                <Border.StrokeShape>
+                                    <Ellipse />
+                                </Border.StrokeShape>
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding AddSessionCommand}" />
+                                </Border.GestureRecognizers>
+                                <Label Text="+"
+                                       TextColor="White"
+                                       FontSize="20"
+                                       FontAttributes="Bold"
+                                       HorizontalOptions="Center"
+                                       VerticalOptions="Center"
+                                       HorizontalTextAlignment="Center"
+                                       VerticalTextAlignment="Center" />
+                            </Border>
+                        </HorizontalStackLayout>
                     </VerticalStackLayout>
                 </CollectionView.Header>
 
@@ -117,41 +130,35 @@
 
                 <CollectionView.ItemTemplate>
                     <DataTemplate x:DataType="models:Session">
-                        <Border Padding="12">
+                        <Border Padding="12"
+                                Background="{Binding ListCardBackground}"
+                                Stroke="{Binding ListCardStroke}"
+                                StrokeThickness="{Binding ListCardStrokeThickness}">
                             <Border.GestureRecognizers>
                                 <TapGestureRecognizer
                                     Command="{Binding NavigateToSessionCommand, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}"
                                     CommandParameter="{Binding .}" />
                             </Border.GestureRecognizers>
 
-                            <Grid RowDefinitions="Auto,Auto,Auto" RowSpacing="8">
-                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
-                                    <Label FontSize="13"
-                                           FontAttributes="Bold"
-                                           LineBreakMode="TailTruncation"
-                                           MaxLines="2"
-                                           VerticalOptions="Center"
-                                           Text="{Binding SessionDateLocal, StringFormat='{}{0:dd/MM/yy HH:mm}'}" />
-                                    <Border Grid.Column="1"
-                                            IsVisible="{Binding IsActive}"
-                                            BackgroundColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}"
-                                            Padding="6,2"
-                                            StrokeThickness="0"
-                                            StrokeShape="RoundRectangle 20"
-                                            VerticalOptions="Start">
-                                        <Label Text="Activa"
-                                               TextColor="White"
-                                               FontSize="10"
-                                               FontAttributes="Bold" />
-                                    </Border>
-                                </Grid>
+                            <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="8">
+                                <Label FontSize="13"
+                                       FontAttributes="Bold"
+                                       LineBreakMode="TailTruncation"
+                                       MaxLines="2"
+                                       Text="{Binding SessionDateLocal, StringFormat='{}{0:dd/MM/yy HH:mm}'}">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
+                                            <Setter Property="TextColor" Value="White" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
 
                                 <HorizontalStackLayout Grid.Row="1" Spacing="6" VerticalOptions="Center">
                                     <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center">
                                         <Image.Source>
                                             <FontImageSource Glyph="{x:Static f:FluentUI.star_24_regular}"
                                                              FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                             Color="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                                             Color="{Binding ListCardIconColor}"
                                                              Size="16" />
                                         </Image.Source>
                                     </Image>
@@ -159,23 +166,35 @@
                                            FontSize="14"
                                            FontAttributes="Bold"
                                            VerticalOptions="Center"
-                                           TextColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}" />
-                                </HorizontalStackLayout>
-
-                                <HorizontalStackLayout Grid.Row="2" Spacing="6" VerticalOptions="Center">
-                                    <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center">
+                                           TextColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}">
+                                        <Label.Triggers>
+                                            <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
+                                                <Setter Property="TextColor" Value="White" />
+                                            </DataTrigger>
+                                        </Label.Triggers>
+                                    </Label>
+                                    <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center" Margin="8,0,0,0">
                                         <Image.Source>
                                             <FontImageSource Glyph="{x:Static f:FluentUI.people_24_regular}"
                                                              FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                             Color="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                                             Color="{Binding ListCardIconColor}"
                                                              Size="16" />
                                         </Image.Source>
                                     </Image>
                                     <Label Text="{Binding PlayerCount}"
                                            FontSize="14"
                                            VerticalOptions="Center"
-                                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                           TextColor="{Binding ListCardIconColor}" />
                                 </HorizontalStackLayout>
+
+                                <Label Grid.Row="3"
+                                       Text="Activa"
+                                       IsVisible="{Binding IsActive}"
+                                       HorizontalOptions="End"
+                                       VerticalOptions="End"
+                                       TextColor="White"
+                                       FontSize="10"
+                                       FontAttributes="Bold" />
                             </Grid>
                         </Border>
                     </DataTemplate>

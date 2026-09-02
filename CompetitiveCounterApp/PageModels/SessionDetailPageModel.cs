@@ -31,6 +31,9 @@ namespace CompetitiveCounterApp.PageModels
         private string _notes = string.Empty;
 
         [ObservableProperty]
+        private bool _hasNotes;
+
+        [ObservableProperty]
         private string _sessionDateText = string.Empty;
 
         [ObservableProperty]
@@ -106,7 +109,8 @@ namespace CompetitiveCounterApp.PageModels
         private void ApplySession(Session session)
         {
             IsActive = session.IsActive;
-            Notes = string.IsNullOrWhiteSpace(session.Notes) ? "Sin descripción" : session.Notes;
+            Notes = session.Notes?.Trim() ?? string.Empty;
+            HasNotes = !string.IsNullOrWhiteSpace(Notes);
             SessionDateText = session.SessionDateLocal.ToString("dd/MM/yyyy HH:mm");
             Title = IsActive ? "Sesión activa" : "Sesión cerrada";
             Game = session.Game;
@@ -179,9 +183,11 @@ namespace CompetitiveCounterApp.PageModels
             if (string.IsNullOrWhiteSpace(name))
                 return;
 
+            var defaultIcon = GameDataService.GetDefaultPlayerIcon();
             var player = new Player
             {
                 Name = name.Trim(),
+                Icon = defaultIcon.Icon,
                 ColorLight = GameDataService.GetDefaultColor().ColorLight,
                 ColorDark = GameDataService.GetDefaultColor().ColorDark
             };

@@ -1,3 +1,4 @@
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
@@ -15,6 +16,12 @@ namespace CompetitiveCounterApp.PageModels
         private string _name = string.Empty;
 
         [ObservableProperty]
+        private ObservableCollection<IconData> _icons = [];
+
+        [ObservableProperty]
+        private IconData _selectedIcon;
+
+        [ObservableProperty]
         private List<GameColor> _playerColors = [];
 
         [ObservableProperty]
@@ -27,6 +34,9 @@ namespace CompetitiveCounterApp.PageModels
         {
             _playerRepository = playerRepository;
             _errorHandler = errorHandler;
+            Icons = new ObservableCollection<IconData>(GameDataService.GetPlayerIcons());
+            SelectedIcon = Icons[0];
+            SelectedIcon.IsSelected = true;
             PlayerColors = GameDataService.GetGameColors();
             SelectedColor = PlayerColors[0];
             SelectedColor.IsSelected = true;
@@ -44,6 +54,16 @@ namespace CompetitiveCounterApp.PageModels
         }
 
         [RelayCommand]
+        private void SelectIcon(IconData selectedIcon)
+        {
+            foreach (var icon in Icons)
+                icon.IsSelected = false;
+
+            selectedIcon.IsSelected = true;
+            SelectedIcon = selectedIcon;
+        }
+
+        [RelayCommand]
         private void SelectColor(GameColor color)
         {
             foreach (var c in PlayerColors)
@@ -58,6 +78,13 @@ namespace CompetitiveCounterApp.PageModels
         protected void ApplyPlayerData(Player player)
         {
             Name = player.Name;
+
+            foreach (var icon in Icons)
+                icon.IsSelected = false;
+
+            SelectedIcon = Icons.FirstOrDefault(i => i.Icon == player.Icon) ?? Icons[0];
+            SelectedIcon.IsSelected = true;
+
             var match = PlayerColors.FirstOrDefault(c =>
                 c.ColorLight == player.ColorLight && c.ColorDark == player.ColorDark);
 
@@ -86,6 +113,7 @@ namespace CompetitiveCounterApp.PageModels
         protected void UpdatePlayerFromForm(Player player)
         {
             player.Name = Name.Trim();
+            player.Icon = SelectedIcon?.Icon ?? FluentUI.person_24_regular;
             player.ColorLight = SelectedColor?.ColorLight ?? "#C62828";
             player.ColorDark = SelectedColor?.ColorDark ?? "#EF9A9A";
         }

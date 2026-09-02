@@ -50,7 +50,19 @@
                                             StrokeThickness="2"
                                             Stroke="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray100}}"
                                             Background="{Binding CurrentColor}"
-                                            StrokeShape="Ellipse" />
+                                            StrokeShape="Ellipse"
+                                            Padding="0">
+                                        <Image HeightRequest="22" WidthRequest="22"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center">
+                                            <Image.Source>
+                                                <FontImageSource Glyph="{Binding Icon}"
+                                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                 Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}"
+                                                                 Size="22" />
+                                            </Image.Source>
+                                        </Image>
+                                    </Border>
                                     <Label Grid.Column="1"
                                            Text="{Binding Name}"
                                            FontSize="18"

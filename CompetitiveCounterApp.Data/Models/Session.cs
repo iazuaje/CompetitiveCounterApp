@@ -27,6 +27,51 @@ namespace CompetitiveCounterApp.Models
 
         public DateTime? ClosedAtLocal => ClosedAt;
 
+        /// <summary>Fondo de tarjeta en listados: color del juego si está activa.</summary>
+        public Color ListCardBackground =>
+            IsActive
+                ? Game?.CurrentGameColor ?? Colors.Transparent
+                : ResolveSecondaryBackground();
+
+        /// <summary>Borde de tarjeta: complementario del juego si está activa.</summary>
+        public Color ListCardStroke =>
+            IsActive
+                ? Game?.ComplementaryColor ?? Colors.Transparent
+                : Colors.Transparent;
+
+        public double ListCardStrokeThickness => IsActive ? 2d : 0d;
+
+        /// <summary>Color de iconos/métricas secundarias en la tarjeta del listado.</summary>
+        public Color ListCardIconColor =>
+            IsActive ? Colors.White : ResolveMutedForeground();
+
+        static Color ResolveSecondaryBackground()
+        {
+            var app = Application.Current;
+            if (app?.Resources is null)
+                return Colors.Transparent;
+
+            var key = app.RequestedTheme == AppTheme.Dark
+                ? "DarkSecondaryBackground"
+                : "LightSecondaryBackground";
+
+            return app.Resources.TryGetValue(key, out var resource) && resource is Color color
+                ? color
+                : Colors.Transparent;
+        }
+
+        static Color ResolveMutedForeground()
+        {
+            var app = Application.Current;
+            if (app?.Resources is null)
+                return Colors.Gray;
+
+            var key = app.RequestedTheme == AppTheme.Dark ? "Gray400" : "Gray600";
+            return app.Resources.TryGetValue(key, out var resource) && resource is Color color
+                ? color
+                : Colors.Gray;
+        }
+
         public override string ToString() => $"{Game?.Name ?? "Unknown"} - {SessionDateLocal:dd/MM/yyyy}";
     }
 }

@@ -23,6 +23,7 @@ namespace CompetitiveCounterApp.Models
         public Color GameColorDark => ThemeColors.DarkThemeColor;
         public Color CurrentGameColor => ThemeColors.CurrentColor;
         public Color ToolbarColor => ThemeColors.ToolbarColor;
+        public Color ComplementaryColor => ThemeColors.ComplementaryColor;
 
         public Color SurfaceColor => ThemeColors.SurfaceColor;
         public Color OnSurfaceColor => ThemeColors.OnSurfaceColor;
@@ -35,6 +36,7 @@ namespace CompetitiveCounterApp.Models
         {
             OnPropertyChanged(nameof(CurrentGameColor));
             OnPropertyChanged(nameof(ToolbarColor));
+            OnPropertyChanged(nameof(ComplementaryColor));
             OnPropertyChanged(nameof(SurfaceColor));
             OnPropertyChanged(nameof(OnSurfaceColor));
         }

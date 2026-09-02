@@ -5,6 +5,13 @@ namespace CompetitiveCounterApp.Pages.Controls;
 
 public partial class IconPicker : ContentView
 {
+    public static readonly BindableProperty TitleProperty =
+        BindableProperty.Create(
+            nameof(Title),
+            typeof(string),
+            typeof(IconPicker),
+            "Ícono del juego");
+
     public static readonly BindableProperty ItemsSourceProperty =
         BindableProperty.Create(
             nameof(ItemsSource),
@@ -33,6 +40,12 @@ public partial class IconPicker : ContentView
             typeof(GameColor),
             typeof(IconPicker),
             default(GameColor));
+
+    public string Title
+    {
+        get => (string)GetValue(TitleProperty);
+        set => SetValue(TitleProperty, value);
+    }
 
     public IEnumerable<IconData> ItemsSource
     {

@@ -6,6 +6,7 @@ namespace CompetitiveCounterApp.Models
     {
         public int ID { get; set; }
         public string Name { get; set; } = string.Empty;
+        public string Icon { get; set; } = string.Empty;
         public string ColorLight { get; set; } = "#C62828";
         public string ColorDark { get; set; } = "#EF9A9A";
 

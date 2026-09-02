@@ -52,6 +52,30 @@ public class GameDataService
     }
 
     public static IconData GetDefaultIcon() => GetIcons()[0];
-    
+
+    public static List<IconData> GetPlayerIcons()
+    {
+        var icons = new List<IconData>
+        {
+            new IconData { Icon = FluentUI.person_24_regular, Description = "Persona" },
+            new IconData { Icon = FluentUI.person_circle_24_regular, Description = "Círculo" },
+            new IconData { Icon = FluentUI.emoji_smile_slight_24_regular, Description = "Sonrisa" },
+            new IconData { Icon = FluentUI.emoji_laugh_24_regular, Description = "Risa" },
+            new IconData { Icon = FluentUI.crown_24_regular, Description = "Corona" },
+            new IconData { Icon = FluentUI.rocket_24_regular, Description = "Cohete" },
+            new IconData { Icon = FluentUI.flash_24_regular, Description = "Rayo" },
+            new IconData { Icon = FluentUI.bot_24_regular, Description = "Bot" },
+            new IconData { Icon = FluentUI.guest_24_regular, Description = "Invitado" },
+            new IconData { Icon = FluentUI.hat_graduation_24_regular, Description = "Birrete" }
+        };
+
+        foreach (var item in icons)
+            item.IsSelected = false;
+
+        return icons;
+    }
+
+    public static IconData GetDefaultPlayerIcon() => GetPlayerIcons()[0];
+
     public static GameColor GetDefaultColor() => GetGameColors()[0];
 }

@@ -134,18 +134,6 @@ namespace CompetitiveCounterApp.PageModels
         }
 
         [RelayCommand]
-        private async Task ContinueSession()
-        {
-            if (ActiveSession is null)
-            {
-                await AppShell.DisplayToastAsync("No hay una sesión activa");
-                return;
-            }
-
-            await Shell.Current.GoToAsync($"sessiondetail?id={ActiveSession.ID}");
-        }
-
-        [RelayCommand]
         private async Task AddSession()
         {
             if (Game.IsNullOrNew())

@@ -13,6 +13,17 @@ public readonly record struct ThemeColorPair(string LightThemeHex, string DarkTh
     /// <summary>Color del juego oscurecido para barra Shell / toolbar.</summary>
     public Color ToolbarColor => Darken(CurrentColor, ToolbarLuminosityFactor);
 
+    /// <summary>Complementario del color actual (matiz +180°) para resaltar bordes.</summary>
+    public Color ComplementaryColor
+    {
+        get
+        {
+            var color = CurrentColor;
+            var hue = (color.GetHue() + 0.5f) % 1f;
+            return Color.FromHsla(hue, color.GetSaturation(), color.GetLuminosity(), color.Alpha);
+        }
+    }
+
     public Color SurfaceColor => IsDarkTheme
         ? CurrentColor
         : GetResourceColor("LightBackground", Colors.White);

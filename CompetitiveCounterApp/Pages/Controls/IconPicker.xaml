@@ -5,7 +5,7 @@
              x:Class="CompetitiveCounterApp.Pages.Controls.IconPicker"
              x:Name="this">
     <VerticalStackLayout Spacing="10">
-        <Label Text="Ícono del juego" FontAttributes="Bold"></Label>
+        <Label Text="{Binding Source={x:Reference this}, Path=Title}" FontAttributes="Bold"></Label>
         <Border>
             <CollectionView ItemsSource="{Binding Source={x:Reference this}, Path=ItemsSource}" SelectionMode="None">
                 <CollectionView.ItemsLayout>

@@ -28,6 +28,12 @@
                        FontSize="18" />
             </VerticalStackLayout>
 
+            <controls:IconPicker Title="Ícono del jugador"
+                                 ItemsSource="{Binding Icons}"
+                                 SelectedItem="{Binding SelectedIcon}"
+                                 SelectedColor="{Binding SelectedColor}"
+                                 ItemCommand="{Binding SelectIconCommand}" />
+
             <controls:ColorPicker Title="Color del jugador"
                                   ItemsSource="{Binding PlayerColors}"
                                   SelectedItem="{Binding SelectedColor}"
