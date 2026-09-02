@@ -21,7 +21,9 @@ El producto es exclusivamente móvil. Windows y macOS en `TargetFrameworks` son 
 
 ## Validación
 
-- La compilación que valida un cambio es Android. Compilar siempre en Debug: el proceso es más rápido que en Release.
+- **No compilar** tras cada paso intermedio de un plan ni al terminar un cambio parcial: el desarrollador valida en el día a día.
+- Compilar **solo al final de un plan completo** (último to-do de validación), o si el usuario lo pide explícitamente.
+- La compilación que valida es Android Debug (más rápido que Release):
 
 ```powershell
 dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net9.0-android

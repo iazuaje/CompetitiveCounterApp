@@ -7,13 +7,14 @@ App .NET MAUI 9 (MVVM con CommunityToolkit.MVVM, SQLite) para registrar partidas
 El producto es exclusivamente móvil. Windows y macOS existen en `TargetFrameworks` solo como conveniencia de desarrollo, no son destinos de entrega.
 
 - Toda decisión de diseño y UX se razona sobre una pantalla de teléfono: alto útil reducido, interacción táctil, contenido que debe poder desplazarse.
-- La compilación que valida un cambio es la de Android:
+- No compilar tras cada paso intermedio: el agente solo ejecuta el build al **final de un plan completo** (o si el usuario lo pide).
+- La compilación que valida es Android Debug:
 
 ```powershell
 dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net9.0-android
 ```
 
-Compilar solo para Windows no es evidencia suficiente de que un cambio esté correcto; sirve como verificación rápida de C#/XAML, pero el resultado debe confirmarse en Android.
+Compilar solo para Windows no basta como evidencia final.
 
 ## Layout de las pantallas de juegos
 
