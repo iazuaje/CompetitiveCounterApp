@@ -14,10 +14,10 @@
 		<MauiEnableXamlCBindingWithSourceCompilation>true</MauiEnableXamlCBindingWithSourceCompilation>
 
 		<!-- Display name -->
-		<ApplicationTitle>CompetitiveCounterApp</ApplicationTitle>
+		<ApplicationTitle>Comp Counter</ApplicationTitle>
 
 		<!-- App Identifier -->
-		<ApplicationId>com.companyname.competitivecounterapp</ApplicationId>
+		<ApplicationId>com.iazuaje.competitivecounterapp</ApplicationId>
 
 		<!-- Versions -->
 		<ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>
@@ -36,7 +36,7 @@
 
 	<ItemGroup>
 		<!-- App Icon -->
-		<MauiIcon Include="Resources\AppIcon\appicon.svg" ForegroundFile="Resources\AppIcon\appiconfg.svg" Color="#17171a" />
+		<MauiIcon Include="Resources\AppIcon\new_appicon.svg" Color="#FFFFFF"/>
 
 		<!-- Splash Screen -->
 		<MauiSplashScreen Include="Resources\Splash\splash.svg" Color="#17171a" BaseSize="128,128" />
