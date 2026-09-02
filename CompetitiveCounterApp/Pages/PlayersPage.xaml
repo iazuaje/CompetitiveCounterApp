@@ -52,8 +52,9 @@
                                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
                                     <Border WidthRequest="40"
                                             HeightRequest="40"
-                                            StrokeThickness="0"
-                                            BackgroundColor="{Binding Color}">
+                                            StrokeThickness="2"
+                                            Stroke="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray100}}"
+                                            Background="{Binding CurrentColor}">
                                         <Border.StrokeShape>
                                             <Ellipse />
                                         </Border.StrokeShape>

@@ -40,7 +40,6 @@
                     Command="{Binding SaveCommand}"
                     BackgroundColor="{StaticResource Primary}"
                     TextColor="White"
-                    HeightRequest="48"
                     CornerRadius="10" />
         </VerticalStackLayout>
     </ScrollView>

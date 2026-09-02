@@ -57,7 +57,7 @@
                             <Border WidthRequest="36"
                                     HeightRequest="36"
                                     StrokeThickness="0"
-                                    BackgroundColor="{Binding Player.Color}"
+                                    Background="{Binding Player.CurrentColor}"
                                     VerticalOptions="Center">
                                 <Border.StrokeShape>
                                     <Ellipse />
@@ -80,7 +80,7 @@
                                    MinimumWidthRequest="36">
                                 <Label.GestureRecognizers>
                                     <TapGestureRecognizer
-                                        Command="{Binding BindingContext.EditWinsCommand, Source={x:Reference SessionDetailRoot}}"
+                                        Command="{Binding EditWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
                                         CommandParameter="{Binding .}" />
                                 </Label.GestureRecognizers>
                             </Label>
@@ -90,27 +90,24 @@
                                                    Grid.ColumnSpan="3"
                                                    Spacing="10"
                                                    Margin="0,8,0,0"
-                                                   IsVisible="{Binding BindingContext.IsActive, Source={x:Reference SessionDetailRoot}}">
+                                                   IsVisible="{Binding IsActive, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}">
                                 <Button Text="−1"
-                                        Command="{Binding BindingContext.DecrementWinsCommand, Source={x:Reference SessionDetailRoot}}"
+                                        Command="{Binding DecrementWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
                                         CommandParameter="{Binding .}"
-                                        HeightRequest="44"
                                         WidthRequest="72"
                                         CornerRadius="8"
                                         BackgroundColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
                                         TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}" />
                                 <Button Text="+1"
-                                        Command="{Binding BindingContext.IncrementWinsCommand, Source={x:Reference SessionDetailRoot}}"
+                                        Command="{Binding IncrementWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
                                         CommandParameter="{Binding .}"
-                                        HeightRequest="44"
                                         WidthRequest="72"
                                         CornerRadius="8"
                                         BackgroundColor="{StaticResource Primary}"
                                         TextColor="White" />
                                 <Button Text="Editar"
-                                        Command="{Binding BindingContext.EditWinsCommand, Source={x:Reference SessionDetailRoot}}"
+                                        Command="{Binding EditWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
                                         CommandParameter="{Binding .}"
-                                        HeightRequest="44"
                                         CornerRadius="8"
                                         BackgroundColor="Transparent"
                                         TextColor="{StaticResource Primary}" />
@@ -135,15 +132,13 @@
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                     BackgroundColor="{StaticResource Primary}"
                     TextColor="White"
-                    HeightRequest="48"
                     CornerRadius="10" />
             <Button Text="Cerrar sesión"
                     Command="{Binding CloseSessionCommand}"
                     IsVisible="{Binding IsActive}"
                     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                     BackgroundColor="Transparent"
-                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
-                    HeightRequest="44" />
+                    TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"/>
         </VerticalStackLayout>
     </Grid>
 </ContentPage>

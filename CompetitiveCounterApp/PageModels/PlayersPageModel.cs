@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Messages;
 using CompetitiveCounterApp.Models;
 
 namespace CompetitiveCounterApp.PageModels
@@ -22,6 +24,12 @@ namespace CompetitiveCounterApp.PageModels
         {
             _playerRepository = playerRepository;
             _errorHandler = errorHandler;
+
+            WeakReferenceMessenger.Default.Register<AppThemeChangedMessage>(this, static (r, _) =>
+            {
+                foreach (var player in ((PlayersPageModel)r).Players)
+                    player.NotifyThemeChanged();
+            });
         }
 
         [RelayCommand]

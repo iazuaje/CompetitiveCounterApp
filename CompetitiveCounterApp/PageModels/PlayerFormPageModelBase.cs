@@ -1,5 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Messages;
 using CompetitiveCounterApp.Models;
 
 namespace CompetitiveCounterApp.PageModels
@@ -28,6 +30,17 @@ namespace CompetitiveCounterApp.PageModels
             PlayerColors = GameDataService.GetGameColors();
             SelectedColor = PlayerColors[0];
             SelectedColor.IsSelected = true;
+
+            WeakReferenceMessenger.Default.Register<AppThemeChangedMessage>(this, static (r, _) =>
+                ((PlayerFormPageModelBase)r).NotifyThemeChanged());
+        }
+
+        private void NotifyThemeChanged()
+        {
+            foreach (var color in PlayerColors)
+                color.NotifyThemeChanged();
+
+            SelectedColor?.NotifyThemeChanged();
         }
 
         [RelayCommand]
@@ -46,20 +59,35 @@ namespace CompetitiveCounterApp.PageModels
         {
             Name = player.Name;
             var match = PlayerColors.FirstOrDefault(c =>
-                string.Equals(c.ColorLight, player.ColorHex, StringComparison.OrdinalIgnoreCase)
-                || string.Equals(c.ColorDark, player.ColorHex, StringComparison.OrdinalIgnoreCase));
+                c.ColorLight == player.ColorLight && c.ColorDark == player.ColorDark);
 
             foreach (var c in PlayerColors)
                 c.IsSelected = false;
 
-            SelectedColor = match ?? PlayerColors[0];
-            SelectedColor.IsSelected = true;
+            if (match is null)
+            {
+                match = new GameColor
+                {
+                    Name = "Personalizado",
+                    ColorLight = player.ColorLight,
+                    ColorDark = player.ColorDark,
+                    IsSelected = true
+                };
+                PlayerColors.Insert(0, match);
+            }
+            else
+            {
+                match.IsSelected = true;
+            }
+
+            SelectedColor = match;
         }
 
         protected void UpdatePlayerFromForm(Player player)
         {
             player.Name = Name.Trim();
-            player.ColorHex = SelectedColor.ColorLight;
+            player.ColorLight = SelectedColor?.ColorLight ?? "#C62828";
+            player.ColorDark = SelectedColor?.ColorDark ?? "#EF9A9A";
         }
     }
 }

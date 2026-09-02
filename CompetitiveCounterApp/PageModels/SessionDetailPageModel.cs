@@ -1,6 +1,8 @@
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Messages;
 using CompetitiveCounterApp.Models;
 
 namespace CompetitiveCounterApp.PageModels
@@ -42,6 +44,12 @@ namespace CompetitiveCounterApp.PageModels
             _sessionRepository = sessionRepository;
             _playerRepository = playerRepository;
             _errorHandler = errorHandler;
+
+            WeakReferenceMessenger.Default.Register<AppThemeChangedMessage>(this, static (r, _) =>
+            {
+                foreach (var row in ((SessionDetailPageModel)r).Leaderboard)
+                    row.Player?.NotifyThemeChanged();
+            });
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -94,7 +102,7 @@ namespace CompetitiveCounterApp.PageModels
         {
             IsActive = session.IsActive;
             Notes = string.IsNullOrWhiteSpace(session.Notes) ? "Sin descripción" : session.Notes;
-            SessionDateText = session.SessionDate.ToString("dd/MM/yyyy HH:mm");
+            SessionDateText = session.SessionDateLocal.ToString("dd/MM/yyyy HH:mm");
             Title = IsActive ? "Sesión activa" : "Sesión cerrada";
 
             Leaderboard = new ObservableCollection<SessionPlayer>(
@@ -168,7 +176,8 @@ namespace CompetitiveCounterApp.PageModels
             var player = new Player
             {
                 Name = name.Trim(),
-                ColorHex = GameDataService.GetDefaultColor().ColorLight
+                ColorLight = GameDataService.GetDefaultColor().ColorLight,
+                ColorDark = GameDataService.GetDefaultColor().ColorDark
             };
 
             await _playerRepository.SaveItemAsync(player);
@@ -190,9 +199,9 @@ namespace CompetitiveCounterApp.PageModels
         }
 
         [RelayCommand]
-        private async Task EditWins(SessionPlayer sessionPlayer)
+        private async Task EditWins(SessionPlayer? sessionPlayer)
         {
-            if (Session is null || !IsActive || sessionPlayer.Player is null)
+            if (Session is null || !IsActive || sessionPlayer?.Player is null)
                 return;
 
             var input = await Shell.Current.DisplayPromptAsync(
@@ -222,9 +231,9 @@ namespace CompetitiveCounterApp.PageModels
             }
         }
 
-        private async Task ChangeWinsAsync(SessionPlayer sessionPlayer, int delta)
+        private async Task ChangeWinsAsync(SessionPlayer? sessionPlayer, int delta)
         {
-            if (Session is null || !IsActive)
+            if (Session is null || !IsActive || sessionPlayer is null)
                 return;
 
             try

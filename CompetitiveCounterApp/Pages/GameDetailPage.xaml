@@ -129,7 +129,7 @@
                                                    FontAttributes="Bold">
                                                 <Label.Text>
                                                     <MultiBinding StringFormat="{}{0:dd/MM/yyyy HH:mm}">
-                                                        <Binding Path="SessionDate" />
+                                                        <Binding Path="SessionDateLocal" />
                                                     </MultiBinding>
                                                 </Label.Text>
                                             </Label>

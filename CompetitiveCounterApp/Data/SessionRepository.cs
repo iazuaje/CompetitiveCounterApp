@@ -67,12 +67,12 @@ namespace CompetitiveCounterApp.Data
                 .FirstOrDefaultAsync(s => s.GameID == gameId && s.ClosedAt == null);
 
             if (active is not null)
-                active.ClosedAt = DateTime.Now;
+                active.ClosedAt = DateTime.UtcNow;
 
             var session = new Session
             {
                 GameID = gameId,
-                SessionDate = DateTime.Now,
+                SessionDate = DateTime.UtcNow,
                 Notes = notes?.Trim() ?? string.Empty,
                 ClosedAt = null
             };
@@ -94,7 +94,7 @@ namespace CompetitiveCounterApp.Data
             if (session.ClosedAt is not null)
                 throw new InvalidOperationException("La sesión ya está cerrada.");
 
-            session.ClosedAt = DateTime.Now;
+            session.ClosedAt = DateTime.UtcNow;
             await db.SaveChangesAsync();
         }
 

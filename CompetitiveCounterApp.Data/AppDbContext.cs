@@ -43,8 +43,10 @@ namespace CompetitiveCounterApp.Data
                 entity.ToTable("Players");
                 entity.HasKey(e => e.ID);
                 entity.Property(e => e.Name).IsRequired();
-                entity.Property(e => e.ColorHex).HasDefaultValue("#FF6B6B");
-                entity.Ignore(e => e.Color);
+                entity.Property(e => e.ColorLight).HasDefaultValue("#C62828");
+                entity.Property(e => e.ColorDark).HasDefaultValue("#EF9A9A");
+                entity.Ignore(e => e.ThemeColors);
+                entity.Ignore(e => e.CurrentColor);
             });
 
             modelBuilder.Entity<Session>(entity =>
@@ -55,6 +57,8 @@ namespace CompetitiveCounterApp.Data
                 entity.Property(e => e.Notes).HasDefaultValue(string.Empty);
                 entity.Property(e => e.ClosedAt);
                 entity.Ignore(e => e.IsActive);
+                entity.Ignore(e => e.SessionDateLocal);
+                entity.Ignore(e => e.ClosedAtLocal);
 
                 // Una sola sesión activa (ClosedAt IS NULL) por juego.
                 entity.HasIndex(e => e.GameID)
