@@ -33,3 +33,9 @@ La imagen del encabezado usa `Aspect="AspectFill"` sin `HeightRequest`: rellena 
 - Las imágenes de juego se guardan en `AppDataDirectory/GameImages` y se mueven desde caché al guardar con `MoveTemporaryImageToPermanent()`.
 - Colores y superficies usan `AppThemeBinding` para respetar modo claro y oscuro; no se fijan colores literales como `White` en fondos.
 - Los textos de la interfaz están en español, con tildes.
+
+## Esquema de sesiones
+
+- `Session.ClosedAt`: `null` = activa; con valor = cerrada. Como máximo una activa por `GameID` (`IX_Sessions_GameID_Active`).
+- `SessionPlayer`: único `(SessionID, PlayerID)`. Métrica actual: solo `Wins`.
+- No generar ni editar migraciones EF desde el agente; tras cambiar entidades/Fluent API, el desarrollador crea la migración a mano.

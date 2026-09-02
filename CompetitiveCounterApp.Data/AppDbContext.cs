@@ -53,6 +53,14 @@ namespace CompetitiveCounterApp.Data
                 entity.HasKey(e => e.ID);
                 entity.Property(e => e.SessionDate).IsRequired();
                 entity.Property(e => e.Notes).HasDefaultValue(string.Empty);
+                entity.Property(e => e.ClosedAt);
+                entity.Ignore(e => e.IsActive);
+
+                // Una sola sesión activa (ClosedAt IS NULL) por juego.
+                entity.HasIndex(e => e.GameID)
+                    .IsUnique()
+                    .HasFilter("\"ClosedAt\" IS NULL")
+                    .HasDatabaseName("IX_Sessions_GameID_Active");
 
                 entity.HasOne(e => e.Game)
                     .WithMany()
@@ -70,6 +78,10 @@ namespace CompetitiveCounterApp.Data
                 entity.ToTable("SessionPlayers");
                 entity.HasKey(e => e.ID);
                 entity.Property(e => e.Wins).HasDefaultValue(0);
+
+                entity.HasIndex(e => new { e.SessionID, e.PlayerID })
+                    .IsUnique()
+                    .HasDatabaseName("IX_SessionPlayers_SessionID_PlayerID");
 
                 entity.HasOne(e => e.Player)
                     .WithMany()

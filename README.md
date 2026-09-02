@@ -71,6 +71,7 @@ Game
 
 Session
 ├── ID, GameID, SessionDate, Notes
+├── ClosedAt (null = activa; con valor = cerrada)
 └── SessionPlayers[]
 
 Player
@@ -81,6 +82,21 @@ SessionPlayer
 ├── ID, SessionID, PlayerID
 └── Wins
 ```
+
+### Índices / restricciones
+
+- `IX_Sessions_GameID_Active`: único filtrado sobre `GameID` donde `ClosedAt IS NULL` (una sola sesión activa por juego).
+- `IX_SessionPlayers_SessionID_PlayerID`: único sobre `(SessionID, PlayerID)` (un jugador no se agrega dos veces a la misma sesión).
+
+### Migración pendiente
+
+Los cambios de esquema están en entidades y Fluent API (`AppDbContext`). La migración EF **no** se genera automáticamente; hay que crearla y aplicarla a mano, por ejemplo:
+
+```powershell
+dotnet ef migrations add AddSessionClosedAtAndUniqueness -p CompetitiveCounterApp.Data -s CompetitiveCounterApp
+```
+
+Datos existentes: las sesiones actuales quedan con `ClosedAt = null` (activas). Si hubiera más de una por juego, el índice filtrado fallará al aplicar; cerrar las sobrantes antes de migrar.
 
 ## Licencia
 
