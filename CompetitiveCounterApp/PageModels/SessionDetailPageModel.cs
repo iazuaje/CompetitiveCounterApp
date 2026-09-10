@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Messages;
 using CompetitiveCounterApp.Models;
 
@@ -23,6 +24,11 @@ namespace CompetitiveCounterApp.PageModels
 
         [ObservableProperty]
         private ObservableCollection<SessionPlayer> _leaderboard = [];
+
+        public bool HasPlayers => Leaderboard.Count > 0;
+
+        partial void OnLeaderboardChanged(ObservableCollection<SessionPlayer> value) =>
+            OnPropertyChanged(nameof(HasPlayers));
 
         [ObservableProperty]
         private string _title = "Sesión";
@@ -125,6 +131,8 @@ namespace CompetitiveCounterApp.PageModels
             if (Session is null || !IsActive)
                 return;
 
+            HapticFeedbackHelper.Click();
+
             try
             {
                 IsBusy = true;
@@ -216,6 +224,8 @@ namespace CompetitiveCounterApp.PageModels
             if (Session is null || !IsActive || sessionPlayer?.Player is null)
                 return;
 
+            HapticFeedbackHelper.Click();
+
             var input = await Shell.Current.DisplayPromptAsync(
                 "Victorias",
                 $"Valor para {sessionPlayer.Player.Name}",
@@ -250,6 +260,7 @@ namespace CompetitiveCounterApp.PageModels
 
             try
             {
+                HapticFeedbackHelper.Click();
                 IsBusy = true;
                 await _sessionRepository.AdjustWinsAsync(Session.ID, sessionPlayer.PlayerID, delta);
                 await LoadData(Session.ID);
@@ -269,6 +280,8 @@ namespace CompetitiveCounterApp.PageModels
         {
             if (Session is null || !IsActive)
                 return;
+
+            HapticFeedbackHelper.Click();
 
             bool confirm = await Shell.Current.DisplayAlert(
                 "Cerrar sesión",

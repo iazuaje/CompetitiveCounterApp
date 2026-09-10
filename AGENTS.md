@@ -35,6 +35,10 @@ La imagen del encabezado usa `Aspect="AspectFill"` sin `HeightRequest`: rellena 
 - Colores y superficies usan `AppThemeBinding` para respetar modo claro y oscuro; no se fijan colores literales como `White` en fondos.
 - Los textos de la interfaz están en español, con tildes.
 
+## Feedback táctil
+
+Acciones = `Button` nativo. Cards animadas = `behaviors:AnimatedTap` (no `TouchBehavior`). Listas con pulso = `BindableLayout`, no `CollectionView`. Detalle en `.cursor/rules/press-feedback.mdc`.
+
 ## Esquema de sesiones
 
 - `Session.ClosedAt`: `null` = activa; con valor = cerrada. Como máximo una activa por `GameID` (`IX_Sessions_GameID_Active`).

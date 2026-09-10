@@ -5,6 +5,7 @@
              xmlns:controls="clr-namespace:CompetitiveCounterApp.Pages.Controls"
              xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
              xmlns:models="clr-namespace:CompetitiveCounterApp.Models;assembly=CompetitiveCounterApp.Data"
+             xmlns:behaviors="clr-namespace:CompetitiveCounterApp.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="CompetitiveCounterApp.Pages.PlayersPage"
              x:DataType="pageModels:PlayersPageModel"
@@ -30,83 +31,80 @@
     <Grid>
         <RefreshView IsRefreshing="{Binding IsRefreshing}"
                      Command="{Binding RefreshCommand}">
-            <Grid Padding="15">
-                <CollectionView ItemsSource="{Binding Players}"
-                                SelectionMode="None">
-                    <CollectionView.ItemsLayout>
-                        <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Player">
-                            <Border>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer
-                                        Command="{Binding NavigateToPlayerCommand, Source={RelativeSource AncestorType={x:Type pageModels:PlayersPageModel}}, x:DataType=pageModels:PlayersPageModel}"
-                                        CommandParameter="{Binding .}" />
-                                </Border.GestureRecognizers>
-                                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
-                                    <Border WidthRequest="40"
-                                            HeightRequest="40"
-                                            StrokeThickness="2"
-                                            Stroke="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray100}}"
-                                            Background="{Binding CurrentColor}"
-                                            StrokeShape="Ellipse"
-                                            Padding="0">
-                                        <Image HeightRequest="22" WidthRequest="22"
-                                               HorizontalOptions="Center"
-                                               VerticalOptions="Center">
+            <ScrollView>
+                <VerticalStackLayout Padding="15" Spacing="10">
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}"
+                                         Spacing="10">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Player">
+                                <Border behaviors:AnimatedTap.Command="{Binding NavigateToPlayerCommand, Source={RelativeSource AncestorType={x:Type pageModels:PlayersPageModel}}, x:DataType=pageModels:PlayersPageModel}"
+                                        behaviors:AnimatedTap.CommandParameter="{Binding .}"
+                                        behaviors:AnimatedTap.PressedScale="0.97"
+                                        behaviors:AnimatedTap.PressedOpacity="0.92">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" InputTransparent="True">
+                                        <Border WidthRequest="40"
+                                                HeightRequest="40"
+                                                StrokeThickness="2"
+                                                Stroke="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray100}}"
+                                                Background="{Binding CurrentColor}"
+                                                StrokeShape="Ellipse"
+                                                Padding="0">
+                                            <Image HeightRequest="22" WidthRequest="22"
+                                                   HorizontalOptions="Center"
+                                                   VerticalOptions="Center">
+                                                <Image.Source>
+                                                    <FontImageSource Glyph="{Binding Icon}"
+                                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                     Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}"
+                                                                     Size="22" />
+                                                </Image.Source>
+                                            </Image>
+                                        </Border>
+                                        <Label Grid.Column="1"
+                                               Text="{Binding Name}"
+                                               FontSize="18"
+                                               FontAttributes="Bold"
+                                               VerticalOptions="Center"
+                                               LineBreakMode="TailTruncation" />
+                                        <Image Grid.Column="2" VerticalOptions="Center">
                                             <Image.Source>
-                                                <FontImageSource Glyph="{Binding Icon}"
+                                                <FontImageSource Glyph="{x:Static f:FluentUI.chevron_right_24_regular}"
                                                                  FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                                 Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}"
-                                                                 Size="22" />
+                                                                 Color="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                                                 Size="20" />
                                             </Image.Source>
                                         </Image>
-                                    </Border>
-                                    <Label Grid.Column="1"
-                                           Text="{Binding Name}"
-                                           FontSize="18"
-                                           FontAttributes="Bold"
-                                           VerticalOptions="Center"
-                                           LineBreakMode="TailTruncation" />
-                                    <Image Grid.Column="2" VerticalOptions="Center">
-                                        <Image.Source>
-                                            <FontImageSource Glyph="{x:Static f:FluentUI.chevron_right_24_regular}"
-                                                             FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                             Color="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
-                                                             Size="20" />
-                                        </Image.Source>
-                                    </Image>
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                    <CollectionView.EmptyView>
-                        <VerticalStackLayout VerticalOptions="Center"
-                                             HorizontalOptions="Center"
-                                             Spacing="10"
-                                             Padding="20">
-                            <Image>
-                                <Image.Source>
-                                    <FontImageSource Glyph="{x:Static f:FluentUI.people_24_regular}"
-                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
-                                                     Size="50" />
-                                </Image.Source>
-                            </Image>
-                            <Label Text="No hay jugadores aún"
-                                   FontSize="18"
-                                   FontAttributes="Bold"
-                                   HorizontalOptions="Center" />
-                            <Label Text="Toca el botón + para agregar tu primer jugador"
-                                   FontSize="14"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
-                                   HorizontalOptions="Center"
-                                   HorizontalTextAlignment="Center" />
-                        </VerticalStackLayout>
-                    </CollectionView.EmptyView>
-                </CollectionView>
-            </Grid>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout IsVisible="{Binding HasPlayers, Converter={StaticResource InvertedBoolConverter}}"
+                                         VerticalOptions="Center"
+                                         HorizontalOptions="Center"
+                                         Spacing="10"
+                                         Padding="20">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource Glyph="{x:Static f:FluentUI.people_24_regular}"
+                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                 Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                                                 Size="50" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="No hay jugadores aún"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Label Text="Toca el botón + para agregar tu primer jugador"
+                               FontSize="14"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
         </RefreshView>
         <controls:AddButton IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                             Command="{Binding AddPlayerCommand}" />

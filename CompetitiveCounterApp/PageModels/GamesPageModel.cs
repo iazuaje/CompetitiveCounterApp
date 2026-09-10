@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Messages;
 using CompetitiveCounterApp.Models;
 
@@ -14,6 +15,11 @@ namespace CompetitiveCounterApp.PageModels
 
         [ObservableProperty]
         private List<Game> _games = [];
+
+        public bool HasGames => Games.Count > 0;
+
+        partial void OnGamesChanged(List<Game> value) =>
+            OnPropertyChanged(nameof(HasGames));
 
         [ObservableProperty]
         private bool _isBusy;
@@ -77,18 +83,21 @@ namespace CompetitiveCounterApp.PageModels
         [RelayCommand]
         private async Task AddGame()
         {
+            HapticFeedbackHelper.Click();
             await Shell.Current.GoToAsync("creategame");
         }
 
         [RelayCommand]
         private async Task NavigateToGame(Game game)
         {
+            HapticFeedbackHelper.Click();
             await Shell.Current.GoToAsync($"gamedetail?id={game.ID}");
         }
 
         [RelayCommand]
         private async Task OpenOptions()
         {
+            HapticFeedbackHelper.Click();
             // Por implementar
             await AppShell.DisplayToastAsync("Opciones - Por implementar");
         }

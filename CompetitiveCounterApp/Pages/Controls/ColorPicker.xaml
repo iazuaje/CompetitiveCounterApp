@@ -18,7 +18,26 @@
                         CornerRadius="50"
                         HeightRequest="50"
                         WidthRequest="50"
+                        Padding="0"
                                 BackgroundColor="{Binding CurrentGameColor}">
+                            <VisualStateManager.VisualStateGroups>
+                                <VisualStateGroupList>
+                                    <VisualStateGroup x:Name="CommonStates">
+                                        <VisualState x:Name="Normal">
+                                            <VisualState.Setters>
+                                                <Setter Property="Scale" Value="1" />
+                                                <Setter Property="Opacity" Value="1" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                        <VisualState x:Name="Pressed">
+                                            <VisualState.Setters>
+                                                <Setter Property="Scale" Value="0.96" />
+                                                <Setter Property="Opacity" Value="0.92" />
+                                            </VisualState.Setters>
+                                        </VisualState>
+                                    </VisualStateGroup>
+                                </VisualStateGroupList>
+                            </VisualStateManager.VisualStateGroups>
                             <Button.Background>
                                 <SolidColorBrush Color="{Binding CurrentGameColor}"/>
                             </Button.Background>

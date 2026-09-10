@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Models;
 
 namespace CompetitiveCounterApp.PageModels;
@@ -62,6 +63,8 @@ public partial class EditGamePageModel : GameFormPageModelBase, IQueryAttributab
     [RelayCommand]
     private async Task Save()
     {
+        HapticFeedbackHelper.Click();
+
         if (_game is null)
         {
             _errorHandler.HandleError(new Exception("Game is null. Cannot Save."));
@@ -123,6 +126,7 @@ public partial class EditGamePageModel : GameFormPageModelBase, IQueryAttributab
     {
         try
         {
+            HapticFeedbackHelper.Click();
             IsBusy = true;
             await _gameOperations.DeleteGameAsync(_game, _errorHandler);
         }

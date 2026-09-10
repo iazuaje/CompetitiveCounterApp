@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Models;
 
 namespace CompetitiveCounterApp.PageModels
@@ -54,6 +55,8 @@ namespace CompetitiveCounterApp.PageModels
         [RelayCommand]
         private async Task Save()
         {
+            HapticFeedbackHelper.Click();
+
             if (_player is null)
             {
                 _errorHandler.HandleError(new Exception("No se pudo identificar el jugador."));
@@ -92,6 +95,8 @@ namespace CompetitiveCounterApp.PageModels
                 await Shell.Current.GoToAsync("..");
                 return;
             }
+
+            HapticFeedbackHelper.Click();
 
             bool confirm = await Shell.Current.DisplayAlert(
                 "Eliminar jugador",

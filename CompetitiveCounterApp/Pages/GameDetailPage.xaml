@@ -4,6 +4,7 @@
              xmlns:f="clr-namespace:Fonts"
              xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
              xmlns:models="clr-namespace:CompetitiveCounterApp.Models;assembly=CompetitiveCounterApp.Data"
+             xmlns:behaviors="clr-namespace:CompetitiveCounterApp.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="CompetitiveCounterApp.Pages.GameDetailPage"
              x:DataType="pageModels:GameDetailPageModel"
@@ -73,140 +74,125 @@
             <Border.Shadow>
                 <Shadow Offset="0,-10" Radius="10" Opacity="0.2"/>
             </Border.Shadow>
-            <CollectionView ItemsSource="{Binding Sessions}"
-                            SelectionMode="None">
-                <CollectionView.Header>
-                    <VerticalStackLayout Spacing="15"
-                                         Padding="0,0,0,10"
-                                         BindingContext="{Binding BindingContext, Source={x:Reference GameDetailRoot}, x:DataType=ContentPage}">
-                        <Border>
-                            <VerticalStackLayout Spacing="10">
-                                <Label Text="Descripción"
-                                       FontSize="16"
-                                       FontAttributes="Bold" />
-                                <Label Text="{Binding Description}"
-                                       FontSize="14"
-                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
-                            </VerticalStackLayout>
-                        </Border>
+            <ScrollView>
+                <VerticalStackLayout Spacing="15" Padding="0,0,0,10">
+                    <Border>
+                        <VerticalStackLayout Spacing="10">
+                            <Label Text="Descripción"
+                                   FontSize="16"
+                                   FontAttributes="Bold" />
+                            <Label Text="{Binding Description}"
+                                   FontSize="14"
+                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                        </VerticalStackLayout>
+                    </Border>
 
-                        <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
-                            <Label Text="Sesiones de Juego"
-                                   FontSize="18"
-                                   FontAttributes="Bold"
-                                   VerticalOptions="Center" />
-                            <Border WidthRequest="32"
-                                    HeightRequest="32"
-                                    Padding="0"
-                                    Background="{Binding Game.CurrentGameColor}"
-                                    StrokeThickness="0"
-                                    VerticalOptions="Center"
-                                    SemanticProperties.Description="Nueva sesión">
-                                <Border.StrokeShape>
-                                    <Ellipse />
-                                </Border.StrokeShape>
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding AddSessionCommand}" />
-                                </Border.GestureRecognizers>
-                                <Label Text="+"
-                                       TextColor="White"
-                                       FontSize="20"
-                                       FontAttributes="Bold"
-                                       HorizontalOptions="Center"
-                                       VerticalOptions="Center"
-                                       HorizontalTextAlignment="Center"
-                                       VerticalTextAlignment="Center" />
-                            </Border>
-                        </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Label Text="Sesiones de Juego"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center" />
+                        <Button Text="+"
+                                Command="{Binding AddSessionCommand}"
+                                BackgroundColor="{Binding Game.CurrentGameColor}"
+                                TextColor="White"
+                                FontSize="20"
+                                FontAttributes="Bold"
+                                Padding="0"
+                                BorderWidth="0"
+                                CornerRadius="16"
+                                WidthRequest="32"
+                                HeightRequest="32"
+                                MinimumWidthRequest="32"
+                                MinimumHeightRequest="32"
+                                VerticalOptions="Center"
+                                SemanticProperties.Description="Nueva sesión" />
+                    </HorizontalStackLayout>
 
-                        <Label Text="No hay sesiones registradas aún"
-                               IsVisible="{Binding HasSessions, Converter={StaticResource InvertedBoolConverter}}"
-                               FontSize="14"
-                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
-                               HorizontalOptions="Center"
-                               Margin="0,10,0,0" />
-                    </VerticalStackLayout>
-                </CollectionView.Header>
+                    <Label Text="No hay sesiones registradas aún"
+                           IsVisible="{Binding HasSessions, Converter={StaticResource InvertedBoolConverter}}"
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                           HorizontalOptions="Center"
+                           Margin="0,10,0,0" />
 
-                <CollectionView.ItemsLayout>
-                    <GridItemsLayout Orientation="Vertical"
-                                     Span="3"
-                                     HorizontalItemSpacing="10"
-                                     VerticalItemSpacing="10" />
-                </CollectionView.ItemsLayout>
+                    <FlexLayout Wrap="Wrap"
+                                Direction="Row"
+                                AlignItems="Stretch"
+                                JustifyContent="Start"
+                                BindableLayout.ItemsSource="{Binding Sessions}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Session">
+                                <Border Padding="10,8"
+                                        Margin="0,0,8,10"
+                                        FlexLayout.Basis="31%"
+                                        Background="{Binding ListCardBackground}"
+                                        Stroke="{Binding ListCardStroke}"
+                                        StrokeThickness="{Binding ListCardStrokeThickness}"
+                                        behaviors:AnimatedTap.Command="{Binding NavigateToSessionCommand, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}"
+                                        behaviors:AnimatedTap.CommandParameter="{Binding .}"
+                                        behaviors:AnimatedTap.PressedScale="0.97"
+                                        behaviors:AnimatedTap.PressedOpacity="0.92">
+                                    <VerticalStackLayout Spacing="6" InputTransparent="True">
+                                        <Label FontSize="14"
+                                               FontAttributes="Bold"
+                                               LineBreakMode="TailTruncation"
+                                               MaxLines="2"
+                                               Text="{Binding SessionDateLocal, StringFormat='{}{0:dd/MM/yy HH:mm}'}">
+                                            <Label.Triggers>
+                                                <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
+                                                    <Setter Property="TextColor" Value="White" />
+                                                </DataTrigger>
+                                            </Label.Triggers>
+                                        </Label>
 
-                <CollectionView.ItemTemplate>
-                    <DataTemplate x:DataType="models:Session">
-                        <Border Padding="12"
-                                Background="{Binding ListCardBackground}"
-                                Stroke="{Binding ListCardStroke}"
-                                StrokeThickness="{Binding ListCardStrokeThickness}">
-                            <Border.GestureRecognizers>
-                                <TapGestureRecognizer
-                                    Command="{Binding NavigateToSessionCommand, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}"
-                                    CommandParameter="{Binding .}" />
-                            </Border.GestureRecognizers>
+                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                            <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center">
+                                                <Image.Source>
+                                                    <FontImageSource Glyph="{x:Static f:FluentUI.star_24_regular}"
+                                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                     Color="{Binding ListCardIconColor}"
+                                                                     Size="16" />
+                                                </Image.Source>
+                                            </Image>
+                                            <Label Text="{Binding TotalWins}"
+                                                   FontSize="15"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
+                                                        <Setter Property="TextColor" Value="White" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                            <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center" Margin="6,0,0,0">
+                                                <Image.Source>
+                                                    <FontImageSource Glyph="{x:Static f:FluentUI.people_24_regular}"
+                                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                     Color="{Binding ListCardIconColor}"
+                                                                     Size="16" />
+                                                </Image.Source>
+                                            </Image>
+                                            <Label Text="{Binding PlayerCount}"
+                                                   FontSize="15"
+                                                   VerticalOptions="Center"
+                                                   TextColor="{Binding ListCardIconColor}" />
+                                        </HorizontalStackLayout>
 
-                            <Grid RowDefinitions="Auto,Auto,*,Auto" RowSpacing="8">
-                                <Label FontSize="13"
-                                       FontAttributes="Bold"
-                                       LineBreakMode="TailTruncation"
-                                       MaxLines="2"
-                                       Text="{Binding SessionDateLocal, StringFormat='{}{0:dd/MM/yy HH:mm}'}">
-                                    <Label.Triggers>
-                                        <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
-                                            <Setter Property="TextColor" Value="White" />
-                                        </DataTrigger>
-                                    </Label.Triggers>
-                                </Label>
-
-                                <HorizontalStackLayout Grid.Row="1" Spacing="6" VerticalOptions="Center">
-                                    <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center">
-                                        <Image.Source>
-                                            <FontImageSource Glyph="{x:Static f:FluentUI.star_24_regular}"
-                                                             FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                             Color="{Binding ListCardIconColor}"
-                                                             Size="16" />
-                                        </Image.Source>
-                                    </Image>
-                                    <Label Text="{Binding TotalWins}"
-                                           FontSize="14"
-                                           FontAttributes="Bold"
-                                           VerticalOptions="Center"
-                                           TextColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}">
-                                        <Label.Triggers>
-                                            <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
-                                                <Setter Property="TextColor" Value="White" />
-                                            </DataTrigger>
-                                        </Label.Triggers>
-                                    </Label>
-                                    <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center" Margin="8,0,0,0">
-                                        <Image.Source>
-                                            <FontImageSource Glyph="{x:Static f:FluentUI.people_24_regular}"
-                                                             FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                             Color="{Binding ListCardIconColor}"
-                                                             Size="16" />
-                                        </Image.Source>
-                                    </Image>
-                                    <Label Text="{Binding PlayerCount}"
-                                           FontSize="14"
-                                           VerticalOptions="Center"
-                                           TextColor="{Binding ListCardIconColor}" />
-                                </HorizontalStackLayout>
-
-                                <Label Grid.Row="3"
-                                       Text="Activa"
-                                       IsVisible="{Binding IsActive}"
-                                       HorizontalOptions="End"
-                                       VerticalOptions="End"
-                                       TextColor="White"
-                                       FontSize="10"
-                                       FontAttributes="Bold" />
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+                                        <Label Text="Activa"
+                                               IsVisible="{Binding IsActive}"
+                                               HorizontalOptions="End"
+                                               TextColor="White"
+                                               FontSize="12"
+                                               FontAttributes="Bold" />
+                                    </VerticalStackLayout>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
+                </VerticalStackLayout>
+            </ScrollView>
         </Border>
     </Grid>
 

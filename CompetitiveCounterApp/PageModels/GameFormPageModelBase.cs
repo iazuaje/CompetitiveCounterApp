@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Messages;
 using CompetitiveCounterApp.Models;
 using System.Collections.ObjectModel;
@@ -78,6 +79,8 @@ public abstract partial class GameFormPageModelBase : ObservableObject
     [RelayCommand]
     public async Task SelectImage()
     {
+        HapticFeedbackHelper.Click();
+
         try
         {
             var result = await MediaPicker.Default.PickPhotoAsync();
@@ -127,6 +130,8 @@ public abstract partial class GameFormPageModelBase : ObservableObject
     [RelayCommand]
     private void SelectIcon(IconData selectedIcon)
     {
+        HapticFeedbackHelper.Click();
+
         foreach(var i in Icons)
         {
             i.IsSelected = false;
@@ -139,6 +144,8 @@ public abstract partial class GameFormPageModelBase : ObservableObject
     [RelayCommand]
     private void SelectColor(GameColor color)
     {
+        HapticFeedbackHelper.Click();
+
         foreach (var c in GameColors)
         {
             c.IsSelected = false;

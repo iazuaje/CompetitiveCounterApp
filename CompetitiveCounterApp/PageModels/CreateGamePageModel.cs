@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.Input;
+using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Models;
 
 namespace CompetitiveCounterApp.PageModels
@@ -13,6 +14,8 @@ namespace CompetitiveCounterApp.PageModels
         [RelayCommand]
         private async Task Save()
         {
+            HapticFeedbackHelper.Click();
+
             if (!ValidateForm())
             {
                 await ShowValidationErrorAsync("El nombre del juego es requerido");

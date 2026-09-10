@@ -47,6 +47,12 @@
                      Color="{StaticResource White}"
                      Size="{StaticResource IconSize}" />
 
+    <FontImageSource x:Key="IconCloseSessionShell"
+                     Glyph="{x:Static f:FluentUI.checkmark_circle_32_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{StaticResource White}"
+                     Size="{StaticResource IconSize}" />
+
     <FontImageSource x:Key="IconSettingsShell"
                      Glyph="{x:Static f:FluentUI.more_vertical_28_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"

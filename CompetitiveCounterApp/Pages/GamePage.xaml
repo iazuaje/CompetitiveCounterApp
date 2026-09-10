@@ -5,6 +5,7 @@
              xmlns:controls="clr-namespace:CompetitiveCounterApp.Pages.Controls"
              xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
              xmlns:models="clr-namespace:CompetitiveCounterApp.Models;assembly=CompetitiveCounterApp.Data"
+             xmlns:behaviors="clr-namespace:CompetitiveCounterApp.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="CompetitiveCounterApp.Pages.GamesPage"
              x:DataType="pageModels:GamesPageModel"
@@ -38,109 +39,107 @@
         <!-- Contenido -->
         <RefreshView IsRefreshing="{Binding IsRefreshing}"
                  Command="{Binding RefreshCommand}">
-            <Grid Padding="15">
-                <CollectionView ItemsSource="{Binding Games}"
-                                SelectionMode="None">
-                    <CollectionView.ItemsLayout>
-                        <GridItemsLayout Orientation="Vertical"
-                                       Span="2"
-                                       HorizontalItemSpacing="15"
-                                       VerticalItemSpacing="15" />
-                    </CollectionView.ItemsLayout>
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate x:DataType="models:Game">
-                            <Border StrokeThickness="1"
-                                    Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
-                                    Padding="0"
-                                    HeightRequest="200"
-                                    Background="{Binding CurrentGameColor}"
-                                    StrokeShape="RoundRectangle 20">
-                                <Border.GestureRecognizers>
-                                    <TapGestureRecognizer Command="{Binding NavigateToGameCommand, Source={RelativeSource AncestorType={x:Type pageModels:GamesPageModel}}, x:DataType=pageModels:GamesPageModel}" 
-                                                          CommandParameter="{Binding .}"/>
-                                </Border.GestureRecognizers>
+            <ScrollView>
+                <VerticalStackLayout Padding="15">
+                    <FlexLayout Wrap="Wrap"
+                                Direction="Row"
+                                AlignItems="Stretch"
+                                JustifyContent="SpaceBetween"
+                                HorizontalOptions="Fill"
+                                BindableLayout.ItemsSource="{Binding Games}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Game">
+                                <Border StrokeThickness="1"
+                                        Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                        Padding="0"
+                                        HeightRequest="200"
+                                        Margin="0,0,0,15"
+                                        FlexLayout.Basis="48%"
+                                        Background="{Binding CurrentGameColor}"
+                                        StrokeShape="RoundRectangle 20"
+                                        behaviors:AnimatedTap.Command="{Binding NavigateToGameCommand, Source={RelativeSource AncestorType={x:Type pageModels:GamesPageModel}}, x:DataType=pageModels:GamesPageModel}"
+                                        behaviors:AnimatedTap.CommandParameter="{Binding .}"
+                                        behaviors:AnimatedTap.PressedScale="0.97"
+                                        behaviors:AnimatedTap.PressedOpacity="0.92">
+                                    <Grid RowDefinitions="*,Auto,Auto" InputTransparent="True">
+                                        <Grid>
+                                            <Image Source="{Binding GameImage}"
+                                                   Aspect="AspectFill" />
 
-                                <Grid RowDefinitions="*,Auto,Auto">
-                                    <Grid>
-                                        <Image Source="{Binding GameImage}"
-                                               Aspect="AspectFill" />
-                                        
-                                        <Border WidthRequest="64"
-                                                HeightRequest="64"
-                                                Padding="0"
-                                                HorizontalOptions="Center"
-                                                VerticalOptions="Center"
-                                                StrokeThickness="2"
-                                                Stroke="{StaticResource White}"
-                                                Background="{Binding SurfaceColor}">
-                                            <Border.StrokeShape>
-                                                <Ellipse />
-                                            </Border.StrokeShape>
-                                            <Border.Shadow>
-                                                <Shadow Offset="0,2" Radius="6" Opacity="0.4" />
-                                            </Border.Shadow>
-                                            <Image HeightRequest="32">
-                                                <Image.Source>
-                                                    <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}" 
-                                                             Color="{Binding OnSurfaceColor}"
-                                                             Size="36" />
-                                                </Image.Source>
-                                            </Image>
-                                        </Border>
+                                            <Border WidthRequest="64"
+                                                    HeightRequest="64"
+                                                    Padding="0"
+                                                    HorizontalOptions="Center"
+                                                    VerticalOptions="Center"
+                                                    StrokeThickness="2"
+                                                    Stroke="{StaticResource White}"
+                                                    Background="{Binding SurfaceColor}">
+                                                <Border.StrokeShape>
+                                                    <Ellipse />
+                                                </Border.StrokeShape>
+                                                <Border.Shadow>
+                                                    <Shadow Offset="0,2" Radius="6" Opacity="0.4" />
+                                                </Border.Shadow>
+                                                <Image HeightRequest="32">
+                                                    <Image.Source>
+                                                        <FontImageSource Glyph="{Binding Icon}" FontFamily="{Static f:FluentUI.FontFamily}"
+                                                                 Color="{Binding OnSurfaceColor}"
+                                                                 Size="36" />
+                                                    </Image.Source>
+                                                </Image>
+                                            </Border>
+                                        </Grid>
+
+                                        <Label Grid.Row="1"
+                                               Text="{Binding Name}"
+                                               Margin="10,8,10,0"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               TextColor="White"
+                                               HorizontalOptions="Center"
+                                               VerticalOptions="Center"
+                                               HorizontalTextAlignment="Center"
+                                               LineBreakMode="TailTruncation"
+                                               MaxLines="2" />
+
+                                        <Label Grid.Row="2"
+                                               Margin="10,0,10,10"
+                                               FontSize="12"
+                                               HorizontalOptions="Center"
+                                               TextColor="White"
+                                               Opacity="0.9"
+                                               Text="{Binding SessionCount, StringFormat='{}{0} sesión(es)'}" />
                                     </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </FlexLayout>
 
-                                    <Label Grid.Row="1"
-                                           Text="{Binding Name}"
-                                           Margin="10,8,10,0"
-                                           FontSize="16"
-                                           FontAttributes="Bold"
-                                           TextColor="White"
-                                           HorizontalOptions="Center"
-                                           VerticalOptions="Center"
-                                           HorizontalTextAlignment="Center"
-                                           LineBreakMode="TailTruncation"
-                                           MaxLines="2" />
-
-                                    <Label Grid.Row="2"
-                                           Margin="10,0,10,10"
-                                           FontSize="12"
-                                           HorizontalOptions="Center"
-                                           TextColor="White"
-                                           Opacity="0.9"
-                                           Text="{Binding SessionCount, StringFormat='{}{0} sesión(es)'}" />
-                                </Grid>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-
-                    <!-- Empty view cuando no hay juegos -->
-                    <CollectionView.EmptyView>
-                        <VerticalStackLayout VerticalOptions="Center"
-                                           HorizontalOptions="Center"
-                                           Spacing="10"
-                                           Padding="20">
-                            <Image>
-                                <Image.Source>
-                                    <FontImageSource Glyph="{x:Static f:FluentUI.emoji_sad_slight_24_regular}"
-                                                    FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                    Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
-                                                    Size="50" 
-                                                     />
-                                </Image.Source>
-                            </Image>
-                            <Label Text="No hay juegos aún"
-                                   FontSize="18"
-                                   FontAttributes="Bold"
-                                   HorizontalOptions="Center" />
-                            <Label Text="Toca el botón + para agregar tu primer juego"
-                                   FontSize="14"
-                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
-                                   HorizontalOptions="Center"
-                                   HorizontalTextAlignment="Center" />
-                        </VerticalStackLayout>
-                    </CollectionView.EmptyView>
-                </CollectionView>
-            </Grid>
+                    <VerticalStackLayout IsVisible="{Binding HasGames, Converter={StaticResource InvertedBoolConverter}}"
+                                         VerticalOptions="Center"
+                                         HorizontalOptions="Center"
+                                         Spacing="10"
+                                         Padding="20">
+                        <Image>
+                            <Image.Source>
+                                <FontImageSource Glyph="{x:Static f:FluentUI.emoji_sad_slight_24_regular}"
+                                                FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                                                Size="50" />
+                            </Image.Source>
+                        </Image>
+                        <Label Text="No hay juegos aún"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               HorizontalOptions="Center" />
+                        <Label Text="Toca el botón + para agregar tu primer juego"
+                               FontSize="14"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                               HorizontalOptions="Center"
+                               HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </ScrollView>
         </RefreshView>
         <!-- Botón flotante para agregar juegos -->
         <controls:AddButton IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"

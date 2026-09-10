@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Messages;
 using CompetitiveCounterApp.Models;
 
@@ -56,6 +57,8 @@ namespace CompetitiveCounterApp.PageModels
         [RelayCommand]
         private void SelectIcon(IconData selectedIcon)
         {
+            HapticFeedbackHelper.Click();
+
             foreach (var icon in Icons)
                 icon.IsSelected = false;
 
@@ -66,6 +69,8 @@ namespace CompetitiveCounterApp.PageModels
         [RelayCommand]
         private void SelectColor(GameColor color)
         {
+            HapticFeedbackHelper.Click();
+
             foreach (var c in PlayerColors)
                 c.IsSelected = false;
 

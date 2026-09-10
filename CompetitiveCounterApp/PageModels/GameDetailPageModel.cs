@@ -1,6 +1,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Messages;
 using CompetitiveCounterApp.Models;
 
@@ -130,6 +131,7 @@ namespace CompetitiveCounterApp.PageModels
                 return;
             }
 
+            HapticFeedbackHelper.Click();
             await Shell.Current.GoToAsync($"editgame?id={Game.ID}");
         }
 
@@ -141,6 +143,8 @@ namespace CompetitiveCounterApp.PageModels
                 await AppShell.DisplayToastAsync("Error: No se pudo identificar el juego");
                 return;
             }
+
+            HapticFeedbackHelper.Click();
 
             if (HasActiveSession)
             {
@@ -188,6 +192,7 @@ namespace CompetitiveCounterApp.PageModels
             if (session is null || session.ID == 0)
                 return;
 
+            HapticFeedbackHelper.Click();
             await Shell.Current.GoToAsync($"sessiondetail?id={session.ID}");
         }
 
@@ -196,6 +201,7 @@ namespace CompetitiveCounterApp.PageModels
         {
             try
             {
+                HapticFeedbackHelper.Click();
                 IsBusy = true;
                 await _gameOperations.DeleteGameAsync(Game, _errorHandler);
             }
