@@ -83,8 +83,12 @@ public abstract partial class GameFormPageModelBase : ObservableObject
 
         try
         {
-            var result = await MediaPicker.Default.PickPhotoAsync();
-            if (result == null) return;
+            var results = await MediaPicker.Default.PickPhotosAsync(new MediaPickerOptions
+            {
+                SelectionLimit = 1
+            });
+            var result = results?.FirstOrDefault();
+            if (result is null) return;
 
             if (!string.IsNullOrEmpty(_temporaryImagePath) && File.Exists(_temporaryImagePath))
                 File.Delete(_temporaryImagePath);

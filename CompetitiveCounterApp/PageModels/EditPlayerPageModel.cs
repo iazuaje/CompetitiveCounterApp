@@ -98,7 +98,7 @@ namespace CompetitiveCounterApp.PageModels
 
             HapticFeedbackHelper.Click();
 
-            bool confirm = await Shell.Current.DisplayAlert(
+            bool confirm = await Shell.Current.DisplayAlertAsync(
                 "Eliminar jugador",
                 $"¿Estás seguro de eliminar a '{_player.Name}'?",
                 "Sí",
@@ -113,7 +113,7 @@ namespace CompetitiveCounterApp.PageModels
 
                 if (await _playerRepository.HasParticipationsAsync(_player.ID))
                 {
-                    await Shell.Current.DisplayAlert(
+                    await Shell.Current.DisplayAlertAsync(
                         "No se puede eliminar",
                         "El jugador participa en sesiones. Quitá esas participaciones o dejalo en el catálogo.",
                         "OK");

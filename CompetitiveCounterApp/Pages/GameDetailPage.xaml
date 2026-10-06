@@ -109,6 +109,10 @@
                                 SemanticProperties.Description="Nueva sesión" />
                     </HorizontalStackLayout>
 
+                    <BoxView HeightRequest="2"
+                             BackgroundColor="{Binding Game.CurrentGameColor}"
+                             HorizontalOptions="Fill" />
+
                     <Label Text="No hay sesiones registradas aún"
                            IsVisible="{Binding HasSessions, Converter={StaticResource InvertedBoolConverter}}"
                            FontSize="14"

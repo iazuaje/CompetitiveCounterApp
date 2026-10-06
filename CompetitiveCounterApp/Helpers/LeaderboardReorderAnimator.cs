@@ -71,9 +71,7 @@ public static class LeaderboardReorderAnimator
 
                 child.CancelAnimations();
                 child.TranslationY = delta;
-#pragma warning disable CS0618 // TranslateTo is obsolete in favor of TranslateToAsync (not in this MAUI version)
-                animations.Add(child.TranslateTo(0, 0, DurationMs, Easing.CubicInOut));
-#pragma warning restore CS0618
+                animations.Add(child.TranslateToAsync(0, 0, DurationMs, Easing.CubicInOut));
             }
 
             if (animations.Count > 0)
