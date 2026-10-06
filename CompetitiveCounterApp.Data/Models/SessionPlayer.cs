@@ -1,11 +1,15 @@
+using CommunityToolkit.Mvvm.ComponentModel;
+
 namespace CompetitiveCounterApp.Models
 {
-    public class SessionPlayer
+    public partial class SessionPlayer : ObservableObject
     {
         public int ID { get; set; }
         public int SessionID { get; set; }
         public int PlayerID { get; set; }
-        public int Wins { get; set; }
+
+        [ObservableProperty]
+        private int _wins;
 
         public Session? Session { get; set; }
         public Player? Player { get; set; }

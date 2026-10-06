@@ -76,7 +76,7 @@
             </Border.Shadow>
             <ScrollView>
                 <VerticalStackLayout Spacing="15" Padding="0,0,0,10">
-                    <Border>
+                    <Border IsVisible="{Binding HasDescription}">
                         <VerticalStackLayout Spacing="10">
                             <Label Text="Descripción"
                                    FontSize="16"

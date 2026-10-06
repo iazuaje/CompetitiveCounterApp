@@ -97,7 +97,8 @@
             <ScrollView Grid.Row="1">
                 <VerticalStackLayout Spacing="10">
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Leaderboard}"
-                                         Spacing="10">
+                                         Spacing="10"
+                                         behaviors:AnimatedReorder.Request="{Binding LeaderboardReorderRequest}">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:SessionPlayer">
                                 <Border StrokeThickness="1"
@@ -160,10 +161,17 @@
                                                    TextColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}" />
                                         </HorizontalStackLayout>
 
-                                        <VerticalStackLayout Grid.Column="3"
-                                                             Spacing="6"
-                                                             VerticalOptions="Center"
-                                                             IsVisible="{Binding IsActive, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}">
+                                        <HorizontalStackLayout Grid.Column="3"
+                                                               Spacing="6"
+                                                               VerticalOptions="Center"
+                                                               IsVisible="{Binding IsActive, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}">
+                                            <Button Text="−"
+                                                    Style="{StaticResource WinsAdjustButton}"
+                                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
+                                                    Command="{Binding DecrementWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
+                                                    CommandParameter="{Binding .}"
+                                                    SemanticProperties.Description="Restar victoria" />
                                             <Button Text="+"
                                                     Style="{StaticResource WinsAdjustButton}"
                                                     BackgroundColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
@@ -171,14 +179,7 @@
                                                     Command="{Binding IncrementWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
                                                     CommandParameter="{Binding .}"
                                                     SemanticProperties.Description="Sumar victoria" />
-                                            <Button Text="−"
-                                                    Style="{StaticResource WinsAdjustButton}"
-                                                    BackgroundColor="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray700}}"
-                                                    TextColor="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"
-                                                    Command="{Binding DecrementWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
-                                                    CommandParameter="{Binding .}"
-                                                    SemanticProperties.Description="Restar victoria" />
-                                        </VerticalStackLayout>
+                                        </HorizontalStackLayout>
                                     </Grid>
                                 </Border>
                             </DataTemplate>

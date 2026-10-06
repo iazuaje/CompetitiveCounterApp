@@ -25,6 +25,9 @@ namespace CompetitiveCounterApp.PageModels
         private string _description = string.Empty;
 
         [ObservableProperty]
+        private bool _hasDescription;
+
+        [ObservableProperty]
         private IconData _selectedIcon;
 
         [ObservableProperty]
@@ -104,7 +107,8 @@ namespace CompetitiveCounterApp.PageModels
                 }
 
                 Name = Game.Name;
-                Description = Game.Description;
+                Description = Game.Description?.Trim() ?? string.Empty;
+                HasDescription = !string.IsNullOrWhiteSpace(Description);
                 SelectedIcon = Icons.FirstOrDefault(i => i.Icon == Game.Icon) ?? GameDataService.GetDefaultIcon();
 
                 Sessions = await _sessionRepository.ListAsync(Game.ID);

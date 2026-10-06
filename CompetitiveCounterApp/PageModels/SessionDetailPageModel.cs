@@ -48,6 +48,9 @@ namespace CompetitiveCounterApp.PageModels
         [ObservableProperty]
         private bool _isBusy;
 
+        [ObservableProperty]
+        private LeaderboardReorderRequest? _leaderboardReorderRequest;
+
         public SessionDetailPageModel(
             SessionRepository sessionRepository,
             PlayerRepository playerRepository,
@@ -221,7 +224,7 @@ namespace CompetitiveCounterApp.PageModels
         [RelayCommand]
         private async Task EditWins(SessionPlayer? sessionPlayer)
         {
-            if (Session is null || !IsActive || sessionPlayer?.Player is null)
+            if (Session is null || !IsActive || sessionPlayer?.Player is null || IsBusy)
                 return;
 
             HapticFeedbackHelper.Click();
@@ -240,8 +243,8 @@ namespace CompetitiveCounterApp.PageModels
             try
             {
                 IsBusy = true;
-                await _sessionRepository.SetWinsAsync(Session.ID, sessionPlayer.PlayerID, wins);
-                await LoadData(Session.ID);
+                var newWins = await _sessionRepository.SetWinsAsync(Session.ID, sessionPlayer.PlayerID, wins);
+                await ApplyWinsAndReorderAsync(sessionPlayer, newWins);
             }
             catch (Exception e)
             {
@@ -255,15 +258,15 @@ namespace CompetitiveCounterApp.PageModels
 
         private async Task ChangeWinsAsync(SessionPlayer? sessionPlayer, int delta)
         {
-            if (Session is null || !IsActive || sessionPlayer is null)
+            if (Session is null || !IsActive || sessionPlayer is null || IsBusy)
                 return;
 
             try
             {
                 HapticFeedbackHelper.Click();
                 IsBusy = true;
-                await _sessionRepository.AdjustWinsAsync(Session.ID, sessionPlayer.PlayerID, delta);
-                await LoadData(Session.ID);
+                var newWins = await _sessionRepository.AdjustWinsAsync(Session.ID, sessionPlayer.PlayerID, delta);
+                await ApplyWinsAndReorderAsync(sessionPlayer, newWins);
             }
             catch (Exception e)
             {
@@ -273,6 +276,23 @@ namespace CompetitiveCounterApp.PageModels
             {
                 IsBusy = false;
             }
+        }
+
+        private async Task ApplyWinsAndReorderAsync(SessionPlayer sessionPlayer, int newWins)
+        {
+            sessionPlayer.Wins = newWins;
+
+            var targetOrder = Leaderboard
+                .OrderByDescending(sp => sp.Wins)
+                .ThenBy(sp => sp.PlayerID)
+                .ToList();
+
+            if (Leaderboard.Select(sp => sp.PlayerID).SequenceEqual(targetOrder.Select(sp => sp.PlayerID)))
+                return;
+
+            var request = new LeaderboardReorderRequest(Leaderboard, targetOrder);
+            LeaderboardReorderRequest = request;
+            await request.Completion;
         }
 
         [RelayCommand]
