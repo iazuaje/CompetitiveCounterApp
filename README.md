@@ -1,71 +1,66 @@
-﻿# CompetitiveCounterApp
+# CompetitiveCounterApp
 
-![.NET MAUI](https://img.shields.io/badge/.NET_MAUI-9-512BD4?logo=.net)
-![Platform](https://img.shields.io/badge/Platform-Android_|_iOS_|_macOS_|_Windows-blue)
+![.NET MAUI](https://img.shields.io/badge/.NET_MAUI-10-512BD4?logo=.net)
+![Platform](https://img.shields.io/badge/Platform-Android-3DDC84)
 
-Una aplicación móvil multiplataforma desarrollada con .NET MAUI para llevar el registro de partidas competitivas entre jugadores.
+Aplicación móvil desarrollada con .NET MAUI para llevar el registro de partidas competitivas entre jugadores.
 
 ## Características
 
-- **Gestión de Juegos**: Crear y personalizar juegos con iconos, colores y descripciones
-- **Gestión de Sesiones**: Registro de partidas con fecha, notas y victorias por jugador
-- **Gestión de Jugadores**: Sistema de jugadores reutilizable entre diferentes juegos
-- **Temas**: Soporte completo para modo claro y oscuro con colores personalizados
-- **UI Moderna**: Interfaz con FluentUI Icons y diseño responsivo
+- **Juegos**: crear y personalizar juegos con imagen o icono, color y descripción.
+- **Sesiones**: una sesión activa por juego, con notas y victorias por jugador; al crear una nueva se cierra la anterior.
+- **Jugadores**: reutilizables entre juegos, con icono y color propios.
+- **Ranking**: podio de los jugadores con más victorias por juego y reordenamiento animado dentro de la sesión.
+- **Temas**: modo claro y oscuro con colores por juego y por jugador adaptados a cada tema.
+- **Feedback táctil**: animaciones de presión y vibración en las acciones.
 
 ## Arquitectura
 
-El proyecto utiliza el patrón **MVVM** con CommunityToolkit.MVVM:
+Patrón **MVVM** con CommunityToolkit.MVVM y persistencia con **EF Core + SQLite**.
 
 ```
-CompetitiveCounterApp/
-├── Models/                    # Entidades de dominio
-│   ├── Game.cs
-│   ├── Session.cs
-│   ├── Player.cs
-│   └── SessionPlayer.cs
-├── Pages/                     # Vistas XAML
-│   ├── GamesPage.xaml
-│   ├── GameDetailPage.xaml
-│   ├── CreateGamePage.xaml
-│   ├── EditGamePage.xaml
-│   └── Controls/
-├── PageModels/                # ViewModels
-│   ├── GamesPageModel.cs
-│   ├── GameDetailPageModel.cs
-│   ├── CreateGamePageModel.cs
-│   └── EditGamePageModel.cs
-├── Data/                      # Repositorios SQLite
-│   ├── GameRepository.cs
-│   ├── SessionRepository.cs
-│   └── PlayerRepository.cs
-├── Services/                  # Servicios de la aplicación
-└── Resources/                 # Recursos (Fonts, Images, Styles)
+CompetitiveCounterApp.sln
+├── CompetitiveCounterApp/            # App MAUI
+│   ├── Pages/                        # Vistas XAML (+ Controls/ reutilizables)
+│   ├── PageModels/                   # ViewModels
+│   ├── Data/                         # Repositorios y ruta de la base de datos
+│   ├── Services/                     # Catálogos, operaciones y manejo de errores
+│   ├── Behaviors/                    # AnimatedTap, AnimatedReorder
+│   ├── Helpers/ Messages/ Utilities/ Converters/ Models/
+│   └── Resources/                    # Fonts, Images, Styles
+└── CompetitiveCounterApp.Data/       # Entidades, AppDbContext y migraciones EF
+    ├── Models/                       # Game, Session, Player, SessionPlayer
+    └── Migrations/
 ```
 
 ## Tecnologías
 
-- **.NET 9** con .NET MAUI
-- **CommunityToolkit.MVVM** (v8.3.2)
-- **CommunityToolkit.Maui** (v11.1.1)
-- **Syncfusion.Maui.Toolkit** (v1.0.6)
-- **SQLite** (Microsoft.Data.Sqlite.Core v8.0.8)
+- **.NET 10** con .NET MAUI (`Microsoft.Maui.Controls` 10.0.90), SDK fijado en `global.json`
+- **CommunityToolkit.Mvvm** 8.3.2
+- **CommunityToolkit.Maui** 15.0.1
+- **Syncfusion.Maui.Toolkit** 1.0.11
+- **Microsoft.EntityFrameworkCore.Sqlite** 10.0.12
 
-## Plataformas Soportadas
+## Plataformas
 
-| Plataforma | Versión Mínima |
-|------------|----------------|
-| Android    | API 21 (5.0)   |
-| iOS        | 15.0           |
-| macOS      | 15.0           |
-| Windows    | 10.0.17763.0   |
+El producto es exclusivamente móvil y hoy compila solo para Android. iOS está previsto a futuro: `Platforms/iOS` ya existe y basta con agregar `net10.0-ios` a `TargetFrameworks`.
 
+| Plataforma | Versión mínima | Estado    |
+|------------|----------------|-----------|
+| Android    | API 21 (5.0)   | Activa    |
+| iOS        | 15.0           | Prevista  |
 
-## Modelo de Datos (Sujeto a cambios)
+## Compilación
+
+```powershell
+dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net10.0-android
+```
+
+## Modelo de datos
 
 ```csharp
 Game
-├── ID, Name, Icon, Description
+├── ID, Name, Icon, ImagePath, Description
 ├── ColorLight, ColorDark
 └── CreatedDate
 
@@ -76,35 +71,28 @@ Session
 
 Player
 ├── ID, Name, Icon
-├── ColorLight, ColorDark
+└── ColorLight, ColorDark
 
 SessionPlayer
 ├── ID, SessionID, PlayerID
 └── Wins
 ```
 
-### Índices / restricciones
+### Índices y restricciones
 
 - `IX_Sessions_GameID_Active`: único filtrado sobre `GameID` donde `ClosedAt IS NULL` (una sola sesión activa por juego).
 - `IX_SessionPlayers_SessionID_PlayerID`: único sobre `(SessionID, PlayerID)` (un jugador no se agrega dos veces a la misma sesión).
+- Borrar un juego elimina en cascada sus sesiones y sus `SessionPlayers`.
 
-### Migración pendiente
+`SessionDate` y `ClosedAt` se guardan en hora local del dispositivo (`LocalDateTimeConverter`).
 
-Los cambios de esquema están en entidades y Fluent API (`AppDbContext`). La migración EF **no** se genera automáticamente; hay que crearla y aplicarla a mano.
+### Migraciones
 
-Cambios pendientes de migrar (si aún no están en BD):
-
-1. `Session.ClosedAt` + índices `IX_Sessions_GameID_Active` y `IX_SessionPlayers_SessionID_PlayerID`
-2. `Player`: reemplazar `ColorHex` por `ColorLight` / `ColorDark` (mismo patrón que `Game`). Al migrar, copiar `ColorHex` a `ColorLight` y asignar un `ColorDark` por defecto (p. ej. el de la paleta o `#EF9A9A`).
-3. `Player.Icon` (texto, default vacío): ícono FluentUI del jugador.
+Las migraciones se aplican solas al iniciar la app (`Database.Migrate()`). Tras cambiar entidades o Fluent API en `AppDbContext`, se crean a mano:
 
 ```powershell
-dotnet ef migrations add PlayerThemeColors -p CompetitiveCounterApp.Data -s CompetitiveCounterApp
+dotnet ef migrations add <Nombre> -p CompetitiveCounterApp.Data -s CompetitiveCounterApp
 ```
-
-Datos existentes de sesiones: las sesiones actuales quedan con `ClosedAt = null` (activas). Si hubiera más de una por juego, el índice filtrado fallará al aplicar; cerrar las sobrantes antes de migrar.
-
-`SessionDate`/`ClosedAt` usan hora local del dispositivo (`LocalDateTimeConverter`). Sesiones guardadas antes como UTC pueden verse corridas; conviene recrearlas para verificar.
 
 ## Licencia
 

@@ -7,8 +7,8 @@
              x:DataType="pageModels:EditPlayerPageModel"
              Title="Editar jugador"
              Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-             Shell.ForegroundColor="{StaticResource White}"
-             Shell.TitleColor="{StaticResource White}">
+             Shell.ForegroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
+             Shell.TitleColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Eliminar"

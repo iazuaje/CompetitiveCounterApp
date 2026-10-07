@@ -36,12 +36,17 @@ namespace CompetitiveCounterApp.Data
                 entity.Ignore(e => e.GameColorLight);
                 entity.Ignore(e => e.GameColorDark);
                 entity.Ignore(e => e.CurrentGameColor);
+                entity.Ignore(e => e.OnGameColor);
                 entity.Ignore(e => e.ToolbarColor);
+                entity.Ignore(e => e.OnToolbarColor);
                 entity.Ignore(e => e.ComplementaryColor);
                 entity.Ignore(e => e.SurfaceColor);
                 entity.Ignore(e => e.OnSurfaceColor);
                 entity.Ignore(e => e.GameImage);
                 entity.Ignore(e => e.SessionCount);
+                entity.Ignore(e => e.LeaderName);
+                entity.Ignore(e => e.LeaderWins);
+                entity.Ignore(e => e.HasLeader);
             });
 
             modelBuilder.Entity<Player>(entity =>
@@ -54,6 +59,7 @@ namespace CompetitiveCounterApp.Data
                 entity.Property(e => e.ColorDark).HasDefaultValue("#EF9A9A");
                 entity.Ignore(e => e.ThemeColors);
                 entity.Ignore(e => e.CurrentColor);
+                entity.Ignore(e => e.OnColor);
             });
 
             modelBuilder.Entity<Session>(entity =>
@@ -75,7 +81,6 @@ namespace CompetitiveCounterApp.Data
                 entity.Ignore(e => e.ListCardStroke);
                 entity.Ignore(e => e.ListCardStrokeThickness);
                 entity.Ignore(e => e.ListCardIconColor);
-
                 // Una sola sesión activa (ClosedAt IS NULL) por juego.
                 entity.HasIndex(e => e.GameID)
                     .IsUnique()

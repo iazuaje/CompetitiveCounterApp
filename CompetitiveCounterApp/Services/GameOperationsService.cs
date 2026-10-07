@@ -20,9 +20,9 @@ public class GameOperationsService
         }
 
         bool confirm = await Shell.Current.DisplayAlertAsync(
-            "Eliminar Juego",
-            $"?Estás seguro de eliminar '{game.Name}'? Esto eliminará todas las sesiones asociadas.",
-            "Sí",
+            "Eliminar juego",
+            $"Â¿EstÃ¡s seguro de eliminar '{game.Name}'? Esto eliminarÃ¡ todas las sesiones asociadas.",
+            "SÃ­",
             "No");
 
         if (!confirm) return false;

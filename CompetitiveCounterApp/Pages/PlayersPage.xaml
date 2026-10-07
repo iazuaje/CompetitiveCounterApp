@@ -12,8 +12,8 @@
              x:Name="PlayersPageRoot"
              Title="Jugadores"
              Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-             Shell.ForegroundColor="{StaticResource White}"
-             Shell.TitleColor="{StaticResource White}">
+             Shell.ForegroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
+             Shell.TitleColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -55,7 +55,7 @@
                                                 <Image.Source>
                                                     <FontImageSource Glyph="{Binding Icon}"
                                                                      FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                                     Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource White}}"
+                                                                     Color="{Binding OnColor}"
                                                                      Size="22" />
                                                 </Image.Source>
                                             </Image>

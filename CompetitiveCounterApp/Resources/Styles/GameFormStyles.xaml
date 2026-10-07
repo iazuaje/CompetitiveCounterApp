@@ -26,6 +26,8 @@
                                 <Binding Path="SelectedIndex"
                                          Source="{RelativeSource AncestorType={x:Type segmented:SfSegmentedControl}}" />
                                 <Binding Path="Text" />
+                                <Binding Path="SelectionIndicatorSettings.Background"
+                                         Source="{RelativeSource AncestorType={x:Type segmented:SfSegmentedControl}}" />
                             </MultiBinding>
                         </FontImageSource.Color>
                     </FontImageSource>
@@ -38,6 +40,8 @@
                         <Binding Path="SelectedIndex"
                                  Source="{RelativeSource AncestorType={x:Type segmented:SfSegmentedControl}}" />
                         <Binding Path="Text" />
+                        <Binding Path="SelectionIndicatorSettings.Background"
+                                 Source="{RelativeSource AncestorType={x:Type segmented:SfSegmentedControl}}" />
                     </MultiBinding>
                 </Label.TextColor>
             </Label>

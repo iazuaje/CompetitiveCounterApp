@@ -43,9 +43,12 @@ namespace CompetitiveCounterApp.Models
 
         public double ListCardStrokeThickness => IsActive ? 2d : 0d;
 
-        /// <summary>Color de iconos/métricas secundarias en la tarjeta del listado.</summary>
+        /// <summary>
+        /// Color de iconos/métricas secundarias en la tarjeta del listado.
+        /// En la activa (fondo del juego) es el texto de contraste y también se usa para el texto principal.
+        /// </summary>
         public Color ListCardIconColor =>
-            IsActive ? Colors.White : ResolveMutedForeground();
+            IsActive ? Game?.OnGameColor ?? Colors.White : ResolveMutedForeground();
 
         static Color ResolveSecondaryBackground()
         {

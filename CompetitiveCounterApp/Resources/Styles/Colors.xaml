@@ -64,6 +64,14 @@
     <Color x:Key="GameColorIndigoDark">#7986CB</Color>
     <Color x:Key="GameColorLimeDark">#AED581</Color>
 
+    <!-- Podio (ámbar / plata cálida / cobre; light y dark) -->
+    <Color x:Key="PodiumGold">#C9A227</Color>
+    <Color x:Key="PodiumGoldDark">#E8C547</Color>
+    <Color x:Key="PodiumSilver">#A39488</Color>
+    <Color x:Key="PodiumSilverDark">#D9CEC4</Color>
+    <Color x:Key="PodiumBronze">#8F4A36</Color>
+    <Color x:Key="PodiumBronzeDark">#D4846A</Color>
+
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>

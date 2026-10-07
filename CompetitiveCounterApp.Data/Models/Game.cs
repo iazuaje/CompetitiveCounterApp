@@ -17,12 +17,24 @@ namespace CompetitiveCounterApp.Models
         [ObservableProperty]
         private int _sessionCount;
 
+        /// <summary>Jugador con más victorias acumuladas para UI (no persistido).</summary>
+        [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(HasLeader))]
+        private string _leaderName = string.Empty;
+
+        [ObservableProperty]
+        private int _leaderWins;
+
+        public bool HasLeader => !string.IsNullOrEmpty(LeaderName);
+
         public ThemeColorPair ThemeColors => new(ColorLight, ColorDark);
 
         public Color GameColorLight => ThemeColors.LightThemeColor;
         public Color GameColorDark => ThemeColors.DarkThemeColor;
         public Color CurrentGameColor => ThemeColors.CurrentColor;
+        public Color OnGameColor => ThemeColors.OnColor;
         public Color ToolbarColor => ThemeColors.ToolbarColor;
+        public Color OnToolbarColor => ThemeColors.OnToolbarColor;
         public Color ComplementaryColor => ThemeColors.ComplementaryColor;
 
         public Color SurfaceColor => ThemeColors.SurfaceColor;
@@ -35,7 +47,9 @@ namespace CompetitiveCounterApp.Models
         public void NotifyThemeChanged()
         {
             OnPropertyChanged(nameof(CurrentGameColor));
+            OnPropertyChanged(nameof(OnGameColor));
             OnPropertyChanged(nameof(ToolbarColor));
+            OnPropertyChanged(nameof(OnToolbarColor));
             OnPropertyChanged(nameof(ComplementaryColor));
             OnPropertyChanged(nameof(SurfaceColor));
             OnPropertyChanged(nameof(OnSurfaceColor));

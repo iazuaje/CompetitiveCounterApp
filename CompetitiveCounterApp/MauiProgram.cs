@@ -16,7 +16,7 @@ namespace CompetitiveCounterApp
                 .ConfigureSyncfusionToolkit()
                 .ConfigureMauiHandlers(handlers =>
                 {
-#if IOS || MACCATALYST
+#if IOS
     				handlers.AddHandler<Microsoft.Maui.Controls.CollectionView, Microsoft.Maui.Controls.Handlers.Items2.CollectionViewHandler2>();
 #endif
                 })
@@ -55,6 +55,7 @@ namespace CompetitiveCounterApp
             builder.Services.AddTransientWithShellRoute<CreatePlayerPage, CreatePlayerPageModel>("createplayer");
             builder.Services.AddTransientWithShellRoute<EditPlayerPage, EditPlayerPageModel>("editplayer");
             builder.Services.AddTransientWithShellRoute<SessionDetailPage, SessionDetailPageModel>("sessiondetail");
+            builder.Services.AddTransientWithShellRoute<GameStatsPage, GameStatsPageModel>("gamestats");
 
             var app = builder.Build();
 

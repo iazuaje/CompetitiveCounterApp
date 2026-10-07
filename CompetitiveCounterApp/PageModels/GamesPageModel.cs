@@ -65,10 +65,22 @@ namespace CompetitiveCounterApp.PageModels
             try
             {
                 IsBusy = true;
-                Games = await _gameRepository.ListAsync();
+                var games = await _gameRepository.ListAsync();
+                var sessionCounts = await _sessionRepository.CountByGameAsync();
+                var leaders = await _sessionRepository.GetLeadersByGameAsync();
 
-                foreach (var game in Games)
-                    game.SessionCount = await _sessionRepository.CountByGameIdAsync(game.ID);
+                foreach (var game in games)
+                {
+                    game.SessionCount = sessionCounts.GetValueOrDefault(game.ID);
+
+                    if (leaders.TryGetValue(game.ID, out var leader))
+                    {
+                        game.LeaderName = leader.PlayerName;
+                        game.LeaderWins = leader.TotalWins;
+                    }
+                }
+
+                Games = games;
             }
             catch (Exception e)
             {

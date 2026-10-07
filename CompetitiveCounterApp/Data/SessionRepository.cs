@@ -33,10 +33,37 @@ namespace CompetitiveCounterApp.Data
                 .ToListAsync();
         }
 
-        public async Task<int> CountByGameIdAsync(int gameId)
+        public async Task<Dictionary<int, int>> CountByGameAsync()
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
-            return await db.Sessions.CountAsync(s => s.GameID == gameId);
+            return await db.Sessions
+                .GroupBy(s => s.GameID)
+                .Select(g => new { GameID = g.Key, Count = g.Count() })
+                .ToDictionaryAsync(x => x.GameID, x => x.Count);
+        }
+
+        /// <summary>
+        /// Jugador con más victorias acumuladas por juego; empates se resuelven por nombre,
+        /// igual que el podio del detalle. Juegos sin victorias no aparecen.
+        /// </summary>
+        public async Task<Dictionary<int, GameLeader>> GetLeadersByGameAsync()
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+
+            var totals = await db.SessionPlayers
+                .GroupBy(sp => new { sp.Session!.GameID, sp.PlayerID, sp.Player!.Name })
+                .Select(g => new { g.Key.GameID, g.Key.Name, Wins = g.Sum(sp => sp.Wins) })
+                .Where(x => x.Wins > 0)
+                .ToListAsync();
+
+            return totals
+                .GroupBy(x => x.GameID)
+                .ToDictionary(
+                    g => g.Key,
+                    g => g.OrderByDescending(x => x.Wins)
+                          .ThenBy(x => x.Name, StringComparer.CurrentCultureIgnoreCase)
+                          .Select(x => new GameLeader(x.Name, x.Wins))
+                          .First());
         }
 
         public async Task<Session?> GetAsync(int id)
@@ -217,4 +244,6 @@ namespace CompetitiveCounterApp.Data
                 ?? throw new InvalidOperationException("El jugador no está en esta sesión.");
         }
     }
+
+    public sealed record GameLeader(string PlayerName, int TotalWins);
 }

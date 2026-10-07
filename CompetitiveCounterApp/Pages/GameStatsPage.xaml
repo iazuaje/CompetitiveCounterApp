@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             x:Class="CompetitiveCounterApp.Pages.GameStatsPage"
+             x:DataType="pageModels:GameStatsPageModel"
+             Title="{Binding Title}"
+             Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+             Shell.ForegroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
+             Shell.TitleColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}">
+
+    <Grid BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
+          Padding="20">
+        <VerticalStackLayout VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             Spacing="8">
+            <Label Text="Próximamente"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center" />
+            <Label Text="Las estadísticas detalladas de este juego estarán disponibles acá."
+                   FontSize="14"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+        </VerticalStackLayout>
+    </Grid>
+
+</ContentPage>

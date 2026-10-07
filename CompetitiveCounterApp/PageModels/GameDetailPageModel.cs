@@ -42,6 +42,14 @@ namespace CompetitiveCounterApp.PageModels
             OnPropertyChanged(nameof(HasSessions));
 
         [ObservableProperty]
+        private List<GameLeaderboardEntry> _leaderboard = [];
+
+        public bool HasLeaderboard => Leaderboard.Count > 0;
+
+        partial void OnLeaderboardChanged(List<GameLeaderboardEntry> value) =>
+            OnPropertyChanged(nameof(HasLeaderboard));
+
+        [ObservableProperty]
         private Session? _activeSession;
 
         [ObservableProperty]
@@ -67,7 +75,12 @@ namespace CompetitiveCounterApp.PageModels
             _selectedIcon = GameDataService.GetDefaultIcon();
 
             WeakReferenceMessenger.Default.Register<AppThemeChangedMessage>(this, static (r, _) =>
-                ((GameDetailPageModel)r).Game?.NotifyThemeChanged());
+            {
+                var vm = (GameDetailPageModel)r;
+                vm.Game?.NotifyThemeChanged();
+                foreach (var entry in vm.Leaderboard)
+                    entry.NotifyThemeChanged();
+            });
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -114,6 +127,7 @@ namespace CompetitiveCounterApp.PageModels
                 Sessions = await _sessionRepository.ListAsync(Game.ID);
                 ActiveSession = Sessions.FirstOrDefault(s => s.IsActive);
                 HasActiveSession = ActiveSession is not null;
+                Leaderboard = BuildLeaderboard(Sessions);
             }
             catch (Exception e)
             {
@@ -124,6 +138,56 @@ namespace CompetitiveCounterApp.PageModels
                 IsBusy = false;
                 IsLoadingGame = false;
             }
+        }
+
+        static List<GameLeaderboardEntry> BuildLeaderboard(IEnumerable<Session> sessions)
+        {
+            return sessions
+                .SelectMany(s => s.SessionPlayers ?? [])
+                .Where(sp => sp.Player is not null)
+                .GroupBy(sp => sp.PlayerID)
+                .Select(g => new
+                {
+                    Player = g.First().Player!,
+                    TotalWins = g.Sum(sp => sp.Wins)
+                })
+                .Where(x => x.TotalWins > 0)
+                .OrderByDescending(x => x.TotalWins)
+                .ThenBy(x => x.Player.Name, StringComparer.CurrentCultureIgnoreCase)
+                .Take(3)
+                .Select((x, index) => new GameLeaderboardEntry
+                {
+                    Rank = index + 1,
+                    PlayerName = x.Player.Name,
+                    PlayerIcon = string.IsNullOrEmpty(x.Player.Icon)
+                        ? FluentUI.person_24_regular
+                        : x.Player.Icon,
+                    PlayerColors = x.Player.ThemeColors,
+                    TotalWins = x.TotalWins,
+                    MedalColors = MedalColorsForRank(index + 1)
+                })
+                .ToList();
+        }
+
+        // Mismos valores que PodiumGold / PodiumSilver / PodiumBronze en Colors.xaml.
+        static ThemeColorPair MedalColorsForRank(int rank) => rank switch
+        {
+            1 => new ThemeColorPair("#C9A227", "#E8C547"),
+            2 => new ThemeColorPair("#A39488", "#D9CEC4"),
+            _ => new ThemeColorPair("#8F4A36", "#D4846A")
+        };
+
+        [RelayCommand]
+        private async Task OpenStats()
+        {
+            if (Game.IsNullOrNew())
+            {
+                await AppShell.DisplayToastAsync("Error: No se pudo identificar el juego");
+                return;
+            }
+
+            HapticFeedbackHelper.Click();
+            await Shell.Current.GoToAsync($"gamestats?id={Game.ID}");
         }
 
         [RelayCommand]

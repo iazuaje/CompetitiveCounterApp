@@ -11,8 +11,8 @@
              x:DataType="pageModels:EditGamePageModel"
              Title="{Binding Name, StringFormat='Editando {0}'}"
              Shell.BackgroundColor="{Binding SelectedColor.ToolbarColor}"
-             Shell.ForegroundColor="{StaticResource White}"
-             Shell.TitleColor="{StaticResource White}">
+             Shell.ForegroundColor="{Binding SelectedColor.OnToolbarColor}"
+             Shell.TitleColor="{Binding SelectedColor.OnToolbarColor}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
@@ -71,10 +71,24 @@
                 </VerticalStackLayout>
             </Border>
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="10" IsVisible="{Binding SelectedImage, Converter={toolkit:IsNullConverter}}">
-                <Image Source="{StaticResource IconWarning}" />
+                <Image>
+                    <Image.Source>
+                        <FontImageSource Glyph="{x:Static f:FluentUI.warning_28_regular}"
+                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                         Color="{Binding SelectedColor.OnGameColor}"
+                                         Size="{StaticResource size240}" />
+                    </Image.Source>
+                </Image>
                 <Label
-                    Text="No se ha cargado una imagen" VerticalOptions="Center" TextColor="White" HorizontalOptions="Center" FontSize="12"></Label>
-                <Image Source="{StaticResource IconWarning}" />
+                    Text="No se ha cargado una imagen" VerticalOptions="Center" TextColor="{Binding SelectedColor.OnGameColor}" HorizontalOptions="Center" FontSize="12"></Label>
+                <Image>
+                    <Image.Source>
+                        <FontImageSource Glyph="{x:Static f:FluentUI.warning_28_regular}"
+                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                         Color="{Binding SelectedColor.OnGameColor}"
+                                         Size="{StaticResource size240}" />
+                    </Image.Source>
+                </Image>
             </HorizontalStackLayout>
         </VerticalStackLayout>
         <Border Grid.Row="1" Background="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}" Padding="10">
@@ -159,13 +173,19 @@
                     Text="Guardar Cambios"
                     Command="{Binding SaveCommand}"
                     BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-                    TextColor="White"
+                    TextColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
                     FontSize="18"
                     FontAttributes="Bold"
                     HeightRequest="56"
                     CornerRadius="12"
-                    HorizontalOptions="Fill"
-                    ImageSource="{StaticResource IconSaveShell}" />
+                    HorizontalOptions="Fill">
+                    <Button.ImageSource>
+                        <FontImageSource Glyph="{x:Static f:FluentUI.save_32_regular}"
+                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                         Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
+                                         Size="{StaticResource IconSize}" />
+                    </Button.ImageSource>
+                </Button>
             </Grid>
         </Border>
     </Grid>

@@ -12,22 +12,21 @@
              x:Name="GamesPageRoot"
              Title="Juegos"
              Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-             Shell.ForegroundColor="{StaticResource White}"
-             Shell.TitleColor="{StaticResource White}">
-    
-    
-    <ContentPage.Behaviors>
-        <toolkit:EventToCommandBehavior
-			BindingContext="{Binding Path=BindingContext, Source={x:Reference GamesPageRoot}, x:DataType=ContentPage}"
-            EventName="Appearing"
-            Command="{Binding AppearingCommand}" />
-    </ContentPage.Behaviors>
+             Shell.ForegroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
+             Shell.TitleColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}">
 
     <ContentPage.Resources>
         <ResourceDictionary>
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
         </ResourceDictionary>
     </ContentPage.Resources>
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+			BindingContext="{Binding Path=BindingContext, Source={x:Reference GamesPageRoot}, x:DataType=ContentPage}"
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Opciones"
@@ -61,7 +60,7 @@
                                         behaviors:AnimatedTap.CommandParameter="{Binding .}"
                                         behaviors:AnimatedTap.PressedScale="0.97"
                                         behaviors:AnimatedTap.PressedOpacity="0.92">
-                                    <Grid RowDefinitions="*,Auto,Auto" InputTransparent="True">
+                                    <Grid RowDefinitions="*,Auto,Auto,Auto" InputTransparent="True">
                                         <Grid>
                                             <Image Source="{Binding GameImage}"
                                                    Aspect="AspectFill" />
@@ -95,18 +94,40 @@
                                                Margin="10,8,10,0"
                                                FontSize="16"
                                                FontAttributes="Bold"
-                                               TextColor="White"
+                                               TextColor="{Binding OnGameColor}"
                                                HorizontalOptions="Center"
                                                VerticalOptions="Center"
                                                HorizontalTextAlignment="Center"
                                                LineBreakMode="TailTruncation"
                                                MaxLines="2" />
 
+                                        <!-- Líder del juego: corona + nombre + victorias acumuladas. -->
                                         <Label Grid.Row="2"
+                                               IsVisible="{Binding HasLeader}"
+                                               Margin="10,2,10,0"
+                                               FontSize="12"
+                                               HorizontalOptions="Center"
+                                               TextColor="{Binding OnGameColor}"
+                                               MaxLines="1"
+                                               LineBreakMode="TailTruncation"
+                                               SemanticProperties.Description="{Binding LeaderName, StringFormat='Va ganando {0}'}">
+                                            <Label.FormattedText>
+                                                <FormattedString>
+                                                    <Span Text="{x:Static f:FluentUI.crown_24_regular}"
+                                                          FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                          FontSize="13" />
+                                                    <Span Text=" " />
+                                                    <Span Text="{Binding LeaderName}" FontAttributes="Bold" />
+                                                    <Span Text="{Binding LeaderWins, StringFormat=' · {0}'}" />
+                                                </FormattedString>
+                                            </Label.FormattedText>
+                                        </Label>
+
+                                        <Label Grid.Row="3"
                                                Margin="10,0,10,10"
                                                FontSize="12"
                                                HorizontalOptions="Center"
-                                               TextColor="White"
+                                               TextColor="{Binding OnGameColor}"
                                                Opacity="0.9"
                                                Text="{Binding SessionCount, StringFormat='{}{0} sesión(es)'}" />
                                     </Grid>

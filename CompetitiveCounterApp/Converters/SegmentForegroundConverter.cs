@@ -1,4 +1,5 @@
 using System.Globalization;
+using CompetitiveCounterApp.Models;
 
 namespace CompetitiveCounterApp.Converters;
 
@@ -17,8 +18,11 @@ public class SegmentForegroundConverter : IMultiValueConverter
             _ => -1
         };
 
+        // El segmento seleccionado se dibuja sobre el indicador (color del juego): texto de contraste.
         if (selectedIndex == segmentIndex)
-            return Colors.White;
+            return values.Length > 2 && values[2] is SolidColorBrush indicator
+                ? ThemeColorPair.ContrastingTextColor(indicator.Color)
+                : Colors.White;
 
         var app = Application.Current;
         if (app is null)

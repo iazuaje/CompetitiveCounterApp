@@ -4,6 +4,7 @@
              xmlns:f="clr-namespace:Fonts"
              xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
              xmlns:models="clr-namespace:CompetitiveCounterApp.Models;assembly=CompetitiveCounterApp.Data"
+             xmlns:appModels="clr-namespace:CompetitiveCounterApp.Models"
              xmlns:behaviors="clr-namespace:CompetitiveCounterApp.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="CompetitiveCounterApp.Pages.GameDetailPage"
@@ -11,8 +12,8 @@
              x:Name="GameDetailRoot"
              Title="{Binding Name}"
              Shell.BackgroundColor="{Binding Game.ToolbarColor}"
-             Shell.ForegroundColor="{StaticResource White}"
-             Shell.TitleColor="{StaticResource White}">
+             Shell.ForegroundColor="{Binding Game.OnToolbarColor}"
+             Shell.TitleColor="{Binding Game.OnToolbarColor}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -87,27 +88,149 @@
                         </VerticalStackLayout>
                     </Border>
 
-                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                    <Grid ColumnDefinitions="*,Auto"
+                          ColumnSpacing="8"
+                          VerticalOptions="Center"
+                          Margin="0">
+                        <Label Text="Clasificación"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center" />
+                        <Button Grid.Column="1"
+                                Text="Stats"
+                                Command="{Binding OpenStatsCommand}"
+                                BackgroundColor="{Binding Game.CurrentGameColor}"
+                                TextColor="{Binding Game.OnGameColor}"
+                                FontSize="13"
+                                FontAttributes="Bold"
+                                Padding="12,0"
+                                BorderWidth="0"
+                                CornerRadius="20"
+                                VerticalOptions="Center"
+                                SemanticProperties.Description="Estadísticas" />
+                    </Grid>
+
+
+                    <Label Text="Todavía no hay victorias registradas"
+                           IsVisible="{Binding HasLeaderboard, Converter={StaticResource InvertedBoolConverter}}"
+                           FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                           HorizontalOptions="Center"
+                           Margin="0,8,0,4" />
+
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Leaderboard}"
+                                         Spacing="8"
+                                         Margin="0,4,0,10">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="appModels:GameLeaderboardEntry">
+                                <!-- Fila neutra: el color de medalla vive solo en la insignia y en el borde del 1º. -->
+                                <Border Padding="12,8"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 16"
+                                        Background="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}">
+                                    <Border.Triggers>
+                                        <DataTrigger TargetType="Border" Binding="{Binding IsFirst}" Value="True">
+                                            <Setter Property="Stroke" Value="{Binding MedalColor}" />
+                                            <Setter Property="StrokeThickness" Value="2" />
+                                        </DataTrigger>
+                                    </Border.Triggers>
+                                    <Grid ColumnDefinitions="Auto,*,Auto"
+                                          ColumnSpacing="12"
+                                          VerticalOptions="Center">
+                                        <!-- Avatar del jugador con la insignia de puesto en la esquina. -->
+                                        <Grid WidthRequest="46"
+                                              HeightRequest="46"
+                                              VerticalOptions="Center">
+                                            <Border WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    StrokeThickness="0"
+                                                    StrokeShape="Ellipse"
+                                                    Padding="0"
+                                                    Background="{Binding PlayerColor}"
+                                                    HorizontalOptions="Start"
+                                                    VerticalOptions="Start">
+                                                <Image HeightRequest="20"
+                                                       WidthRequest="20"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center">
+                                                    <Image.Source>
+                                                        <FontImageSource Glyph="{Binding PlayerIcon}"
+                                                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                         Color="{Binding OnPlayerColor}"
+                                                                         Size="20" />
+                                                    </Image.Source>
+                                                </Image>
+                                            </Border>
+                                            <Border WidthRequest="22"
+                                                    HeightRequest="22"
+                                                    StrokeThickness="2"
+                                                    StrokeShape="Ellipse"
+                                                    Padding="0"
+                                                    Stroke="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+                                                    Background="{Binding MedalColor}"
+                                                    HorizontalOptions="End"
+                                                    VerticalOptions="End"
+                                                    SemanticProperties.Description="{Binding Rank, StringFormat='Puesto {0}'}">
+                                                <Label Text="{Binding Rank}"
+                                                       FontSize="11"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{Binding MedalTextColor}"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center" />
+                                            </Border>
+                                        </Grid>
+
+                                        <Label Grid.Column="1"
+                                               Text="{Binding PlayerName}"
+                                               FontSize="16"
+                                               FontAttributes="Bold"
+                                               TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource White}}"
+                                               LineBreakMode="TailTruncation"
+                                               VerticalOptions="Center" />
+
+                                        <HorizontalStackLayout Grid.Column="2"
+                                                               Spacing="4"
+                                                               VerticalOptions="Center">
+                                            <Label Text="{Binding TotalWins}"
+                                                   FontSize="18"
+                                                   FontAttributes="Bold"
+                                                   TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource White}}"
+                                                   VerticalOptions="Center" />
+                                            <Image HeightRequest="20"
+                                                   WidthRequest="20"
+                                                   VerticalOptions="Center">
+                                                <Image.Source>
+                                                    <FontImageSource Glyph="{x:Static f:FluentUI.trophy_24_regular}"
+                                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                     Color="{Binding MedalColor}"
+                                                                     Size="20" />
+                                                </Image.Source>
+                                            </Image>
+                                        </HorizontalStackLayout>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="*,auto" VerticalOptions="Center">
                         <Label Text="Sesiones de Juego"
                                FontSize="18"
                                FontAttributes="Bold"
                                VerticalOptions="Center" />
-                        <Button Text="+"
+                        <Button Text="Nueva sesión +"
+                                Grid.Column="1"
                                 Command="{Binding AddSessionCommand}"
                                 BackgroundColor="{Binding Game.CurrentGameColor}"
-                                TextColor="White"
-                                FontSize="20"
+                                TextColor="{Binding Game.OnGameColor}"
+                                FontSize="13"
                                 FontAttributes="Bold"
-                                Padding="0"
+                                Padding="12, 0"
                                 BorderWidth="0"
-                                CornerRadius="16"
-                                WidthRequest="32"
-                                HeightRequest="32"
-                                MinimumWidthRequest="32"
-                                MinimumHeightRequest="32"
+                                CornerRadius="20"
                                 VerticalOptions="Center"
                                 SemanticProperties.Description="Nueva sesión" />
-                    </HorizontalStackLayout>
+                    </Grid>
 
                     <BoxView HeightRequest="1"
                              Color="{Binding Game.CurrentGameColor}"
@@ -145,7 +268,7 @@
                                                Text="{Binding SessionDateLocal, StringFormat='{}{0:dd/MM/yy HH:mm}'}">
                                             <Label.Triggers>
                                                 <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
-                                                    <Setter Property="TextColor" Value="White" />
+                                                    <Setter Property="TextColor" Value="{Binding ListCardIconColor}" />
                                                 </DataTrigger>
                                             </Label.Triggers>
                                         </Label>
@@ -166,7 +289,7 @@
                                                    TextColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}">
                                                 <Label.Triggers>
                                                     <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
-                                                        <Setter Property="TextColor" Value="White" />
+                                                        <Setter Property="TextColor" Value="{Binding ListCardIconColor}" />
                                                     </DataTrigger>
                                                 </Label.Triggers>
                                             </Label>
@@ -200,7 +323,7 @@
                                                    Text="{Binding BestPlayer.Player, StringFormat='{0}'}">
                                                 <Label.Triggers>
                                                     <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
-                                                        <Setter Property="TextColor" Value="White" />
+                                                        <Setter Property="TextColor" Value="{Binding ListCardIconColor}" />
                                                     </DataTrigger>
                                                 </Label.Triggers>
                                             </Label>
@@ -209,7 +332,7 @@
                                         <Label Text="Activa"
                                                IsVisible="{Binding IsActive}"
                                                HorizontalOptions="End"
-                                               TextColor="White"
+                                               TextColor="{Binding ListCardIconColor}"
                                                FontSize="12"
                                                FontAttributes="Bold" />
                                         

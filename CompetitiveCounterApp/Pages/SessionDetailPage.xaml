@@ -11,8 +11,8 @@
              x:Name="SessionDetailRoot"
              Title="{Binding Title}"
              Shell.BackgroundColor="{Binding Game.CurrentGameColor}"
-             Shell.ForegroundColor="{StaticResource White}"
-             Shell.TitleColor="{StaticResource White}">
+             Shell.ForegroundColor="{Binding Game.OnGameColor}"
+             Shell.TitleColor="{Binding Game.OnGameColor}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -121,7 +121,7 @@
                                                 <Image.Source>
                                                     <FontImageSource Glyph="{Binding Player.Icon}"
                                                                      FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                                     Color="White"
+                                                                     Color="{Binding Player.OnColor}"
                                                                      Size="20" />
                                                 </Image.Source>
                                             </Image>
@@ -175,7 +175,7 @@
                                             <Button Text="+"
                                                     Style="{StaticResource WinsAdjustButton}"
                                                     BackgroundColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
-                                                    TextColor="White"
+                                                    TextColor="{Binding Game.OnGameColor, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
                                                     Command="{Binding IncrementWinsCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
                                                     CommandParameter="{Binding .}"
                                                     SemanticProperties.Description="Sumar victoria" />
@@ -213,7 +213,7 @@
             </Border.StrokeShape>
             <HorizontalStackLayout Spacing="8" VerticalOptions="Center" InputTransparent="True">
                 <Label Text="Agregar"
-                       TextColor="White"
+                       TextColor="{Binding Game.OnGameColor}"
                        FontSize="16"
                        FontAttributes="Bold"
                        VerticalOptions="Center" />
@@ -223,7 +223,7 @@
                     <Image.Source>
                         <FontImageSource Glyph="{x:Static f:FluentUI.person_add_24_regular}"
                                          FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                         Color="White"
+                                         Color="{Binding Game.OnGameColor}"
                                          Size="22" />
                     </Image.Source>
                 </Image>
