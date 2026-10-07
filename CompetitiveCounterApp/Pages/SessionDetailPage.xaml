@@ -89,8 +89,8 @@
                        FontSize="18"
                        FontAttributes="Bold"
                        Margin="0,10,0,0" />
-                <BoxView HeightRequest="2"
-                         BackgroundColor="{Binding Game.CurrentGameColor}"
+                <BoxView HeightRequest="1"
+                         Color="{Binding Game.CurrentGameColor}"
                          HorizontalOptions="Fill" />
             </VerticalStackLayout>
 

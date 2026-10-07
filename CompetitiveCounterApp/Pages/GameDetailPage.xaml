@@ -75,7 +75,7 @@
                 <Shadow Offset="0,-10" Radius="10" Opacity="0.2"/>
             </Border.Shadow>
             <ScrollView>
-                <VerticalStackLayout Spacing="15" Padding="0,0,0,10">
+                <VerticalStackLayout Spacing="5" Padding="0,0,0,10">
                     <Border IsVisible="{Binding HasDescription}">
                         <VerticalStackLayout Spacing="10">
                             <Label Text="Descripción"
@@ -109,8 +109,8 @@
                                 SemanticProperties.Description="Nueva sesión" />
                     </HorizontalStackLayout>
 
-                    <BoxView HeightRequest="2"
-                             BackgroundColor="{Binding Game.CurrentGameColor}"
+                    <BoxView HeightRequest="1"
+                             Color="{Binding Game.CurrentGameColor}"
                              HorizontalOptions="Fill" />
 
                     <Label Text="No hay sesiones registradas aún"
@@ -128,8 +128,8 @@
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="models:Session">
                                 <Border Padding="10,8"
-                                        Margin="0,0,8,10"
-                                        FlexLayout.Basis="31%"
+                                        Margin="2,8"
+                                        FlexLayout.Basis="33%"
                                         Background="{Binding ListCardBackground}"
                                         Stroke="{Binding ListCardStroke}"
                                         StrokeThickness="{Binding ListCardStrokeThickness}"
@@ -137,7 +137,7 @@
                                         behaviors:AnimatedTap.CommandParameter="{Binding .}"
                                         behaviors:AnimatedTap.PressedScale="0.97"
                                         behaviors:AnimatedTap.PressedOpacity="0.92">
-                                    <VerticalStackLayout Spacing="6" InputTransparent="True">
+                                    <VerticalStackLayout Spacing="2" InputTransparent="True">
                                         <Label FontSize="14"
                                                FontAttributes="Bold"
                                                LineBreakMode="TailTruncation"
@@ -184,12 +184,35 @@
                                                    TextColor="{Binding ListCardIconColor}" />
                                         </HorizontalStackLayout>
 
+                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                            <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center">
+                                                <Image.Source>
+                                                    <FontImageSource Glyph="{x:Static f:FluentUI.crown_24_regular}"
+                                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                     Color="{Binding ListCardIconColor}"
+                                                                     Size="18" />
+                                                </Image.Source>
+                                            </Image>
+                                            <Label FontSize="14" 
+                                                   MaxLines="2"
+                                                   LineBreakMode="TailTruncation"
+                                                   FontAttributes="Bold"
+                                                   Text="{Binding BestPlayer.Player, StringFormat='{0}'}">
+                                                <Label.Triggers>
+                                                    <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
+                                                        <Setter Property="TextColor" Value="White" />
+                                                    </DataTrigger>
+                                                </Label.Triggers>
+                                            </Label>
+                                        </HorizontalStackLayout>
+
                                         <Label Text="Activa"
                                                IsVisible="{Binding IsActive}"
                                                HorizontalOptions="End"
                                                TextColor="White"
                                                FontSize="12"
                                                FontAttributes="Bold" />
+                                        
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>
