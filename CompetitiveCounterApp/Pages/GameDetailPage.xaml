@@ -123,11 +123,16 @@
                                          Margin="0,4,0,10">
                         <BindableLayout.ItemTemplate>
                             <DataTemplate x:DataType="appModels:GameLeaderboardEntry">
-                                <!-- Fila neutra: el color de medalla vive solo en la insignia y en el borde del 1º. -->
+                                <!-- Fila neutra: el color de medalla vive solo en la insignia y en el borde del 1º. Tap: estadísticas del jugador. -->
                                 <Border Padding="12,8"
                                         StrokeThickness="0"
                                         StrokeShape="RoundRectangle 16"
-                                        Background="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}">
+                                        Background="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+                                        SemanticProperties.Description="{Binding PlayerName, StringFormat='Ver estadísticas de {0}'}"
+                                        behaviors:AnimatedTap.Command="{Binding NavigateToPlayerCommand, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}"
+                                        behaviors:AnimatedTap.CommandParameter="{Binding .}"
+                                        behaviors:AnimatedTap.PressedScale="0.97"
+                                        behaviors:AnimatedTap.PressedOpacity="0.92">
                                     <Border.Triggers>
                                         <DataTrigger TargetType="Border" Binding="{Binding IsFirst}" Value="True">
                                             <Setter Property="Stroke" Value="{Binding MedalColor}" />
@@ -136,7 +141,8 @@
                                     </Border.Triggers>
                                     <Grid ColumnDefinitions="Auto,*,Auto"
                                           ColumnSpacing="12"
-                                          VerticalOptions="Center">
+                                          VerticalOptions="Center"
+                                          InputTransparent="True">
                                         <!-- Avatar del jugador con la insignia de puesto en la esquina. -->
                                         <Grid WidthRequest="46"
                                               HeightRequest="46"
@@ -231,10 +237,6 @@
                                 VerticalOptions="Center"
                                 SemanticProperties.Description="Nueva sesión" />
                     </Grid>
-
-                    <BoxView HeightRequest="1"
-                             Color="{Binding Game.CurrentGameColor}"
-                             HorizontalOptions="Fill" />
 
                     <Label Text="No hay sesiones registradas aún"
                            IsVisible="{Binding HasSessions, Converter={StaticResource InvertedBoolConverter}}"
@@ -335,7 +337,6 @@
                                                TextColor="{Binding ListCardIconColor}"
                                                FontSize="12"
                                                FontAttributes="Bold" />
-                                        
                                     </VerticalStackLayout>
                                 </Border>
                             </DataTemplate>

@@ -53,6 +53,12 @@
                      Color="{StaticResource White}"
                      Size="{StaticResource IconSize}" />
 
+    <FontImageSource x:Key="IconStatsShell"
+                     Glyph="{x:Static f:FluentUI.data_histogram_24_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{StaticResource White}"
+                     Size="{StaticResource IconSize}" />
+
     <FontImageSource x:Key="IconSettingsShell"
                      Glyph="{x:Static f:FluentUI.more_vertical_28_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"

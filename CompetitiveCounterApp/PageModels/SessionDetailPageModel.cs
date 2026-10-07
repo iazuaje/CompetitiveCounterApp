@@ -209,6 +209,61 @@ namespace CompetitiveCounterApp.PageModels
             await AppShell.DisplayToastAsync("Jugador agregado");
         }
 
+        /// <summary>Tap sobre el jugador: sus estadísticas.</summary>
+        [RelayCommand]
+        private async Task NavigateToPlayer(SessionPlayer? sessionPlayer)
+        {
+            if (sessionPlayer is null || sessionPlayer.PlayerID == 0 || IsBusy)
+                return;
+
+            HapticFeedbackHelper.Click();
+            await Shell.Current.GoToAsync($"playerstats?id={sessionPlayer.PlayerID}");
+        }
+
+        /// <summary>Mantener presionado el jugador: quitarlo de la sesión (solo si está activa).</summary>
+        [RelayCommand]
+        private async Task RemovePlayer(SessionPlayer? sessionPlayer)
+        {
+            if (Session is null || sessionPlayer is null || IsBusy)
+                return;
+
+            if (!IsActive)
+            {
+                await AppShell.DisplayToastAsync("No se puede modificar una sesión cerrada");
+                return;
+            }
+
+            var winsWarning = sessionPlayer.Wins > 0
+                ? $" Se perderán sus {sessionPlayer.Wins} victorias en esta sesión."
+                : string.Empty;
+
+            bool confirm = await Shell.Current.DisplayAlertAsync(
+                "Quitar jugador",
+                $"¿Quitar a {sessionPlayer.Player?.Name} de la sesión?{winsWarning}",
+                "Quitar",
+                "Cancelar");
+
+            if (!confirm)
+                return;
+
+            try
+            {
+                IsBusy = true;
+                await _sessionRepository.RemovePlayerAsync(Session.ID, sessionPlayer.PlayerID);
+                Leaderboard.Remove(sessionPlayer);
+                OnPropertyChanged(nameof(HasPlayers));
+                await AppShell.DisplayToastAsync("Jugador quitado de la sesión");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleError(e);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         [RelayCommand]
         private async Task IncrementWins(SessionPlayer sessionPlayer)
         {

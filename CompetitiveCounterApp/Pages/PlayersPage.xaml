@@ -28,6 +28,12 @@
         </ResourceDictionary>
     </ContentPage.Resources>
 
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Estadísticas"
+                     Command="{Binding OpenStatsCommand}"
+                     IconImageSource="{StaticResource IconStatsShell}" />
+    </ContentPage.ToolbarItems>
+
     <Grid>
         <RefreshView IsRefreshing="{Binding IsRefreshing}"
                      Command="{Binding RefreshCommand}">

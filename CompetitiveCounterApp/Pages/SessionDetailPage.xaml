@@ -10,9 +10,9 @@
              x:DataType="pageModels:SessionDetailPageModel"
              x:Name="SessionDetailRoot"
              Title="{Binding Title}"
-             Shell.BackgroundColor="{Binding Game.CurrentGameColor}"
-             Shell.ForegroundColor="{Binding Game.OnGameColor}"
-             Shell.TitleColor="{Binding Game.OnGameColor}">
+             Shell.BackgroundColor="{Binding Game.ToolbarColor}"
+             Shell.ForegroundColor="{Binding Game.OnToolbarColor}"
+             Shell.TitleColor="{Binding Game.OnToolbarColor}">
 
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
@@ -104,37 +104,51 @@
                                 <Border StrokeThickness="1"
                                         Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
                                         Padding="12,10">
-                                    <Grid ColumnDefinitions="Auto,*,Auto,Auto"
+                                    <Grid ColumnDefinitions="*,Auto,Auto"
                                           ColumnSpacing="10"
                                           VerticalOptions="Center">
-                                        <Border WidthRequest="40"
-                                                HeightRequest="40"
-                                                StrokeThickness="0"
-                                                Background="{Binding Player.CurrentColor}"
-                                                VerticalOptions="Center"
-                                                StrokeShape="Ellipse"
-                                                Padding="0">
-                                            <Image HeightRequest="20"
-                                                   WidthRequest="20"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center">
-                                                <Image.Source>
-                                                    <FontImageSource Glyph="{Binding Player.Icon}"
-                                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                                     Color="{Binding Player.OnColor}"
-                                                                     Size="20" />
-                                                </Image.Source>
-                                            </Image>
-                                        </Border>
+                                        <!-- Avatar + nombre: tap = estadísticas; mantener presionado = quitar de la sesión. -->
+                                        <Grid ColumnDefinitions="Auto,*"
+                                              ColumnSpacing="10"
+                                              VerticalOptions="Center"
+                                              SemanticProperties.Description="{Binding Player.Name, StringFormat='Ver estadísticas de {0}'}"
+                                              SemanticProperties.Hint="Mantener presionado para quitar de la sesión"
+                                              behaviors:AnimatedTap.Command="{Binding NavigateToPlayerCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
+                                              behaviors:AnimatedTap.LongPressCommand="{Binding RemovePlayerCommand, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}"
+                                              behaviors:AnimatedTap.CommandParameter="{Binding .}"
+                                              behaviors:AnimatedTap.PressedScale="0.97"
+                                              behaviors:AnimatedTap.PressedOpacity="0.92">
+                                            <Border WidthRequest="40"
+                                                    HeightRequest="40"
+                                                    StrokeThickness="0"
+                                                    InputTransparent="True"
+                                                    Background="{Binding Player.CurrentColor}"
+                                                    VerticalOptions="Center"
+                                                    StrokeShape="Ellipse"
+                                                    Padding="0">
+                                                <Image HeightRequest="20"
+                                                       WidthRequest="20"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center">
+                                                    <Image.Source>
+                                                        <FontImageSource Glyph="{Binding Player.Icon}"
+                                                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                         Color="{Binding Player.OnColor}"
+                                                                         Size="20" />
+                                                    </Image.Source>
+                                                </Image>
+                                            </Border>
 
-                                        <Label Grid.Column="1"
-                                               Text="{Binding Player.Name}"
-                                               FontSize="16"
-                                               FontAttributes="Bold"
-                                               VerticalOptions="Center"
-                                               LineBreakMode="TailTruncation" />
+                                            <Label Grid.Column="1"
+                                                   Text="{Binding Player.Name}"
+                                                   InputTransparent="True"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   VerticalOptions="Center"
+                                                   LineBreakMode="TailTruncation" />
+                                        </Grid>
 
-                                        <HorizontalStackLayout Grid.Column="2"
+                                        <HorizontalStackLayout Grid.Column="1"
                                                                Spacing="4"
                                                                VerticalOptions="Center"
                                                                SemanticProperties.Description="Tocar para editar victorias"
@@ -161,7 +175,7 @@
                                                    TextColor="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}" />
                                         </HorizontalStackLayout>
 
-                                        <HorizontalStackLayout Grid.Column="3"
+                                        <HorizontalStackLayout Grid.Column="2"
                                                                Spacing="6"
                                                                VerticalOptions="Center"
                                                                IsVisible="{Binding IsActive, Source={RelativeSource AncestorType={x:Type pageModels:SessionDetailPageModel}}, x:DataType=pageModels:SessionDetailPageModel}">

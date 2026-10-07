@@ -83,10 +83,17 @@ namespace CompetitiveCounterApp.PageModels
         }
 
         [RelayCommand]
+        private async Task OpenStats()
+        {
+            HapticFeedbackHelper.Click();
+            await Shell.Current.GoToAsync("generalstats");
+        }
+
+        [RelayCommand]
         private async Task NavigateToPlayer(Player player)
         {
             HapticFeedbackHelper.Click();
-            await Shell.Current.GoToAsync($"editplayer?id={player.ID}");
+            await Shell.Current.GoToAsync($"playerstats?id={player.ID}");
         }
     }
 }

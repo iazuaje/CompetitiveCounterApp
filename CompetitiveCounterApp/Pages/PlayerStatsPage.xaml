@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="CompetitiveCounterApp.Pages.PlayerStatsPage"
+             x:DataType="pageModels:PlayerStatsPageModel"
+             x:Name="PlayerStatsRoot"
+             Title="{Binding Title}"
+             Shell.BackgroundColor="{Binding Player.ToolbarColor}"
+             Shell.ForegroundColor="{Binding Player.OnToolbarColor}"
+             Shell.TitleColor="{Binding Player.OnToolbarColor}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference PlayerStatsRoot}, x:DataType=ContentPage}"
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Editar"
+                     Command="{Binding EditCommand}"
+                     IconImageSource="{StaticResource IconEditShell}" />
+    </ContentPage.ToolbarItems>
+
+    <Grid BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
+          Padding="20">
+        <VerticalStackLayout VerticalOptions="Center"
+                             HorizontalOptions="Center"
+                             Spacing="8">
+            <Label Text="Próximamente"
+                   FontSize="22"
+                   FontAttributes="Bold"
+                   HorizontalTextAlignment="Center" />
+            <Label Text="Las estadísticas de este jugador estarán disponibles acá."
+                   FontSize="14"
+                   HorizontalTextAlignment="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+        </VerticalStackLayout>
+    </Grid>
+
+</ContentPage>

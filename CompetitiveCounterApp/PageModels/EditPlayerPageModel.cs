@@ -121,7 +121,8 @@ namespace CompetitiveCounterApp.PageModels
                 }
 
                 await _playerRepository.DeleteItemAsync(_player);
-                await Shell.Current.GoToAsync("..");
+                // Saltea también las estadísticas del jugador eliminado y vuelve a la lista.
+                await Shell.Current.GoToAsync("../..");
                 await AppShell.DisplayToastAsync("Jugador eliminado exitosamente");
             }
             catch (Exception e)

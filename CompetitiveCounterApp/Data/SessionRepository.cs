@@ -168,6 +168,18 @@ namespace CompetitiveCounterApp.Data
         }
 
         /// <summary>
+        /// Quita al jugador de una sesión activa junto con sus victorias en ella.
+        /// </summary>
+        public async Task RemovePlayerAsync(int sessionId, int playerId)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            var sessionPlayer = await GetEditableSessionPlayerAsync(db, sessionId, playerId);
+
+            db.SessionPlayers.Remove(sessionPlayer);
+            await db.SaveChangesAsync();
+        }
+
+        /// <summary>
         /// Suma <paramref name="delta"/> a las victorias (no baja de 0).
         /// </summary>
         public async Task<int> AdjustWinsAsync(int sessionId, int playerId, int delta)
@@ -237,7 +249,7 @@ namespace CompetitiveCounterApp.Data
                 ?? throw new InvalidOperationException("La sesión no existe.");
 
             if (session.ClosedAt is not null)
-                throw new InvalidOperationException("No se pueden modificar victorias de una sesión cerrada.");
+                throw new InvalidOperationException("No se puede modificar una sesión cerrada.");
 
             return await db.SessionPlayers
                 .FirstOrDefaultAsync(sp => sp.SessionID == sessionId && sp.PlayerID == playerId)

@@ -2,11 +2,15 @@ namespace CompetitiveCounterApp.Helpers;
 
 public static class HapticFeedbackHelper
 {
-    public static void Click()
+    public static void Click() => Perform(HapticFeedbackType.Click);
+
+    public static void LongPress() => Perform(HapticFeedbackType.LongPress);
+
+    static void Perform(HapticFeedbackType type)
     {
         try
         {
-            HapticFeedback.Default.Perform(HapticFeedbackType.Click);
+            HapticFeedback.Default.Perform(type);
         }
         catch (FeatureNotSupportedException)
         {

@@ -60,6 +60,8 @@ namespace CompetitiveCounterApp.Data
                 entity.Ignore(e => e.ThemeColors);
                 entity.Ignore(e => e.CurrentColor);
                 entity.Ignore(e => e.OnColor);
+                entity.Ignore(e => e.ToolbarColor);
+                entity.Ignore(e => e.OnToolbarColor);
             });
 
             modelBuilder.Entity<Session>(entity =>

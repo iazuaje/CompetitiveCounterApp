@@ -56,6 +56,8 @@ namespace CompetitiveCounterApp
             builder.Services.AddTransientWithShellRoute<EditPlayerPage, EditPlayerPageModel>("editplayer");
             builder.Services.AddTransientWithShellRoute<SessionDetailPage, SessionDetailPageModel>("sessiondetail");
             builder.Services.AddTransientWithShellRoute<GameStatsPage, GameStatsPageModel>("gamestats");
+            builder.Services.AddTransientWithShellRoute<GeneralStatsPage, GeneralStatsPageModel>("generalstats");
+            builder.Services.AddTransientWithShellRoute<PlayerStatsPage, PlayerStatsPageModel>("playerstats");
 
             var app = builder.Build();
 

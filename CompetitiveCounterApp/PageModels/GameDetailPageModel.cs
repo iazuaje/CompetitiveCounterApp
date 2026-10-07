@@ -158,6 +158,7 @@ namespace CompetitiveCounterApp.PageModels
                 .Select((x, index) => new GameLeaderboardEntry
                 {
                     Rank = index + 1,
+                    PlayerId = x.Player.ID,
                     PlayerName = x.Player.Name,
                     PlayerIcon = string.IsNullOrEmpty(x.Player.Icon)
                         ? FluentUI.person_24_regular
@@ -252,6 +253,16 @@ namespace CompetitiveCounterApp.PageModels
             {
                 IsBusy = false;
             }
+        }
+
+        [RelayCommand]
+        private async Task NavigateToPlayer(GameLeaderboardEntry? entry)
+        {
+            if (entry is null || entry.PlayerId == 0)
+                return;
+
+            HapticFeedbackHelper.Click();
+            await Shell.Current.GoToAsync($"playerstats?id={entry.PlayerId}");
         }
 
         [RelayCommand]

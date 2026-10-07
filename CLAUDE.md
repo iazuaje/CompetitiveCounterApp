@@ -32,12 +32,14 @@ dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net10.0-and
 - Colores y superficies con `AppThemeBinding`; nada de colores literales como `White` en fondos.
 - Colores por entidad como par hex `ColorLight` / `ColorDark`, resueltos con `ThemeColorPair`. `Player` sigue el mismo patrón que `Game`.
 - Nunca `White` fijo sobre un color dinámico: en oscuro los colores son pasteles claros. Texto e iconos encima usan `OnColor` / `OnGameColor` (sobre el color), `OnToolbarColor` (sobre `ToolbarColor`) o `ThemeColorPair.ContrastingTextColor(...)`. Sobre `Primary`/`PrimaryDark` fijos: `AppThemeBinding Light=White, Dark=PrimaryDarkText`.
+- Barras de pantallas con color propio: `Shell.BackgroundColor` = `ToolbarColor` y título/iconos = `OnToolbarColor` (formularios: `SelectedColor.ToolbarColor`). La barra de estado del sistema la sincroniza `AppShell` con el `Shell.BackgroundColor` de la página visible; no fijarla por página.
 - Al cambiar el tema, `App` envía `AppThemeChangedMessage`; todo page model con colores calculados se registra y llama `NotifyThemeChanged()` en sus modelos.
 
 ## Feedback táctil
 
 - **Acción clara**: `Button` nativo, `Pressed` suave (`Scale` 0.96, `Opacity` 0.92), `BorderWidth="0"`.
 - **Card que no puede ser Button**: `behaviors:AnimatedTap.Command` sobre el `Border`, con el contenido `InputTransparent="True"`. No `TouchBehavior` ni `TapGestureRecognizer.Command` (navega antes de animar).
+- **Mantener presionado**: `behaviors:AnimatedTap.LongPressCommand` (mismo `CommandParameter`; ~500 ms, se cancela al mover el dedo). Reservado para acciones destructivas o secundarias; el tap simple sigue siendo la acción principal.
 - **Listas con pulso**: `ScrollView` + `BindableLayout`. `CollectionView` solo si el ítem no se anima (en Android recicla celdas y pierde el comando o el pulso).
 - **Grilla de 2 columnas**: `FlexLayout` con `JustifyContent="SpaceBetween"` y `FlexLayout.Basis="48%"`, solo margen inferior.
 - **Háptica**: `HapticFeedbackHelper.Click()` al inicio de cada comando de usuario.

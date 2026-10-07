@@ -49,7 +49,11 @@ public readonly record struct ThemeColorPair(string LightThemeHex, string DarkTh
 
     /// <summary>Blanco u oscuro, el que contraste más con <paramref name="background"/>.</summary>
     public static Color ContrastingTextColor(Color background) =>
-        RelativeLuminance(background) > DarkTextLuminanceThreshold ? DarkText : Colors.White;
+        PrefersDarkText(background) ? DarkText : Colors.White;
+
+    /// <summary>True si sobre <paramref name="background"/> se lee mejor contenido oscuro que blanco.</summary>
+    public static bool PrefersDarkText(Color background) =>
+        RelativeLuminance(background) > DarkTextLuminanceThreshold;
 
     private static bool IsDarkTheme => (Application.Current?.RequestedTheme ?? AppTheme.Light) == AppTheme.Dark;
 

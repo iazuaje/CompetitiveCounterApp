@@ -1,4 +1,6 @@
+using System.Runtime.CompilerServices;
 using System.Windows.Input;
+using CompetitiveCounterApp.Helpers;
 
 namespace CompetitiveCounterApp.Behaviors;
 
@@ -6,17 +8,46 @@ namespace CompetitiveCounterApp.Behaviors;
 /// El comando vive en el View. El TapGestureRecognizer no usa Command propio
 /// (si no, navega antes de animar). Parent del recognizer a veces es null en layouts;
 /// por eso el handler captura el View.
+/// <para>
+/// LongPressCommand (opcional): mantener presionado ejecuta ese comando en lugar del tap.
+/// MAUI no trae gesto de long press; se arma con PointerGestureRecognizer y un temporizador
+/// que se cancela al soltar o al mover el dedo (scroll).
+/// </para>
 /// </summary>
 public static class AnimatedTap
 {
     const string RecognizerStyleId = "AnimatedTap";
     const string AnimationName = "AnimatedTapPress";
 
+    /// <summary>Desplazamiento máximo (DIP) antes de considerar que el dedo hace scroll.</summary>
+    const double LongPressMoveTolerance = 6;
+
+    sealed class LongPressState
+    {
+        public CancellationTokenSource? Timer;
+        public Point? Start;
+        public bool Fired;
+    }
+
+    static readonly ConditionalWeakTable<View, LongPressState> LongPressStates = new();
+
     public static readonly BindableProperty CommandProperty =
         BindableProperty.CreateAttached("Command", typeof(ICommand), typeof(AnimatedTap), null, propertyChanged: OnAttachedChanged);
 
     public static readonly BindableProperty CommandParameterProperty =
         BindableProperty.CreateAttached("CommandParameter", typeof(object), typeof(AnimatedTap), null, propertyChanged: OnAttachedChanged);
+
+    public static readonly BindableProperty LongPressCommandProperty =
+        BindableProperty.CreateAttached("LongPressCommand", typeof(ICommand), typeof(AnimatedTap), null, propertyChanged: OnLongPressAttachedChanged);
+
+    public static readonly BindableProperty LongPressDurationProperty =
+        BindableProperty.CreateAttached("LongPressDuration", typeof(int), typeof(AnimatedTap), 500);
+
+    public static ICommand? GetLongPressCommand(BindableObject view) => (ICommand?)view.GetValue(LongPressCommandProperty);
+    public static void SetLongPressCommand(BindableObject view, ICommand? value) => view.SetValue(LongPressCommandProperty, value);
+
+    public static int GetLongPressDuration(BindableObject view) => (int)view.GetValue(LongPressDurationProperty);
+    public static void SetLongPressDuration(BindableObject view, int value) => view.SetValue(LongPressDurationProperty, value);
 
     public static readonly BindableProperty PressedScaleProperty =
         BindableProperty.CreateAttached("PressedScale", typeof(double), typeof(AnimatedTap), 0.97d);
@@ -53,6 +84,13 @@ public static class AnimatedTap
         var tap = new TapGestureRecognizer { StyleId = RecognizerStyleId };
         tap.Tapped += async (_, _) =>
         {
+            // El long press ya se ejecutó: este tap es el mismo dedo al soltar.
+            if (LongPressStates.TryGetValue(view, out var longPress) && longPress.Fired)
+            {
+                longPress.Fired = false;
+                return;
+            }
+
             try
             {
                 await PlayPressAsync(view);
@@ -69,9 +107,88 @@ public static class AnimatedTap
         return tap;
     }
 
-    static void Execute(View view)
+    static void OnLongPressAttachedChanged(BindableObject bindable, object oldValue, object newValue)
     {
-        var command = GetCommand(view);
+        if (bindable is not View view)
+            return;
+
+        // El tap recognizer también descarta el tap que sigue a un long press.
+        GetOrAddRecognizer(view);
+
+        foreach (var recognizer in view.GestureRecognizers)
+        {
+            if (recognizer is PointerGestureRecognizer existing && existing.StyleId == RecognizerStyleId)
+                return;
+        }
+
+        var pointer = new PointerGestureRecognizer { StyleId = RecognizerStyleId };
+        pointer.PointerPressed += (_, e) => StartLongPress(view, e.GetPosition(view));
+        pointer.PointerMoved += (_, e) =>
+        {
+            if (!LongPressStates.TryGetValue(view, out var state) || state.Start is not Point start)
+                return;
+
+            if (e.GetPosition(view) is Point current && current.Distance(start) > LongPressMoveTolerance)
+                CancelLongPress(view);
+        };
+        pointer.PointerReleased += (_, _) => CancelLongPress(view);
+        pointer.PointerExited += (_, _) => CancelLongPress(view);
+        view.GestureRecognizers.Add(pointer);
+    }
+
+    static async void StartLongPress(View view, Point? start)
+    {
+        var state = LongPressStates.GetOrCreateValue(view);
+        state.Timer?.Cancel();
+
+        var timer = new CancellationTokenSource();
+        state.Timer = timer;
+        state.Start = start;
+        state.Fired = false;
+
+        try
+        {
+            await Task.Delay(GetLongPressDuration(view), timer.Token);
+        }
+        catch (TaskCanceledException)
+        {
+            return;
+        }
+
+        if (timer.IsCancellationRequested || GetLongPressCommand(view) is not ICommand command)
+            return;
+
+        state.Fired = true;
+        state.Start = null;
+        HapticFeedbackHelper.LongPress();
+
+        try
+        {
+            await PlayPressAsync(view);
+        }
+        catch
+        {
+            view.Scale = 1;
+            view.Opacity = 1;
+        }
+
+        Execute(view, command);
+    }
+
+    static void CancelLongPress(View view)
+    {
+        if (!LongPressStates.TryGetValue(view, out var state))
+            return;
+
+        state.Timer?.Cancel();
+        state.Timer = null;
+        state.Start = null;
+    }
+
+    static void Execute(View view) => Execute(view, GetCommand(view));
+
+    static void Execute(View view, ICommand? command)
+    {
         if (command is null)
             return;
 

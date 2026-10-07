@@ -13,11 +13,15 @@ namespace CompetitiveCounterApp.Models
         public ThemeColorPair ThemeColors => new(ColorLight, ColorDark);
         public Color CurrentColor => ThemeColors.CurrentColor;
         public Color OnColor => ThemeColors.OnColor;
+        public Color ToolbarColor => ThemeColors.ToolbarColor;
+        public Color OnToolbarColor => ThemeColors.OnToolbarColor;
 
         public void NotifyThemeChanged()
         {
             OnPropertyChanged(nameof(CurrentColor));
             OnPropertyChanged(nameof(OnColor));
+            OnPropertyChanged(nameof(ToolbarColor));
+            OnPropertyChanged(nameof(OnToolbarColor));
         }
 
         public override string ToString() => Name;

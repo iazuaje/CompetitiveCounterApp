@@ -6,9 +6,9 @@
              x:Class="CompetitiveCounterApp.Pages.EditPlayerPage"
              x:DataType="pageModels:EditPlayerPageModel"
              Title="Editar jugador"
-             Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-             Shell.ForegroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
-             Shell.TitleColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}">
+             Shell.BackgroundColor="{Binding SelectedColor.ToolbarColor}"
+             Shell.ForegroundColor="{Binding SelectedColor.OnToolbarColor}"
+             Shell.TitleColor="{Binding SelectedColor.OnToolbarColor}">
 
     <ContentPage.ToolbarItems>
         <ToolbarItem Text="Eliminar"

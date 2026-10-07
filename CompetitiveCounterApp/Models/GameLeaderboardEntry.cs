@@ -5,6 +5,7 @@ namespace CompetitiveCounterApp.Models;
 public partial class GameLeaderboardEntry : ObservableObject
 {
     public int Rank { get; init; }
+    public int PlayerId { get; init; }
     public string PlayerName { get; init; } = string.Empty;
     public string PlayerIcon { get; init; } = string.Empty;
     public int TotalWins { get; init; }
