@@ -41,9 +41,6 @@
                             <Button.Background>
                                 <SolidColorBrush Color="{Binding CurrentGameColor}"/>
                             </Button.Background>
-                            <Button.Shadow>
-                                <Shadow Opacity="0.2" Radius="3"/>
-                            </Button.Shadow>
                             <Button.Triggers>
                                 <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="True">
                                     <Setter Property="BorderColor" Value="{AppThemeBinding Light={StaticResource Black}, Dark={StaticResource White}}"/>

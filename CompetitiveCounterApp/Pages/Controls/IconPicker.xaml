@@ -49,9 +49,6 @@
 
                             </Button.ImageSource>
 
-                            <Button.Shadow>
-                                <Shadow Opacity="0.2" Radius="3"/>
-                            </Button.Shadow>
 
                             <Button.Triggers>
                                 <DataTrigger TargetType="Button" Binding="{Binding IsSelected}" Value="True">

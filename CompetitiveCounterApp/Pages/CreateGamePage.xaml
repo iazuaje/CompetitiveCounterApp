@@ -140,11 +140,7 @@
                                     <Image Aspect="AspectFill" IsVisible="{Binding SelectedImage, Converter={toolkit:IsNotNullConverter}}" Source="{Binding SelectedImage}" ></Image>
                                     <Button Text="Cargar Imagen" VerticalOptions="Center" Margin="10"
                                 Command="{Binding SelectImageCommand}"
-                                HorizontalOptions="Start" ImageSource="{StaticResource IconAddImage}">
-                                        <Button.Shadow>
-                                            <Shadow Offset="0,4" Opacity="0.5" Radius="10"/>
-                                        </Button.Shadow>
-                                    </Button>
+                                HorizontalOptions="Start" ImageSource="{StaticResource IconAddImage}" />
                                 </Grid>
                             </Border>
                         </VerticalStackLayout>
