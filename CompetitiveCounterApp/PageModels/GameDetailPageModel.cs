@@ -152,7 +152,7 @@ namespace CompetitiveCounterApp.PageModels
 
             if (HasActiveSession)
             {
-                bool confirm = await Shell.Current.DisplayAlert(
+                bool confirm = await Shell.Current.DisplayAlertAsync(
                     "Nueva sesión",
                     "Hay una sesión activa. Al crear una nueva se cerrará la actual. ¿Continuar?",
                     "Crear",

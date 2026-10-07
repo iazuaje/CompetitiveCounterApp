@@ -15,6 +15,8 @@ namespace CompetitiveCounterApp.Models
         public Game? Game { get; set; }
         public List<SessionPlayer> SessionPlayers { get; set; } = [];
 
+        public SessionPlayer BestPlayer => SessionPlayers.Select(sp => sp).OrderByDescending(sp => sp.Wins).FirstOrDefault() ?? new SessionPlayer();
+
         public bool IsActive => ClosedAt is null;
 
         /// <summary>Suma de victorias de todos los jugadores de la sesión.</summary>

@@ -146,7 +146,7 @@ namespace CompetitiveCounterApp.PageModels
                     .Append(CreateNewPlayerOption)
                     .ToArray();
 
-                var choice = await Shell.Current.DisplayActionSheet(
+                var choice = await Shell.Current.DisplayActionSheetAsync(
                     "Agregar jugador",
                     "Cancelar",
                     null,
@@ -303,7 +303,7 @@ namespace CompetitiveCounterApp.PageModels
 
             HapticFeedbackHelper.Click();
 
-            bool confirm = await Shell.Current.DisplayAlert(
+            bool confirm = await Shell.Current.DisplayAlertAsync(
                 "Cerrar sesión",
                 "¿Cerrar la sesión activa? Podrás crear una nueva desde el detalle del juego.",
                 "Cerrar",

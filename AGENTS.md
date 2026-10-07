@@ -1,6 +1,6 @@
 # CompetitiveCounterApp
 
-App .NET MAUI 9 (MVVM con CommunityToolkit.MVVM, SQLite) para registrar partidas competitivas.
+App .NET MAUI 10 (MVVM con CommunityToolkit.MVVM, SQLite) para registrar partidas competitivas.
 
 ## Mobile-first
 
@@ -11,7 +11,7 @@ El producto es exclusivamente móvil. Windows y macOS existen en `TargetFramewor
 - La compilación que valida es Android Debug:
 
 ```powershell
-dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net9.0-android
+dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net10.0-android
 ```
 
 Compilar solo para Windows no basta como evidencia final.
