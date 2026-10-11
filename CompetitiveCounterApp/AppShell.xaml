@@ -20,6 +20,12 @@
         ContentTemplate="{DataTemplate pages:PlayersPage}"
         Route="players" />
 
+    <ShellContent
+        Title="Estadísticas"
+        Icon="{StaticResource IconStats}"
+        ContentTemplate="{DataTemplate pages:GeneralStatsPage}"
+        Route="stats" />
+
     <Shell.FlyoutFooter>
         <Grid Padding="15">
             <sf:SfSegmentedControl x:Name="ThemeSegmentedControl"

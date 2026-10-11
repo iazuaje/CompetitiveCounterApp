@@ -86,7 +86,8 @@ namespace CompetitiveCounterApp.PageModels
         private async Task OpenStats()
         {
             HapticFeedbackHelper.Click();
-            await Shell.Current.GoToAsync("generalstats");
+            // Sección del flyout, no página apilada: evita dos instancias de la misma pantalla.
+            await Shell.Current.GoToAsync("//stats");
         }
 
         [RelayCommand]

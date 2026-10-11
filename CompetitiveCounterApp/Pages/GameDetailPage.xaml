@@ -258,7 +258,9 @@
                                         Background="{Binding ListCardBackground}"
                                         Stroke="{Binding ListCardStroke}"
                                         StrokeThickness="{Binding ListCardStrokeThickness}"
+                                        SemanticProperties.Hint="Mantener presionado para eliminar la sesión"
                                         behaviors:AnimatedTap.Command="{Binding NavigateToSessionCommand, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}"
+                                        behaviors:AnimatedTap.LongPressCommand="{Binding DeleteSessionCommand, Source={RelativeSource AncestorType={x:Type pageModels:GameDetailPageModel}}, x:DataType=pageModels:GameDetailPageModel}"
                                         behaviors:AnimatedTap.CommandParameter="{Binding .}"
                                         behaviors:AnimatedTap.PressedScale="0.97"
                                         behaviors:AnimatedTap.PressedOpacity="0.92">

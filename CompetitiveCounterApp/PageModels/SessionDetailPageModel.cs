@@ -392,5 +392,33 @@ namespace CompetitiveCounterApp.PageModels
                 IsBusy = false;
             }
         }
+
+        [RelayCommand]
+        private async Task DeleteSession()
+        {
+            if (Session is null || IsBusy)
+                return;
+
+            HapticFeedbackHelper.Click();
+
+            if (!await SessionDeletePrompt.ConfirmAsync(Leaderboard.Sum(sp => sp.Wins)))
+                return;
+
+            try
+            {
+                IsBusy = true;
+                await _sessionRepository.DeleteAsync(Session.ID);
+                await Shell.Current.GoToAsync("..");
+                await AppShell.DisplayToastAsync("Sesión eliminada");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleError(e);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
     }
 }

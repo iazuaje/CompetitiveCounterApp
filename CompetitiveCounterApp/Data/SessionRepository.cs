@@ -254,9 +254,16 @@ namespace CompetitiveCounterApp.Data
             await db.SaveChangesAsync();
         }
 
-        public async Task DeleteItemAsync(Session session)
+        /// <summary>
+        /// Elimina la sesión (activa o cerrada) con sus jugadores y victorias (cascada).
+        /// </summary>
+        public async Task DeleteAsync(int sessionId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
+
+            var session = await db.Sessions.FirstOrDefaultAsync(s => s.ID == sessionId)
+                ?? throw new InvalidOperationException("La sesión no existe.");
+
             db.Sessions.Remove(session);
             await db.SaveChangesAsync();
         }

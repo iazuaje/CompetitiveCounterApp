@@ -62,6 +62,10 @@
     </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Eliminar sesión"
+                     Command="{Binding DeleteSessionCommand}"
+                     IconImageSource="{StaticResource IconDeleteShell}"
+                     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
         <ToolbarItem Text="Cerrar sesión"
                      Command="{Binding CloseSessionCommand}"
                      IconImageSource="{StaticResource IconCloseSessionShell}"

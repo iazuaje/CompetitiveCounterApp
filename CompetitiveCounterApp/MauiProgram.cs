@@ -56,7 +56,8 @@ namespace CompetitiveCounterApp
             builder.Services.AddTransientWithShellRoute<EditPlayerPage, EditPlayerPageModel>("editplayer");
             builder.Services.AddTransientWithShellRoute<SessionDetailPage, SessionDetailPageModel>("sessiondetail");
             builder.Services.AddTransientWithShellRoute<GameStatsPage, GameStatsPageModel>("gamestats");
-            builder.Services.AddTransientWithShellRoute<GeneralStatsPage, GeneralStatsPageModel>("generalstats");
+            // Raíz del flyout (ruta "stats" en AppShell.xaml): sin ruta apilada propia.
+            builder.Services.AddTransient<GeneralStatsPageModel>();
             builder.Services.AddTransientWithShellRoute<PlayerStatsPage, PlayerStatsPageModel>("playerstats");
             builder.Services.AddTransientWithShellRoute<PlayerGameStatsPage, PlayerGameStatsPageModel>("playergamestats");
 

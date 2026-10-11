@@ -260,6 +260,34 @@ namespace CompetitiveCounterApp.PageModels
             await Shell.Current.GoToAsync($"playergamestats?playerId={entry.PlayerId}&gameId={_gameId}");
         }
 
+        /// <summary>Mantener presionada una card de sesión: eliminarla.</summary>
+        [RelayCommand]
+        private async Task DeleteSession(Session? session)
+        {
+            if (session is null || session.ID == 0 || IsBusy)
+                return;
+
+            if (!await SessionDeletePrompt.ConfirmAsync(session.TotalWins))
+                return;
+
+            try
+            {
+                IsBusy = true;
+                await _sessionRepository.DeleteAsync(session.ID);
+                await AppShell.DisplayToastAsync("Sesión eliminada");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleError(e);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+
+            await LoadData(_gameId);
+        }
+
         [RelayCommand]
         private async Task NavigateToSession(Session? session)
         {
