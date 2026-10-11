@@ -142,18 +142,7 @@ namespace CompetitiveCounterApp.PageModels
 
         static List<GameLeaderboardEntry> BuildLeaderboard(IEnumerable<Session> sessions)
         {
-            return sessions
-                .SelectMany(s => s.SessionPlayers ?? [])
-                .Where(sp => sp.Player is not null)
-                .GroupBy(sp => sp.PlayerID)
-                .Select(g => new
-                {
-                    Player = g.First().Player!,
-                    TotalWins = g.Sum(sp => sp.Wins)
-                })
-                .Where(x => x.TotalWins > 0)
-                .OrderByDescending(x => x.TotalWins)
-                .ThenBy(x => x.Player.Name, StringComparer.CurrentCultureIgnoreCase)
+            return PlayerGameStatsCalculator.RankPlayers(sessions)
                 .Take(3)
                 .Select((x, index) => new GameLeaderboardEntry
                 {
@@ -217,9 +206,15 @@ namespace CompetitiveCounterApp.PageModels
 
             if (HasActiveSession)
             {
+                // Misma regla que SessionRepository.CreateAsync: sin victorias la activa se descarta.
+                var activeHasWins = ActiveSession?.HasBestPlayer ?? false;
+                var message = activeHasWins
+                    ? "Hay una sesión activa. Al crear una nueva se cerrará la actual. ¿Continuar?"
+                    : "Hay una sesión activa sin victorias. Al crear una nueva se descartará la actual. ¿Continuar?";
+
                 bool confirm = await Shell.Current.DisplayAlertAsync(
                     "Nueva sesión",
-                    "Hay una sesión activa. Al crear una nueva se cerrará la actual. ¿Continuar?",
+                    message,
                     "Crear",
                     "Cancelar");
 
@@ -262,7 +257,7 @@ namespace CompetitiveCounterApp.PageModels
                 return;
 
             HapticFeedbackHelper.Click();
-            await Shell.Current.GoToAsync($"playerstats?id={entry.PlayerId}");
+            await Shell.Current.GoToAsync($"playergamestats?playerId={entry.PlayerId}&gameId={_gameId}");
         }
 
         [RelayCommand]

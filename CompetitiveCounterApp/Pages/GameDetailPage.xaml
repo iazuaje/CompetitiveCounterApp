@@ -309,7 +309,8 @@
                                                    TextColor="{Binding ListCardIconColor}" />
                                         </HorizontalStackLayout>
 
-                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                        <!-- Mejor jugador: solo si alguien ganó al menos una partida. -->
+                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center" IsVisible="{Binding HasBestPlayer}">
                                             <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center">
                                                 <Image.Source>
                                                     <FontImageSource Glyph="{x:Static f:FluentUI.crown_24_regular}"

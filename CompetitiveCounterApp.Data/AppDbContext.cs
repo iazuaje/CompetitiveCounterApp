@@ -75,6 +75,7 @@ namespace CompetitiveCounterApp.Data
                 entity.Property(e => e.ClosedAt)
                     .HasConversion(NullableLocalDateTimeConverter);
                 entity.Ignore(e => e.IsActive);
+                entity.Ignore(e => e.HasBestPlayer);
                 entity.Ignore(e => e.TotalWins);
                 entity.Ignore(e => e.PlayerCount);
                 entity.Ignore(e => e.SessionDateLocal);

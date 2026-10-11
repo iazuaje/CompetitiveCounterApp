@@ -89,7 +89,7 @@ namespace CompetitiveCounterApp.Data
         }
 
         /// <summary>
-        /// Cierra la sesión activa del juego (si existe) y crea una nueva.
+        /// Cierra la sesión activa del juego (si existe; sin victorias se descarta) y crea una nueva.
         /// </summary>
         public async Task<Session> CreateAsync(int gameId, string? notes = null)
         {
@@ -97,10 +97,11 @@ namespace CompetitiveCounterApp.Data
             await using var transaction = await db.Database.BeginTransactionAsync();
 
             var active = await db.Sessions
+                .Include(s => s.SessionPlayers)
                 .FirstOrDefaultAsync(s => s.GameID == gameId && s.ClosedAt == null);
 
             if (active is not null)
-                active.ClosedAt = DateTime.Now;
+                CloseOrDiscard(db, active);
 
             var session = new Session
             {
@@ -117,18 +118,38 @@ namespace CompetitiveCounterApp.Data
             return (await GetAsync(session.ID))!;
         }
 
-        public async Task CloseAsync(int sessionId)
+        /// <summary>
+        /// Cierra la sesión. Si nadie tiene victorias no aporta datos y se descarta (se elimina).
+        /// </summary>
+        /// <returns><c>true</c> si se guardó cerrada; <c>false</c> si se descartó.</returns>
+        public async Task<bool> CloseAsync(int sessionId)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
 
-            var session = await db.Sessions.FirstOrDefaultAsync(s => s.ID == sessionId)
+            var session = await db.Sessions
+                .Include(s => s.SessionPlayers)
+                .FirstOrDefaultAsync(s => s.ID == sessionId)
                 ?? throw new InvalidOperationException("La sesión no existe.");
 
             if (session.ClosedAt is not null)
                 throw new InvalidOperationException("La sesión ya está cerrada.");
 
-            session.ClosedAt = DateTime.Now;
+            var kept = CloseOrDiscard(db, session);
             await db.SaveChangesAsync();
+            return kept;
+        }
+
+        /// <summary>Sesión con victorias: se cierra. Sin victorias: se elimina junto con sus jugadores.</summary>
+        private static bool CloseOrDiscard(AppDbContext db, Session session)
+        {
+            if (session.SessionPlayers.Any(sp => sp.Wins > 0))
+            {
+                session.ClosedAt = DateTime.Now;
+                return true;
+            }
+
+            db.Sessions.Remove(session);
+            return false;
         }
 
         public async Task<SessionPlayer> AddPlayerAsync(int sessionId, int playerId)

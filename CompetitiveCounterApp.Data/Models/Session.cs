@@ -17,6 +17,9 @@ namespace CompetitiveCounterApp.Models
 
         public SessionPlayer BestPlayer => SessionPlayers.Select(sp => sp).OrderByDescending(sp => sp.Wins).FirstOrDefault() ?? new SessionPlayer();
 
+        /// <summary>Hay mejor jugador solo si alguien tiene al menos una victoria.</summary>
+        public bool HasBestPlayer => SessionPlayers?.Any(sp => sp.Wins > 0) ?? false;
+
         public bool IsActive => ClosedAt is null;
 
         /// <summary>Suma de victorias de todos los jugadores de la sesión.</summary>

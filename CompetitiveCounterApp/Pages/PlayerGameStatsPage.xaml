@@ -1,0 +1,463 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:f="clr-namespace:Fonts"
+             xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             xmlns:appModels="clr-namespace:CompetitiveCounterApp.Models"
+             xmlns:behaviors="clr-namespace:CompetitiveCounterApp.Behaviors"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Toolkit.Charts;assembly=Syncfusion.Maui.Toolkit"
+             x:Class="CompetitiveCounterApp.Pages.PlayerGameStatsPage"
+             x:DataType="pageModels:PlayerGameStatsPageModel"
+             x:Name="PlayerGameStatsRoot"
+             Title="{Binding Title}"
+             Shell.BackgroundColor="{Binding Game.ToolbarColor}"
+             Shell.ForegroundColor="{Binding Game.OnToolbarColor}"
+             Shell.TitleColor="{Binding Game.OnToolbarColor}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference PlayerGameStatsRoot}, x:DataType=ContentPage}"
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+
+    <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Estadísticas generales"
+                     Command="{Binding OpenGeneralStatsCommand}"
+                     IconImageSource="{StaticResource IconStatsShell}" />
+    </ContentPage.ToolbarItems>
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="SectionTitle" TargetType="Label">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="Margin" Value="0,12,0,0" />
+            </Style>
+            <Style x:Key="Card" TargetType="Border">
+                <Setter Property="Padding" Value="14,12" />
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 18" />
+                <Setter Property="Background" Value="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}" />
+            </Style>
+            <Style x:Key="StatValue" TargetType="Label">
+                <Setter Property="FontSize" Value="22" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+            </Style>
+            <Style x:Key="StatCaption" TargetType="Label">
+                <Setter Property="FontSize" Value="12" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+            </Style>
+            <Style x:Key="EmptyText" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
+                <Setter Property="HorizontalTextAlignment" Value="Center" />
+                <Setter Property="Margin" Value="0,8" />
+                <Setter Property="TextColor" Value="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <ScrollView BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
+        <VerticalStackLayout Padding="15" Spacing="10">
+
+            <!-- Cabecera: jugador, juego y puesto -->
+            <Border Style="{StaticResource Card}">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                    <Border WidthRequest="52"
+                            HeightRequest="52"
+                            StrokeThickness="0"
+                            StrokeShape="Ellipse"
+                            Padding="0"
+                            VerticalOptions="Center"
+                            Background="{Binding Player.CurrentColor}">
+                        <Image HeightRequest="26" WidthRequest="26" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource Glyph="{Binding Player.Icon}"
+                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                 Color="{Binding Player.OnColor}"
+                                                 Size="26" />
+                            </Image.Source>
+                        </Image>
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                        <Label Text="{Binding Player.Name}" FontSize="20" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                        <Label Text="{Binding Game.Name}" Style="{StaticResource StatCaption}" HorizontalTextAlignment="Start" FontSize="14" />
+                    </VerticalStackLayout>
+                    <Border Grid.Column="2"
+                            Padding="12,6"
+                            StrokeThickness="0"
+                            StrokeShape="RoundRectangle 14"
+                            VerticalOptions="Center"
+                            Background="{Binding Game.CurrentGameColor}">
+                        <Label Text="{Binding RankText}" FontSize="14" FontAttributes="Bold" TextColor="{Binding Game.OnGameColor}" />
+                    </Border>
+                </Grid>
+            </Border>
+
+            <Label Text="Todavía no jugó sesiones con victorias en este juego."
+                   IsVisible="{Binding HasSessions, Converter={toolkit:InvertedBoolConverter}}"
+                   Style="{StaticResource EmptyText}" />
+
+            <!-- Resumen: anillos radiales + tiles -->
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding HasSessions}">
+                <Label Text="Resumen" Style="{StaticResource SectionTitle}" />
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="8">
+                        <Grid HeightRequest="220">
+                            <chart:SfCircularChart>
+                                <chart:SfCircularChart.Series>
+                                    <chart:RadialBarSeries ItemsSource="{Binding RadialItems}"
+                                                           XBindingPath="Label"
+                                                           YBindingPath="Value"
+                                                           MaximumValue="100"
+                                                           CapStyle="BothCurve"
+                                                           InnerRadius="0.5"
+                                                           GapRatio="0.3"
+                                                           PaletteBrushes="{Binding RadialBrushes}"
+                                                           TrackFill="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                                           EnableAnimation="True" />
+                                </chart:SfCircularChart.Series>
+                            </chart:SfCircularChart>
+                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True">
+                                <Label Text="{Binding SessionWinRateText}" FontSize="26" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                <Label Text="ganadas" Style="{StaticResource StatCaption}" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Leyenda de los anillos -->
+                        <HorizontalStackLayout HorizontalOptions="Center" Spacing="16">
+                            <HorizontalStackLayout Spacing="6">
+                                <Ellipse WidthRequest="10" HeightRequest="10" VerticalOptions="Center" Fill="{Binding GameBrush}" />
+                                <Label FontSize="13" VerticalOptions="Center">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Sesiones ganadas " />
+                                            <Span Text="{Binding SessionWinRateText}" FontAttributes="Bold" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </HorizontalStackLayout>
+                            <HorizontalStackLayout Spacing="6">
+                                <Ellipse WidthRequest="10" HeightRequest="10" VerticalOptions="Center" Fill="{Binding ShareColor}" />
+                                <Label FontSize="13" VerticalOptions="Center">
+                                    <Label.FormattedText>
+                                        <FormattedString>
+                                            <Span Text="Victorias del grupo " />
+                                            <Span Text="{Binding WinShareText}" FontAttributes="Bold" />
+                                        </FormattedString>
+                                    </Label.FormattedText>
+                                </Label>
+                            </HorizontalStackLayout>
+                        </HorizontalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Stats.TotalWins}" Style="{StaticResource StatValue}" TextColor="{Binding Game.CurrentGameColor}" />
+                            <Label Text="victorias" Style="{StaticResource StatCaption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource Card}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Stats.SessionsPlayed}" Style="{StaticResource StatValue}" />
+                            <Label Text="sesiones" Style="{StaticResource StatCaption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource Card}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding AverageText}" Style="{StaticResource StatValue}" />
+                            <Label Text="por sesión" Style="{StaticResource StatCaption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+
+            <!-- Sesiones ganadas y rachas -->
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding HasSessions}">
+                <Label Text="Sesiones ganadas y rachas" Style="{StaticResource SectionTitle}" />
+                <Label Text="Todavía no hay sesiones cerradas."
+                       IsVisible="{Binding HasClosedSessions, Converter={toolkit:InvertedBoolConverter}}"
+                       Style="{StaticResource EmptyText}" />
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8" IsVisible="{Binding HasClosedSessions}">
+                    <Border Style="{StaticResource Card}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding SessionsWonText}" Style="{StaticResource StatValue}" FontSize="18" />
+                            <Label Text="ganadas" Style="{StaticResource StatCaption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource Card}">
+                        <VerticalStackLayout>
+                            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                                <Image HeightRequest="18" WidthRequest="18" VerticalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource Glyph="{x:Static f:FluentUI.flash_24_regular}"
+                                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                         Color="{Binding Game.CurrentGameColor}"
+                                                         Size="18" />
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="{Binding Stats.CurrentStreak}" Style="{StaticResource StatValue}" />
+                            </HorizontalStackLayout>
+                            <Label Text="racha actual" Style="{StaticResource StatCaption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource Card}">
+                        <VerticalStackLayout>
+                            <HorizontalStackLayout HorizontalOptions="Center" Spacing="4">
+                                <Image HeightRequest="18" WidthRequest="18" VerticalOptions="Center">
+                                    <Image.Source>
+                                        <FontImageSource Glyph="{x:Static f:FluentUI.trophy_24_regular}"
+                                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                         Color="{Binding ShareColor}"
+                                                         Size="18" />
+                                    </Image.Source>
+                                </Image>
+                                <Label Text="{Binding Stats.BestStreak}" Style="{StaticResource StatValue}" />
+                            </HorizontalStackLayout>
+                            <Label Text="mejor racha" Style="{StaticResource StatCaption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+                <Border Style="{StaticResource Card}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Image HeightRequest="22" WidthRequest="22" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource Glyph="{x:Static f:FluentUI.star_24_regular}"
+                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                 Color="{Binding Game.CurrentGameColor}"
+                                                 Size="22" />
+                            </Image.Source>
+                        </Image>
+                        <VerticalStackLayout Grid.Column="1" Spacing="0">
+                            <Label Text="Mejor sesión" Style="{StaticResource StatCaption}" HorizontalTextAlignment="Start" />
+                            <Label Text="{Binding BestSessionText}" FontSize="15" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Evolución: victorias por sesión -->
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding HasSessions}">
+                <Label Text="Evolución" Style="{StaticResource SectionTitle}" />
+                <Border Style="{StaticResource Card}">
+                    <VerticalStackLayout Spacing="6">
+                        <Label Text="La curva aparece a partir de la segunda sesión."
+                               IsVisible="{Binding HasEvolution, Converter={toolkit:InvertedBoolConverter}}"
+                               Style="{StaticResource EmptyText}" />
+                        <chart:SfCartesianChart HeightRequest="200" IsVisible="{Binding HasEvolution}">
+                            <chart:SfCartesianChart.TooltipBehavior>
+                                <chart:ChartTooltipBehavior />
+                            </chart:SfCartesianChart.TooltipBehavior>
+                            <chart:SfCartesianChart.XAxes>
+                                <chart:CategoryAxis ShowMajorGridLines="False" LabelPlacement="BetweenTicks">
+                                    <chart:CategoryAxis.LabelStyle>
+                                        <chart:ChartAxisLabelStyle FontSize="11" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                    </chart:CategoryAxis.LabelStyle>
+                                </chart:CategoryAxis>
+                            </chart:SfCartesianChart.XAxes>
+                            <chart:SfCartesianChart.YAxes>
+                                <chart:NumericalAxis Minimum="0" RangePadding="Additional">
+                                    <chart:NumericalAxis.LabelStyle>
+                                        <chart:ChartAxisLabelStyle FontSize="11" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                    </chart:NumericalAxis.LabelStyle>
+                                    <chart:NumericalAxis.MajorGridLineStyle>
+                                        <chart:ChartLineStyle Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                                              StrokeDashArray="3,3" />
+                                    </chart:NumericalAxis.MajorGridLineStyle>
+                                    <chart:NumericalAxis.AxisLineStyle>
+                                        <chart:ChartLineStyle StrokeWidth="0" />
+                                    </chart:NumericalAxis.AxisLineStyle>
+                                </chart:NumericalAxis>
+                            </chart:SfCartesianChart.YAxes>
+                            <chart:SfCartesianChart.Series>
+                                <chart:SplineAreaSeries x:Name="EvolutionSeries"
+                                                        ItemsSource="{Binding Evolution}"
+                                                        XBindingPath="Label"
+                                                        YBindingPath="Wins"
+                                                        Fill="{Binding EvolutionFill}"
+                                                        Stroke="{Binding GameBrush}"
+                                                        StrokeWidth="2.5"
+                                                        ShowMarkers="True"
+                                                        EnableTooltip="True"
+                                                        EnableAnimation="True"
+                                                        Label="Victorias">
+                                    <chart:SplineAreaSeries.MarkerSettings>
+                                        <chart:ChartMarkerSettings Type="Circle"
+                                                                   Width="9"
+                                                                   Height="9"
+                                                                   Fill="{Binding Stroke, Source={x:Reference EvolutionSeries}, x:DataType=chart:SplineAreaSeries}"
+                                                                   StrokeWidth="2"
+                                                                   Stroke="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}" />
+                                    </chart:SplineAreaSeries.MarkerSettings>
+                                </chart:SplineAreaSeries>
+                            </chart:SfCartesianChart.Series>
+                        </chart:SfCartesianChart>
+                        <Label Text="{Binding ActivityText}" Style="{StaticResource StatCaption}" />
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Cara a cara -->
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding HasSessions}">
+                <Label Text="Cara a cara" Style="{StaticResource SectionTitle}" />
+                <Label Text="Aparece cuando comparta sesiones cerradas con otros jugadores."
+                       IsVisible="{Binding HasRivals, Converter={toolkit:InvertedBoolConverter}}"
+                       Style="{StaticResource EmptyText}" />
+
+                <VerticalStackLayout Spacing="10" IsVisible="{Binding HasRivals}">
+                    <!-- Balance total: doughnut -->
+                    <Border Style="{StaticResource Card}">
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12">
+                            <Grid HeightRequest="170">
+                                <chart:SfCircularChart>
+                                    <chart:SfCircularChart.Series>
+                                        <chart:DoughnutSeries ItemsSource="{Binding HeadToHead}"
+                                                              XBindingPath="Label"
+                                                              YBindingPath="Value"
+                                                              PaletteBrushes="{Binding ResultBrushes}"
+                                                              InnerRadius="0.68"
+                                                              StrokeWidth="0"
+                                                              EnableAnimation="True" />
+                                    </chart:SfCircularChart.Series>
+                                </chart:SfCircularChart>
+                                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True">
+                                    <Label Text="{Binding Stats.HeadToHeadWins}" FontSize="24" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                    <Label Text="ganadas" Style="{StaticResource StatCaption}" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="8">
+                                <HorizontalStackLayout Spacing="6">
+                                    <Ellipse WidthRequest="10" HeightRequest="10" VerticalOptions="Center" Fill="{Binding WinBrush}" />
+                                    <Label Text="{Binding Stats.HeadToHeadWins, StringFormat='Ganadas {0}'}" FontSize="13" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="6">
+                                    <Ellipse WidthRequest="10" HeightRequest="10" VerticalOptions="Center" Fill="{Binding DrawBrush}" />
+                                    <Label Text="{Binding Stats.HeadToHeadDraws, StringFormat='Empatadas {0}'}" FontSize="13" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="6">
+                                    <Ellipse WidthRequest="10" HeightRequest="10" VerticalOptions="Center" Fill="{Binding LossBrush}" />
+                                    <Label Text="{Binding Stats.HeadToHeadLosses, StringFormat='Perdidas {0}'}" FontSize="13" />
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </Border>
+
+                    <!-- Némesis y víctima -->
+                    <!-- FlexLayout con Grow: si solo hay una de las dos tarjetas, ocupa todo el ancho. -->
+                    <FlexLayout Direction="Row" JustifyContent="SpaceBetween">
+                        <Border Style="{StaticResource Card}"
+                                FlexLayout.Grow="1"
+                                FlexLayout.Basis="0"
+                                Margin="{Binding NemesisMargin}"
+                                IsVisible="{Binding Nemesis, Converter={toolkit:IsNotNullConverter}}"
+                                behaviors:AnimatedTap.Command="{Binding OpenRivalCommand}"
+                                behaviors:AnimatedTap.CommandParameter="{Binding Nemesis}">
+                            <VerticalStackLayout Spacing="4" InputTransparent="True">
+                                <Label Text="Némesis" Style="{StaticResource StatCaption}" />
+                                <Border WidthRequest="40" HeightRequest="40" StrokeThickness="0" StrokeShape="Ellipse" Padding="0"
+                                        HorizontalOptions="Center"
+                                        Background="{Binding Nemesis.Player.CurrentColor}">
+                                    <Image HeightRequest="20" WidthRequest="20" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource Glyph="{Binding Nemesis.Player.Icon}"
+                                                             FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                             Color="{Binding Nemesis.Player.OnColor}"
+                                                             Size="20" />
+                                        </Image.Source>
+                                    </Image>
+                                </Border>
+                                <Label Text="{Binding Nemesis.Name}" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding NemesisText}" Style="{StaticResource StatCaption}" />
+                            </VerticalStackLayout>
+                        </Border>
+                        <Border Style="{StaticResource Card}"
+                                FlexLayout.Grow="1"
+                                FlexLayout.Basis="0"
+                                Margin="{Binding VictimMargin}"
+                                IsVisible="{Binding Victim, Converter={toolkit:IsNotNullConverter}}"
+                                behaviors:AnimatedTap.Command="{Binding OpenRivalCommand}"
+                                behaviors:AnimatedTap.CommandParameter="{Binding Victim}">
+                            <VerticalStackLayout Spacing="4" InputTransparent="True">
+                                <Label Text="Víctima" Style="{StaticResource StatCaption}" />
+                                <Border WidthRequest="40" HeightRequest="40" StrokeThickness="0" StrokeShape="Ellipse" Padding="0"
+                                        HorizontalOptions="Center"
+                                        Background="{Binding Victim.Player.CurrentColor}">
+                                    <Image HeightRequest="20" WidthRequest="20" HorizontalOptions="Center" VerticalOptions="Center">
+                                        <Image.Source>
+                                            <FontImageSource Glyph="{Binding Victim.Player.Icon}"
+                                                             FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                             Color="{Binding Victim.Player.OnColor}"
+                                                             Size="20" />
+                                        </Image.Source>
+                                    </Image>
+                                </Border>
+                                <Label Text="{Binding Victim.Name}" FontAttributes="Bold" HorizontalTextAlignment="Center" LineBreakMode="TailTruncation" />
+                                <Label Text="{Binding VictimText}" Style="{StaticResource StatCaption}" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </FlexLayout>
+
+                    <!-- Balance por rival: barras 100% apiladas -->
+                    <Border Style="{StaticResource Card}" IsVisible="{Binding HasRivalsChart}">
+                        <chart:SfCartesianChart IsTransposed="True" HeightRequest="{Binding RivalsChartHeight}">
+                            <chart:SfCartesianChart.XAxes>
+                                <chart:CategoryAxis ShowMajorGridLines="False">
+                                    <chart:CategoryAxis.LabelStyle>
+                                        <chart:ChartAxisLabelStyle FontSize="12" TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+                                    </chart:CategoryAxis.LabelStyle>
+                                    <chart:CategoryAxis.AxisLineStyle>
+                                        <chart:ChartLineStyle StrokeWidth="0" />
+                                    </chart:CategoryAxis.AxisLineStyle>
+                                </chart:CategoryAxis>
+                            </chart:SfCartesianChart.XAxes>
+                            <chart:SfCartesianChart.YAxes>
+                                <chart:NumericalAxis IsVisible="False" ShowMajorGridLines="False" />
+                            </chart:SfCartesianChart.YAxes>
+                            <chart:SfCartesianChart.Series>
+                                <chart:StackingColumn100Series ItemsSource="{Binding ChartRivals}" XBindingPath="Name" YBindingPath="Wins" Fill="{Binding WinBrush}" Label="Ganadas" Width="0.55" EnableAnimation="True" />
+                                <chart:StackingColumn100Series ItemsSource="{Binding ChartRivals}" XBindingPath="Name" YBindingPath="Draws" Fill="{Binding DrawBrush}" Label="Empatadas" Width="0.55" EnableAnimation="True" />
+                                <chart:StackingColumn100Series ItemsSource="{Binding ChartRivals}" XBindingPath="Name" YBindingPath="Losses" Fill="{Binding LossBrush}" Label="Perdidas" Width="0.55" EnableAnimation="True" />
+                            </chart:SfCartesianChart.Series>
+                        </chart:SfCartesianChart>
+                    </Border>
+
+                    <!-- Lista completa de rivales -->
+                    <VerticalStackLayout BindableLayout.ItemsSource="{Binding Rivals}" Spacing="8">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="appModels:RivalRecord">
+                                <Border Style="{StaticResource Card}"
+                                        Padding="12,8"
+                                        behaviors:AnimatedTap.Command="{Binding OpenRivalCommand, Source={RelativeSource AncestorType={x:Type pageModels:PlayerGameStatsPageModel}}, x:DataType=pageModels:PlayerGameStatsPageModel}"
+                                        behaviors:AnimatedTap.CommandParameter="{Binding .}">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" InputTransparent="True">
+                                        <Border WidthRequest="36" HeightRequest="36" StrokeThickness="0" StrokeShape="Ellipse" Padding="0"
+                                                VerticalOptions="Center"
+                                                Background="{Binding Player.CurrentColor}">
+                                            <Image HeightRequest="18" WidthRequest="18" HorizontalOptions="Center" VerticalOptions="Center">
+                                                <Image.Source>
+                                                    <FontImageSource Glyph="{Binding Player.Icon}"
+                                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                     Color="{Binding Player.OnColor}"
+                                                                     Size="18" />
+                                                </Image.Source>
+                                            </Image>
+                                        </Border>
+                                        <Label Grid.Column="1" Text="{Binding Name}" FontSize="16" FontAttributes="Bold" VerticalOptions="Center" LineBreakMode="TailTruncation" />
+                                        <Label Grid.Column="2" Text="{Binding Summary}" FontSize="13" VerticalOptions="Center"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>

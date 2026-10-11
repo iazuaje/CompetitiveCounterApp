@@ -209,15 +209,15 @@ namespace CompetitiveCounterApp.PageModels
             await AppShell.DisplayToastAsync("Jugador agregado");
         }
 
-        /// <summary>Tap sobre el jugador: sus estadísticas.</summary>
+        /// <summary>Tap sobre el jugador: sus estadísticas en el juego de esta sesión.</summary>
         [RelayCommand]
         private async Task NavigateToPlayer(SessionPlayer? sessionPlayer)
         {
-            if (sessionPlayer is null || sessionPlayer.PlayerID == 0 || IsBusy)
+            if (Session is null || sessionPlayer is null || sessionPlayer.PlayerID == 0 || IsBusy)
                 return;
 
             HapticFeedbackHelper.Click();
-            await Shell.Current.GoToAsync($"playerstats?id={sessionPlayer.PlayerID}");
+            await Shell.Current.GoToAsync($"playergamestats?playerId={sessionPlayer.PlayerID}&gameId={Session.GameID}");
         }
 
         /// <summary>Mantener presionado el jugador: quitarlo de la sesión (solo si está activa).</summary>
@@ -358,11 +358,20 @@ namespace CompetitiveCounterApp.PageModels
 
             HapticFeedbackHelper.Click();
 
-            bool confirm = await Shell.Current.DisplayAlertAsync(
-                "Cerrar sesión",
-                "¿Cerrar la sesión activa? Podrás crear una nueva desde el detalle del juego.",
-                "Cerrar",
-                "Cancelar");
+            // Sin victorias la sesión no aporta datos: el repositorio la descarta en vez de guardarla.
+            var hasWins = Leaderboard.Any(sp => sp.Wins > 0);
+
+            bool confirm = hasWins
+                ? await Shell.Current.DisplayAlertAsync(
+                    "Cerrar sesión",
+                    "¿Cerrar la sesión activa? Podrás crear una nueva desde el detalle del juego.",
+                    "Cerrar",
+                    "Cancelar")
+                : await Shell.Current.DisplayAlertAsync(
+                    "Descartar sesión",
+                    "La sesión no tiene victorias, así que no se guardará. ¿Descartarla?",
+                    "Descartar",
+                    "Cancelar");
 
             if (!confirm)
                 return;
@@ -370,8 +379,8 @@ namespace CompetitiveCounterApp.PageModels
             try
             {
                 IsBusy = true;
-                await _sessionRepository.CloseAsync(Session.ID);
-                await AppShell.DisplayToastAsync("Sesión cerrada");
+                var kept = await _sessionRepository.CloseAsync(Session.ID);
+                await AppShell.DisplayToastAsync(kept ? "Sesión cerrada" : "Sesión descartada");
                 await Shell.Current.GoToAsync("..");
             }
             catch (Exception e)

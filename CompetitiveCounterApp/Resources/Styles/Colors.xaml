@@ -72,6 +72,14 @@
     <Color x:Key="PodiumBronze">#8F4A36</Color>
     <Color x:Key="PodiumBronzeDark">#D4846A</Color>
 
+    <!-- Resultados cara a cara (ganadas / empatadas / perdidas) -->
+    <Color x:Key="ResultWin">#2E7D32</Color>
+    <Color x:Key="ResultWinDark">#81C784</Color>
+    <Color x:Key="ResultDraw">#A39488</Color>
+    <Color x:Key="ResultDrawDark">#85766A</Color>
+    <Color x:Key="ResultLoss">#C45C3E</Color>
+    <Color x:Key="ResultLossDark">#E8957A</Color>
+
     <SolidColorBrush x:Key="PrimaryBrush" Color="{StaticResource Primary}"/>
     <SolidColorBrush x:Key="SecondaryBrush" Color="{StaticResource Secondary}"/>
     <SolidColorBrush x:Key="TertiaryBrush" Color="{StaticResource Tertiary}"/>
