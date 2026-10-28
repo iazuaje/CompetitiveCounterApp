@@ -101,9 +101,45 @@
                    IsVisible="{Binding HasSessions, Converter={toolkit:InvertedBoolConverter}}"
                    Style="{StaticResource EmptyText}" />
 
-            <!-- Resumen: anillos radiales + tiles -->
+            <!-- Resumen: duelos ganados destacados + anillos radiales + tiles -->
             <VerticalStackLayout Spacing="10" IsVisible="{Binding HasSessions}">
                 <Label Text="Resumen" Style="{StaticResource SectionTitle}" />
+
+                <!-- Dato principal: veces que terminó por encima de otro jugador en una sesión cerrada. -->
+                <Border Style="{StaticResource Card}" IsVisible="{Binding HasRivals}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                        <Border WidthRequest="52"
+                                HeightRequest="52"
+                                StrokeThickness="0"
+                                StrokeShape="Ellipse"
+                                Padding="0"
+                                VerticalOptions="Center"
+                                Background="{Binding Game.CurrentGameColor}">
+                            <Image HeightRequest="26" WidthRequest="26" HorizontalOptions="Center" VerticalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource Glyph="{x:Static f:FluentUI.trophy_24_regular}"
+                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                     Color="{Binding Game.OnGameColor}"
+                                                     Size="26" />
+                                </Image.Source>
+                            </Image>
+                        </Border>
+                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="0">
+                            <HorizontalStackLayout Spacing="8">
+                                <Label Text="{Binding Stats.HeadToHeadWins}"
+                                       FontSize="34"
+                                       FontAttributes="Bold"
+                                       TextColor="{Binding Game.CurrentGameColor}"
+                                       VerticalOptions="Center" />
+                                <Label Text="duelos ganados"
+                                       FontSize="16"
+                                       FontAttributes="Bold"
+                                       VerticalOptions="Center" />
+                            </HorizontalStackLayout>
+                            <Label Text="{Binding DuelsText}" Style="{StaticResource StatCaption}" HorizontalTextAlignment="Start" />
+                        </VerticalStackLayout>
+                    </Grid>
+                </Border>
                 <Border Style="{StaticResource Card}">
                     <VerticalStackLayout Spacing="8">
                         <Grid HeightRequest="220">

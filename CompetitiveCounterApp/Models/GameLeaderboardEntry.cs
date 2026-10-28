@@ -8,7 +8,9 @@ public partial class GameLeaderboardEntry : ObservableObject
     public int PlayerId { get; init; }
     public string PlayerName { get; init; } = string.Empty;
     public string PlayerIcon { get; init; } = string.Empty;
+    public int SessionsWon { get; init; }
     public int TotalWins { get; init; }
+    public string TotalWinsText => TotalWins == 1 ? "1 victoria" : $"{TotalWins} victorias";
     public ThemeColorPair PlayerColors { get; init; }
     public ThemeColorPair MedalColors { get; init; }
 

@@ -48,6 +48,7 @@ dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net10.0-and
 
 - Repositorios con `IDbContextFactory`: un contexto por operación, lecturas `AsNoTracking()`. Las reglas de negocio de sesión viven en `SessionRepository` y lanzan `InvalidOperationException` con mensaje en español.
 - `Session.ClosedAt`: `null` = activa. Máximo una activa por `GameID` (`IX_Sessions_GameID_Active`). `SessionPlayer` único por `(SessionID, PlayerID)`; métrica solo `Wins`, nunca menor a 0.
+- Ranking de un juego (podio, líder de la tarjeta de Juegos, puesto en estadísticas): sesiones ganadas (cerradas; empate en el máximo cuenta para todos), luego victorias, luego nombre. Siempre vía `PlayerGameStatsCalculator.RankPlayers`; no reimplementar el orden.
 - Fechas en hora local (`DateTime.Now`, `LocalDateTimeConverter`), sin UTC.
 - Toda propiedad calculada nueva en una entidad va en `entity.Ignore(...)` de `AppDbContext`.
 - No generar ni editar migraciones EF: tras cambiar entidades o Fluent API, el desarrollador crea la migración a mano.

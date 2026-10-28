@@ -153,6 +153,7 @@ namespace CompetitiveCounterApp.PageModels
                         ? FluentUI.person_24_regular
                         : x.Player.Icon,
                     PlayerColors = x.Player.ThemeColors,
+                    SessionsWon = x.SessionsWon,
                     TotalWins = x.TotalWins,
                     MedalColors = MedalColorsForRank(index + 1)
                 })

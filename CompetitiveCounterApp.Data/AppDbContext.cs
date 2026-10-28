@@ -45,7 +45,7 @@ namespace CompetitiveCounterApp.Data
                 entity.Ignore(e => e.GameImage);
                 entity.Ignore(e => e.SessionCount);
                 entity.Ignore(e => e.LeaderName);
-                entity.Ignore(e => e.LeaderWins);
+                entity.Ignore(e => e.LeaderSessionsWon);
                 entity.Ignore(e => e.HasLeader);
             });
 

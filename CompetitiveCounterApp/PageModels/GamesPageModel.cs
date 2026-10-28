@@ -66,18 +66,19 @@ namespace CompetitiveCounterApp.PageModels
             {
                 IsBusy = true;
                 var games = await _gameRepository.ListAsync();
-                var sessionCounts = await _sessionRepository.CountByGameAsync();
-                var leaders = await _sessionRepository.GetLeadersByGameAsync();
+                var sessionsByGame = (await _sessionRepository.ListAsync())
+                    .GroupBy(s => s.GameID)
+                    .ToDictionary(g => g.Key, g => g.ToList());
 
                 foreach (var game in games)
                 {
-                    game.SessionCount = sessionCounts.GetValueOrDefault(game.ID);
+                    var sessions = sessionsByGame.GetValueOrDefault(game.ID) ?? [];
+                    game.SessionCount = sessions.Count;
 
-                    if (leaders.TryGetValue(game.ID, out var leader))
-                    {
-                        game.LeaderName = leader.PlayerName;
-                        game.LeaderWins = leader.TotalWins;
-                    }
+                    // Mismo ranking que el podio del detalle (sesiones ganadas, luego victorias).
+                    var leader = PlayerGameStatsCalculator.RankPlayers(sessions).FirstOrDefault();
+                    game.LeaderName = leader?.Player.Name ?? string.Empty;
+                    game.LeaderSessionsWon = leader?.SessionsWon ?? 0;
                 }
 
                 Games = games;

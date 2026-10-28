@@ -17,13 +17,13 @@ namespace CompetitiveCounterApp.Models
         [ObservableProperty]
         private int _sessionCount;
 
-        /// <summary>Jugador con más victorias acumuladas para UI (no persistido).</summary>
+        /// <summary>Primero del ranking del juego (sesiones ganadas, luego victorias) para UI (no persistido).</summary>
         [ObservableProperty]
         [NotifyPropertyChangedFor(nameof(HasLeader))]
         private string _leaderName = string.Empty;
 
         [ObservableProperty]
-        private int _leaderWins;
+        private int _leaderSessionsWon;
 
         public bool HasLeader => !string.IsNullOrEmpty(LeaderName);
 

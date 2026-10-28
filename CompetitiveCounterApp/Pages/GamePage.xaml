@@ -101,7 +101,7 @@
                                                LineBreakMode="TailTruncation"
                                                MaxLines="2" />
 
-                                        <!-- Líder del juego: corona + nombre + victorias acumuladas. -->
+                                        <!-- Líder del juego: corona + nombre + sesiones ganadas (trofeo). -->
                                         <Label Grid.Row="2"
                                                IsVisible="{Binding HasLeader}"
                                                Margin="10,2,10,0"
@@ -118,7 +118,10 @@
                                                           FontSize="13" />
                                                     <Span Text=" " />
                                                     <Span Text="{Binding LeaderName}" FontAttributes="Bold" />
-                                                    <Span Text="{Binding LeaderWins, StringFormat=' · {0}'}" />
+                                                    <Span Text="{Binding LeaderSessionsWon, StringFormat=' · {0} '}" />
+                                                    <Span Text="{x:Static f:FluentUI.trophy_24_regular}"
+                                                          FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                          FontSize="12" />
                                                 </FormattedString>
                                             </Label.FormattedText>
                                         </Label>

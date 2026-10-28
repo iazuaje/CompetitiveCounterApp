@@ -63,6 +63,10 @@ public partial class PlayerGameStatsPageModel : ObservableObject, IQueryAttribut
     [ObservableProperty]
     private string _bestSessionText = string.Empty;
 
+    /// <summary>Contexto de los duelos ganados: total disputado y porcentaje.</summary>
+    [ObservableProperty]
+    private string _duelsText = string.Empty;
+
     [ObservableProperty]
     private string _activityText = string.Empty;
 
@@ -217,6 +221,10 @@ public partial class PlayerGameStatsPageModel : ObservableObject, IQueryAttribut
         BestSessionText = stats.BestSessionDate is DateTime best
             ? $"{stats.BestSessionWins} victorias · {best:dd/MM/yyyy}"
             : "—";
+        var duels = stats.HeadToHeadWins + stats.HeadToHeadDraws + stats.HeadToHeadLosses;
+        DuelsText = duels == 0
+            ? string.Empty
+            : $"de {duels} {(duels == 1 ? "duelo" : "duelos")} contra otros jugadores · {(double)stats.HeadToHeadWins / duels:P0}";
         ActivityText = stats.FirstSessionDate is DateTime first && stats.LastSessionDate is DateTime last
             ? $"Primera sesión {first:dd/MM/yyyy} · última {last:dd/MM/yyyy}"
             : string.Empty;

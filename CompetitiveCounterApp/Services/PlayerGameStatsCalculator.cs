@@ -10,22 +10,43 @@ public static class PlayerGameStatsCalculator
 {
     public const int EvolutionSessions = 10;
 
-    public sealed record RankedPlayer(Player Player, int TotalWins);
+    public sealed record RankedPlayer(Player Player, int SessionsWon, int TotalWins);
 
     /// <summary>
-    /// Ranking por victorias acumuladas (desc) y nombre. Solo jugadores con al menos una victoria.
-    /// Es el criterio del podio del detalle: ambas pantallas deben usar esta función.
+    /// Ranking del juego: sesiones ganadas (cerradas) desc, luego victorias totales desc, luego nombre.
+    /// Solo jugadores con al menos una victoria. Lo usan el podio del detalle, el líder de la
+    /// tarjeta de Juegos y el puesto en las estadísticas: no reimplementar el orden en otro lado.
     /// </summary>
-    public static List<RankedPlayer> RankPlayers(IEnumerable<Session> sessions) =>
-        sessions
+    public static List<RankedPlayer> RankPlayers(IEnumerable<Session> sessions)
+    {
+        var list = sessions as IReadOnlyCollection<Session> ?? sessions.ToList();
+
+        return list
             .SelectMany(s => s.SessionPlayers ?? [])
             .Where(sp => sp.Player is not null)
             .GroupBy(sp => sp.PlayerID)
-            .Select(g => new RankedPlayer(g.First().Player!, g.Sum(sp => sp.Wins)))
+            .Select(g => new RankedPlayer(
+                g.First().Player!,
+                list.Count(s => !s.IsActive && WonSession(s, g.Key)),
+                g.Sum(sp => sp.Wins)))
             .Where(x => x.TotalWins > 0)
-            .OrderByDescending(x => x.TotalWins)
+            .OrderByDescending(x => x.SessionsWon)
+            .ThenByDescending(x => x.TotalWins)
             .ThenBy(x => x.Player.Name, StringComparer.CurrentCultureIgnoreCase)
             .ToList();
+    }
+
+    /// <summary>
+    /// El jugador terminó primero (empates en el máximo cuentan para todos). Sesiones sin victorias no tienen ganador.
+    /// </summary>
+    public static bool WonSession(Session session, int playerId)
+    {
+        var mine = session.SessionPlayers?.FirstOrDefault(sp => sp.PlayerID == playerId);
+        if (mine is null || mine.Wins == 0)
+            return false;
+
+        return mine.Wins == session.SessionPlayers!.Max(sp => sp.Wins);
+    }
 
     /// <summary>
     /// Totales y evolución incluyen la sesión activa; ganadas, rachas y cara a cara solo sesiones cerradas.
@@ -44,13 +65,13 @@ public static class PlayerGameStatsCalculator
             .ToList();
 
         int WinsIn(Session s) => s.SessionPlayers.First(sp => sp.PlayerID == playerId).Wins;
-        bool WonSession(Session s) => WinsIn(s) == s.SessionPlayers.Max(sp => sp.Wins);
+        bool Won(Session s) => WonSession(s, playerId);
 
         var totalWins = played.Sum(WinsIn);
         var groupWins = played.Sum(s => s.TotalWins);
         var closed = played.Where(s => !s.IsActive).ToList();
 
-        var (currentStreak, bestStreak) = Streaks(closed.Select(WonSession));
+        var (currentStreak, bestStreak) = Streaks(closed.Select(Won));
 
         // Mejor sesión: más victorias; ante empate, la más reciente.
         var best = played
@@ -69,7 +90,7 @@ public static class PlayerGameStatsCalculator
             AverageWins = played.Count == 0 ? 0 : (double)totalWins / played.Count,
             WinShare = groupWins == 0 ? 0 : (double)totalWins / groupWins,
             ClosedSessionsPlayed = closed.Count,
-            SessionsWon = closed.Count(WonSession),
+            SessionsWon = closed.Count(Won),
             CurrentStreak = currentStreak,
             BestStreak = bestStreak,
             BestSessionWins = best is null ? 0 : WinsIn(best),

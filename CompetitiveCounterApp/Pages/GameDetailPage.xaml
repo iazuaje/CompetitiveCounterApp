@@ -194,25 +194,33 @@
                                                LineBreakMode="TailTruncation"
                                                VerticalOptions="Center" />
 
-                                        <HorizontalStackLayout Grid.Column="2"
-                                                               Spacing="4"
-                                                               VerticalOptions="Center">
-                                            <Label Text="{Binding TotalWins}"
-                                                   FontSize="18"
-                                                   FontAttributes="Bold"
-                                                   TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource White}}"
-                                                   VerticalOptions="Center" />
-                                            <Image HeightRequest="20"
-                                                   WidthRequest="20"
-                                                   VerticalOptions="Center">
-                                                <Image.Source>
-                                                    <FontImageSource Glyph="{x:Static f:FluentUI.trophy_24_regular}"
-                                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                                     Color="{Binding MedalColor}"
-                                                                     Size="20" />
-                                                </Image.Source>
-                                            </Image>
-                                        </HorizontalStackLayout>
+                                        <!-- Criterio del ranking: sesiones ganadas (trofeo); victorias como dato secundario. -->
+                                        <VerticalStackLayout Grid.Column="2"
+                                                             Spacing="0"
+                                                             VerticalOptions="Center"
+                                                             SemanticProperties.Description="{Binding SessionsWon, StringFormat='{0} sesiones ganadas'}">
+                                            <HorizontalStackLayout Spacing="4" HorizontalOptions="End">
+                                                <Label Text="{Binding SessionsWon}"
+                                                       FontSize="18"
+                                                       FontAttributes="Bold"
+                                                       TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource White}}"
+                                                       VerticalOptions="Center" />
+                                                <Image HeightRequest="20"
+                                                       WidthRequest="20"
+                                                       VerticalOptions="Center">
+                                                    <Image.Source>
+                                                        <FontImageSource Glyph="{x:Static f:FluentUI.trophy_24_regular}"
+                                                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                         Color="{Binding MedalColor}"
+                                                                         Size="20" />
+                                                    </Image.Source>
+                                                </Image>
+                                            </HorizontalStackLayout>
+                                            <Label Text="{Binding TotalWinsText}"
+                                                   FontSize="11"
+                                                   HorizontalOptions="End"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                        </VerticalStackLayout>
                                     </Grid>
                                 </Border>
                             </DataTemplate>
