@@ -19,6 +19,41 @@
             Command="{Binding AppearingCommand}" />
     </ContentPage.Behaviors>
 
+    <ContentPage.Resources>
+        <!-- El estilo global de Button trae Padding 15 y FontSize 18: con alto fijo el texto se cortaba. -->
+        <Style x:Key="BackupButton" TargetType="Button">
+            <Setter Property="HeightRequest" Value="48" />
+            <Setter Property="Padding" Value="20,0" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontAttributes" Value="Bold" />
+            <Setter Property="CornerRadius" Value="24" />
+            <Setter Property="LineBreakMode" Value="NoWrap" />
+            <Setter Property="VisualStateManager.VisualStateGroups">
+                <VisualStateGroupList>
+                    <VisualStateGroup x:Name="CommonStates">
+                        <VisualState x:Name="Normal">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="1" />
+                                <Setter Property="Opacity" Value="1" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Pressed">
+                            <VisualState.Setters>
+                                <Setter Property="Scale" Value="0.96" />
+                                <Setter Property="Opacity" Value="0.92" />
+                            </VisualState.Setters>
+                        </VisualState>
+                        <VisualState x:Name="Disabled">
+                            <VisualState.Setters>
+                                <Setter Property="Opacity" Value="0.5" />
+                            </VisualState.Setters>
+                        </VisualState>
+                    </VisualStateGroup>
+                </VisualStateGroupList>
+            </Setter>
+        </Style>
+    </ContentPage.Resources>
+
     <ScrollView BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
         <VerticalStackLayout Padding="15" Spacing="12">
 
@@ -55,12 +90,10 @@
                            TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
                            Text="Guarda en un archivo .zip todos los juegos, jugadores, sesiones e imágenes. Guárdalo en el teléfono o compártelo a Drive o WhatsApp para no perder tu historial si cambias de teléfono." />
                     <Button Text="Crear respaldo"
+                            Style="{StaticResource BackupButton}"
                             Command="{Binding CreateBackupCommand}"
                             IsEnabled="{Binding IsIdle}"
                             BorderWidth="0"
-                            CornerRadius="22"
-                            HeightRequest="44"
-                            FontAttributes="Bold"
                             BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                             TextColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}" />
                 </VerticalStackLayout>
@@ -74,12 +107,10 @@
                            TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
                            Text="Reemplaza todos los datos actuales por los de un respaldo. Se pide confirmación antes de reemplazar nada." />
                     <Button Text="Elegir respaldo"
+                            Style="{StaticResource BackupButton}"
                             Command="{Binding RestoreBackupCommand}"
                             IsEnabled="{Binding IsIdle}"
-                            BorderWidth="1"
-                            CornerRadius="22"
-                            HeightRequest="44"
-                            FontAttributes="Bold"
+                            BorderWidth="1.5"
                             BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
                             BackgroundColor="Transparent"
                             TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
