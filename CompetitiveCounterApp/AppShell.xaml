@@ -5,6 +5,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:sf="clr-namespace:Syncfusion.Maui.Toolkit.SegmentedControl;assembly=Syncfusion.Maui.Toolkit"
     xmlns:pages="clr-namespace:CompetitiveCounterApp.Pages"
+    xmlns:helpers="clr-namespace:CompetitiveCounterApp.Helpers"
     Shell.FlyoutBehavior="Flyout"
     Title="CompetitiveCounterApp">
 
@@ -33,7 +34,7 @@
         Route="backup" />
 
     <Shell.FlyoutFooter>
-        <Grid Padding="15">
+        <Grid Padding="15" RowDefinitions="Auto,Auto" RowSpacing="10">
             <sf:SfSegmentedControl x:Name="ThemeSegmentedControl"
                 VerticalOptions="Center" HorizontalOptions="Center" SelectionChanged="SfSegmentedControl_SelectionChanged"
                 SegmentWidth="40" SegmentHeight="40"
@@ -53,6 +54,11 @@
                     </x:Array>
                 </sf:SfSegmentedControl.ItemsSource>
             </sf:SfSegmentedControl>
+            <Label Grid.Row="1"
+                   Text="{x:Static helpers:AppVersion.Text}"
+                   FontSize="12"
+                   HorizontalOptions="Center"
+                   TextColor="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}" />
         </Grid>
     </Shell.FlyoutFooter>
 
