@@ -80,6 +80,7 @@ public static class PlayerGameStatsCalculator
             .FirstOrDefault();
 
         var rivals = BuildRivals(closed, playerId);
+        var (nemesis, victim) = NemesisAndVictim(rivals);
 
         return new PlayerGameStats
         {
@@ -105,22 +106,39 @@ public static class PlayerGameStatsCalculator
                     s.IsActive))
                 .ToList(),
             Rivals = rivals,
-            // Némesis: quien más le gana (desempate: peor saldo). Víctima: a quien más le gana.
-            Nemesis = rivals
-                .Where(r => r.Losses > 0)
-                .OrderByDescending(r => r.Losses)
-                .ThenByDescending(r => r.Losses - r.Wins)
-                .FirstOrDefault(),
-            Victim = rivals
-                .Where(r => r.Wins > 0)
-                .OrderByDescending(r => r.Wins)
-                .ThenByDescending(r => r.Wins - r.Losses)
-                .FirstOrDefault()
+            Nemesis = nemesis,
+            Victim = victim
         };
     }
 
     /// <summary>Racha actual (ganadas consecutivas al final) y mejor racha, en orden cronológico.</summary>
-    static (int Current, int Best) Streaks(IEnumerable<bool> wonInOrder)
+    /// <summary>
+    /// Némesis: quien más le gana (desempate: peor saldo). Víctima: a quien más le gana.
+    /// Si ambos son el mismo rival, queda solo el que indica el saldo (ninguno si está parejo).
+    /// </summary>
+    static (RivalRecord? Nemesis, RivalRecord? Victim) NemesisAndVictim(IReadOnlyList<RivalRecord> rivals)
+    {
+        var nemesis = rivals
+            .Where(r => r.Losses > 0)
+            .OrderByDescending(r => r.Losses)
+            .ThenByDescending(r => r.Losses - r.Wins)
+            .FirstOrDefault();
+        var victim = rivals
+            .Where(r => r.Wins > 0)
+            .OrderByDescending(r => r.Wins)
+            .ThenByDescending(r => r.Wins - r.Losses)
+            .FirstOrDefault();
+
+        if (nemesis is null || victim is null || nemesis.Player.ID != victim.Player.ID)
+            return (nemesis, victim);
+
+        var balance = victim.Wins - victim.Losses;
+        return balance > 0 ? (null, victim)
+            : balance < 0 ? (nemesis, null)
+            : (null, null);
+    }
+
+    public static (int Current, int Best) Streaks(IEnumerable<bool> wonInOrder)
     {
         int current = 0, best = 0;
         foreach (var won in wonInOrder)

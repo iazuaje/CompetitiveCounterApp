@@ -1,28 +1,274 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:f="clr-namespace:Fonts"
              xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             xmlns:appModels="clr-namespace:CompetitiveCounterApp.Models"
+             xmlns:behaviors="clr-namespace:CompetitiveCounterApp.Behaviors"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:chart="clr-namespace:Syncfusion.Maui.Toolkit.Charts;assembly=Syncfusion.Maui.Toolkit"
              x:Class="CompetitiveCounterApp.Pages.GameStatsPage"
              x:DataType="pageModels:GameStatsPageModel"
+             x:Name="GameStatsRoot"
              Title="{Binding Title}"
-             Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
-             Shell.ForegroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
-             Shell.TitleColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}">
+             Shell.BackgroundColor="{Binding Game.ToolbarColor}"
+             Shell.ForegroundColor="{Binding Game.OnToolbarColor}"
+             Shell.TitleColor="{Binding Game.OnToolbarColor}">
 
-    <Grid BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}"
-          Padding="20">
-        <VerticalStackLayout VerticalOptions="Center"
-                             HorizontalOptions="Center"
-                             Spacing="8">
-            <Label Text="Próximamente"
-                   FontSize="22"
-                   FontAttributes="Bold"
-                   HorizontalTextAlignment="Center" />
-            <Label Text="Las estadísticas detalladas de este juego estarán disponibles acá."
-                   FontSize="14"
-                   HorizontalTextAlignment="Center"
-                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference GameStatsRoot}, x:DataType=ContentPage}"
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+
+    <ScrollView BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
+        <VerticalStackLayout Padding="15" Spacing="10">
+
+            <Label Text="Todavía no hay sesiones con victorias en este juego."
+                   IsVisible="{Binding HasSessions, Converter={toolkit:InvertedBoolConverter}}"
+                   Style="{StaticResource StatsEmptyText}"
+                   Margin="0,40,0,0" />
+
+            <!-- Resumen -->
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding HasSessions}">
+                <Label Text="Resumen" Style="{StaticResource StatsSectionTitle}" Margin="0" />
+                <Grid ColumnDefinitions="*,*,*" ColumnSpacing="8">
+                    <Border Style="{StaticResource StatsCard}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Stats.SessionsPlayed}" Style="{StaticResource StatsValue}" TextColor="{Binding Game.CurrentGameColor}" />
+                            <Label Text="sesiones" Style="{StaticResource StatsCaption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource StatsCard}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Stats.TotalWins}" Style="{StaticResource StatsValue}" />
+                            <Label Text="victorias" Style="{StaticResource StatsCaption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                    <Border Grid.Column="2" Style="{StaticResource StatsCard}">
+                        <VerticalStackLayout>
+                            <Label Text="{Binding Stats.DistinctPlayers}" Style="{StaticResource StatsValue}" />
+                            <Label Text="jugadores" Style="{StaticResource StatsCaption}" />
+                        </VerticalStackLayout>
+                    </Border>
+                </Grid>
+                <Label Text="{Binding AveragesText}" Style="{StaticResource StatsCaption}" />
+                <Label Text="{Binding ActivityText}" Style="{StaticResource StatsCaption}" />
+            </VerticalStackLayout>
+
+            <!-- Reparto: sesiones ganadas y victorias, cada anillo con su líder -->
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding HasSessions}">
+                <Label Text="Reparto" Style="{StaticResource StatsSectionTitle}" />
+                <Border Style="{StaticResource StatsCard}">
+                    <VerticalStackLayout Spacing="10">
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="Sesiones ganadas" FontSize="14" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                <Grid HeightRequest="160">
+                                    <chart:SfCircularChart IsVisible="{Binding HasSessionsWonShare}">
+                                        <chart:SfCircularChart.Series>
+                                            <chart:DoughnutSeries ItemsSource="{Binding SessionsWonShare}"
+                                                                  XBindingPath="Label"
+                                                                  YBindingPath="Value"
+                                                                  PaletteBrushes="{Binding SessionsWonBrushes}"
+                                                                  InnerRadius="0.68"
+                                                                  StrokeWidth="0"
+                                                                  EnableTooltip="True"
+                                                                  EnableAnimation="True" />
+                                        </chart:SfCircularChart.Series>
+                                    </chart:SfCircularChart>
+                                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" MaximumWidthRequest="80">
+                                        <Image HeightRequest="18" WidthRequest="18">
+                                            <Image.Source>
+                                                <FontImageSource Glyph="{x:Static f:FluentUI.trophy_24_regular}"
+                                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                 Color="{Binding Game.CurrentGameColor}"
+                                                                 Size="18" />
+                                            </Image.Source>
+                                        </Image>
+                                        <Label Text="{Binding SessionsLeaderName}" FontSize="14" FontAttributes="Bold"
+                                               HorizontalTextAlignment="Center" LineBreakMode="TailTruncation" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                                <Label Text="{Binding SessionsLeaderText}" Style="{StaticResource StatsCaption}" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                <Label Text="Victorias" FontSize="14" FontAttributes="Bold" HorizontalTextAlignment="Center" />
+                                <Grid HeightRequest="160">
+                                    <chart:SfCircularChart>
+                                        <chart:SfCircularChart.Series>
+                                            <chart:DoughnutSeries ItemsSource="{Binding WinsShare}"
+                                                                  XBindingPath="Label"
+                                                                  YBindingPath="Value"
+                                                                  PaletteBrushes="{Binding WinsBrushes}"
+                                                                  InnerRadius="0.68"
+                                                                  StrokeWidth="0"
+                                                                  EnableTooltip="True"
+                                                                  EnableAnimation="True" />
+                                        </chart:SfCircularChart.Series>
+                                    </chart:SfCircularChart>
+                                    <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" InputTransparent="True" MaximumWidthRequest="80">
+                                        <Image HeightRequest="18" WidthRequest="18">
+                                            <Image.Source>
+                                                <FontImageSource Glyph="{x:Static f:FluentUI.star_24_regular}"
+                                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                 Color="{Binding Game.CurrentGameColor}"
+                                                                 Size="18" />
+                                            </Image.Source>
+                                        </Image>
+                                        <Label Text="{Binding WinsLeaderName}" FontSize="14" FontAttributes="Bold"
+                                               HorizontalTextAlignment="Center" LineBreakMode="TailTruncation" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                                <Label Text="{Binding WinsLeaderText}" Style="{StaticResource StatsCaption}" />
+                            </VerticalStackLayout>
+                        </Grid>
+
+                        <!-- Leyenda compartida: color de cada jugador -->
+                        <FlexLayout Wrap="Wrap" JustifyContent="Center" BindableLayout.ItemsSource="{Binding Ranking}">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="appModels:GameRankingRow">
+                                    <HorizontalStackLayout Spacing="6" Margin="8,2">
+                                        <Ellipse WidthRequest="10" HeightRequest="10" VerticalOptions="Center" Fill="{Binding Player.CurrentColor}" />
+                                        <Label Text="{Binding Player.Name}" FontSize="13" VerticalOptions="Center" />
+                                    </HorizontalStackLayout>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </FlexLayout>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Ranking completo: sesiones ganadas (trofeo) y victorias -->
+            <VerticalStackLayout Spacing="8" IsVisible="{Binding HasSessions}">
+                <Label Text="Ranking" Style="{StaticResource StatsSectionTitle}" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Ranking}" Spacing="8">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="appModels:GameRankingRow">
+                            <Border Style="{StaticResource StatsCard}"
+                                    Padding="12,10"
+                                    SemanticProperties.Description="{Binding Player.Name, StringFormat='Ver estadísticas de {0}'}"
+                                    behaviors:AnimatedTap.Command="{Binding OpenPlayerCommand, Source={RelativeSource AncestorType={x:Type pageModels:GameStatsPageModel}}, x:DataType=pageModels:GameStatsPageModel}"
+                                    behaviors:AnimatedTap.CommandParameter="{Binding .}">
+                                <Grid ColumnDefinitions="Auto,Auto,*,Auto" ColumnSpacing="10" InputTransparent="True">
+                                    <Label Text="{Binding Rank, StringFormat='{0}º'}"
+                                           FontSize="15"
+                                           FontAttributes="Bold"
+                                           VerticalOptions="Center"
+                                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                    <Border Grid.Column="1" WidthRequest="38" HeightRequest="38" StrokeThickness="0" StrokeShape="Ellipse" Padding="0"
+                                            VerticalOptions="Center"
+                                            Background="{Binding Player.CurrentColor}">
+                                        <Image HeightRequest="18" WidthRequest="18" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Image.Source>
+                                                <FontImageSource Glyph="{Binding Player.Icon}"
+                                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                 Color="{Binding Player.OnColor}"
+                                                                 Size="18" />
+                                            </Image.Source>
+                                        </Image>
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="2" Spacing="4" VerticalOptions="Center">
+                                        <Label Text="{Binding Player.Name}" FontSize="16" FontAttributes="Bold" LineBreakMode="TailTruncation" />
+                                        <ProgressBar Progress="{Binding Progress}" ProgressColor="{Binding Player.CurrentColor}" />
+                                        <Label Text="{Binding Detail}" Style="{StaticResource StatsCaption}" HorizontalTextAlignment="Start" />
+                                    </VerticalStackLayout>
+                                    <HorizontalStackLayout Grid.Column="3" Spacing="4" VerticalOptions="Center">
+                                        <Label Text="{Binding SessionsWon}" FontSize="20" FontAttributes="Bold" VerticalOptions="Center" />
+                                        <Image HeightRequest="20" WidthRequest="20" VerticalOptions="Center">
+                                            <Image.Source>
+                                                <FontImageSource Glyph="{x:Static f:FluentUI.trophy_24_regular}"
+                                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                 Color="{Binding Player.CurrentColor}"
+                                                                 Size="20" />
+                                            </Image.Source>
+                                        </Image>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <!-- Historial: victorias de cada jugador por sesión (columnas apiladas, series armadas en el code-behind) -->
+            <VerticalStackLayout Spacing="10" IsVisible="{Binding HasSessions}">
+                <Label Text="Historial" Style="{StaticResource StatsSectionTitle}" />
+                <Border Style="{StaticResource StatsCard}">
+                    <VerticalStackLayout>
+                        <Label Text="El historial aparece a partir de la segunda sesión."
+                               IsVisible="{Binding HasHistory, Converter={toolkit:InvertedBoolConverter}}"
+                               Style="{StaticResource StatsEmptyText}" />
+                        <chart:SfCartesianChart x:Name="HistoryChart" HeightRequest="240" IsVisible="{Binding HasHistory}">
+                            <chart:SfCartesianChart.TooltipBehavior>
+                                <chart:ChartTooltipBehavior />
+                            </chart:SfCartesianChart.TooltipBehavior>
+                            <chart:SfCartesianChart.Legend>
+                                <chart:ChartLegend Placement="Bottom">
+                                    <chart:ChartLegend.LabelStyle>
+                                        <chart:ChartLegendLabelStyle FontSize="12" TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}" />
+                                    </chart:ChartLegend.LabelStyle>
+                                </chart:ChartLegend>
+                            </chart:SfCartesianChart.Legend>
+                            <chart:SfCartesianChart.XAxes>
+                                <chart:CategoryAxis ShowMajorGridLines="False">
+                                    <chart:CategoryAxis.LabelStyle>
+                                        <chart:ChartAxisLabelStyle FontSize="11" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                    </chart:CategoryAxis.LabelStyle>
+                                </chart:CategoryAxis>
+                            </chart:SfCartesianChart.XAxes>
+                            <chart:SfCartesianChart.YAxes>
+                                <chart:NumericalAxis Minimum="0" RangePadding="Additional">
+                                    <chart:NumericalAxis.LabelStyle>
+                                        <chart:ChartAxisLabelStyle FontSize="11" TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                    </chart:NumericalAxis.LabelStyle>
+                                    <chart:NumericalAxis.MajorGridLineStyle>
+                                        <chart:ChartLineStyle Stroke="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray600}}"
+                                                              StrokeDashArray="3,3" />
+                                    </chart:NumericalAxis.MajorGridLineStyle>
+                                    <chart:NumericalAxis.AxisLineStyle>
+                                        <chart:ChartLineStyle StrokeWidth="0" />
+                                    </chart:NumericalAxis.AxisLineStyle>
+                                </chart:NumericalAxis>
+                            </chart:SfCartesianChart.YAxes>
+                        </chart:SfCartesianChart>
+                    </VerticalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Récords y rivalidades -->
+            <VerticalStackLayout Spacing="8" IsVisible="{Binding HasRecords}">
+                <Label Text="Récords" Style="{StaticResource StatsSectionTitle}" />
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Records}" Spacing="8">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate x:DataType="appModels:GameRecord">
+                            <Border Style="{StaticResource StatsCard}">
+                                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="12">
+                                    <Border WidthRequest="40" HeightRequest="40" StrokeThickness="0" StrokeShape="Ellipse" Padding="0"
+                                            VerticalOptions="Center"
+                                            Background="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
+                                        <Image HeightRequest="20" WidthRequest="20" HorizontalOptions="Center" VerticalOptions="Center">
+                                            <Image.Source>
+                                                <FontImageSource Glyph="{Binding Glyph}"
+                                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                 Color="{Binding Game.CurrentGameColor, Source={RelativeSource AncestorType={x:Type pageModels:GameStatsPageModel}}, x:DataType=pageModels:GameStatsPageModel}"
+                                                                 Size="20" />
+                                            </Image.Source>
+                                        </Image>
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="1" VerticalOptions="Center">
+                                        <Label Text="{Binding Title}" Style="{StaticResource StatsCaption}" HorizontalTextAlignment="Start" />
+                                        <Label Text="{Binding Headline}" FontSize="15" FontAttributes="Bold" />
+                                        <Label Text="{Binding Detail}" Style="{StaticResource StatsCaption}" HorizontalTextAlignment="Start" />
+                                    </VerticalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
         </VerticalStackLayout>
-    </Grid>
+    </ScrollView>
 
 </ContentPage>
