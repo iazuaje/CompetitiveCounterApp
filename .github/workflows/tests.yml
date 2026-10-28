@@ -1,0 +1,22 @@
+name: Tests
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+    branches: [master]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      # Solo el proyecto de tests: la app requiere el workload de Android y no hace falta para la lógica enlazada.
+      - name: Run tests
+        run: dotnet test CompetitiveCounterApp.Tests/CompetitiveCounterApp.Tests.csproj --logger "console;verbosity=normal"

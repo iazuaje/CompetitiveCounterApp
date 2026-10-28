@@ -1,5 +1,6 @@
 # CompetitiveCounterApp
 
+[![Tests](https://github.com/iazuaje/CompetitiveCounterApp/actions/workflows/tests.yml/badge.svg?branch=master)](https://github.com/iazuaje/CompetitiveCounterApp/actions/workflows/tests.yml)
 ![.NET MAUI](https://img.shields.io/badge/.NET_MAUI-10-512BD4?logo=.net)
 ![Platform](https://img.shields.io/badge/Platform-Android-3DDC84)
 
@@ -54,6 +55,14 @@ El producto es exclusivamente móvil y hoy compila solo para Android. iOS está 
 
 ```powershell
 dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net10.0-android
+```
+
+## Tests
+
+Los tests unitarios (xUnit) cubren la lógica de estadísticas y corren en cada push y pull request a `master` con GitHub Actions.
+
+```powershell
+dotnet test CompetitiveCounterApp.Tests\CompetitiveCounterApp.Tests.csproj
 ```
 
 ## Modelo de datos
