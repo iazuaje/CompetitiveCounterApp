@@ -15,7 +15,26 @@ namespace CompetitiveCounterApp.Data.Migrations
         protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
-            modelBuilder.HasAnnotation("ProductVersion", "9.0.8");
+            modelBuilder.HasAnnotation("ProductVersion", "10.0.12");
+
+            modelBuilder.Entity("CompetitiveCounterApp.Models.Category", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Name")
+                        .IsUnique()
+                        .HasDatabaseName("IX_Categories_Name");
+
+                    b.ToTable("Categories", (string)null);
+                });
 
             modelBuilder.Entity("CompetitiveCounterApp.Models.Game", b =>
                 {
@@ -59,6 +78,9 @@ namespace CompetitiveCounterApp.Data.Migrations
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("ID");
 
@@ -157,6 +179,21 @@ namespace CompetitiveCounterApp.Data.Migrations
                     b.ToTable("SessionPlayers", (string)null);
                 });
 
+            modelBuilder.Entity("GameCategories", b =>
+                {
+                    b.Property<int>("GameID")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CategoryID")
+                        .HasColumnType("INTEGER");
+
+                    b.HasKey("GameID", "CategoryID");
+
+                    b.HasIndex("CategoryID");
+
+                    b.ToTable("GameCategories", (string)null);
+                });
+
             modelBuilder.Entity("CompetitiveCounterApp.Models.Session", b =>
                 {
                     b.HasOne("CompetitiveCounterApp.Models.Game", "Game")
@@ -185,6 +222,21 @@ namespace CompetitiveCounterApp.Data.Migrations
                     b.Navigation("Player");
 
                     b.Navigation("Session");
+                });
+
+            modelBuilder.Entity("GameCategories", b =>
+                {
+                    b.HasOne("CompetitiveCounterApp.Models.Category", null)
+                        .WithMany()
+                        .HasForeignKey("CategoryID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("CompetitiveCounterApp.Models.Game", null)
+                        .WithMany()
+                        .HasForeignKey("GameID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("CompetitiveCounterApp.Models.Session", b =>

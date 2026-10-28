@@ -17,6 +17,7 @@ namespace CompetitiveCounterApp.Data
         public DbSet<Player> Players => Set<Player>();
         public DbSet<Session> Sessions => Set<Session>();
         public DbSet<SessionPlayer> SessionPlayers => Set<SessionPlayer>();
+        public DbSet<Category> Categories => Set<Category>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -31,7 +32,26 @@ namespace CompetitiveCounterApp.Data
                 entity.Property(e => e.ColorDark).HasDefaultValue("#FF5964");
                 entity.Property(e => e.ImagePath).HasDefaultValue(string.Empty);
                 entity.Property(e => e.CreatedDate);
+                entity.Property(e => e.SortOrder);
 
+                // Etiquetas: muchos a muchos; borrar un juego o una categoría borra solo la relación.
+                entity.HasMany(e => e.Categories)
+                    .WithMany(c => c.Games)
+                    .UsingEntity<Dictionary<string, object>>(
+                        "GameCategories",
+                        right => right.HasOne<Category>().WithMany().HasForeignKey("CategoryID").OnDelete(DeleteBehavior.Cascade),
+                        left => left.HasOne<Game>().WithMany().HasForeignKey("GameID").OnDelete(DeleteBehavior.Cascade),
+                        join =>
+                        {
+                            join.ToTable("GameCategories");
+                            join.HasKey("GameID", "CategoryID");
+                        });
+
+                entity.Ignore(e => e.HasCategories);
+                entity.Ignore(e => e.CategoriesText);
+                entity.Ignore(e => e.HasActiveSession);
+                entity.Ignore(e => e.HasWins);
+                entity.Ignore(e => e.LastPlayedDate);
                 entity.Ignore(e => e.ThemeColors);
                 entity.Ignore(e => e.GameColorLight);
                 entity.Ignore(e => e.GameColorDark);
@@ -43,10 +63,21 @@ namespace CompetitiveCounterApp.Data
                 entity.Ignore(e => e.SurfaceColor);
                 entity.Ignore(e => e.OnSurfaceColor);
                 entity.Ignore(e => e.GameImage);
+                entity.Ignore(e => e.HasImage);
                 entity.Ignore(e => e.SessionCount);
                 entity.Ignore(e => e.LeaderName);
                 entity.Ignore(e => e.LeaderSessionsWon);
                 entity.Ignore(e => e.HasLeader);
+            });
+
+            modelBuilder.Entity<Category>(entity =>
+            {
+                entity.ToTable("Categories");
+                entity.HasKey(e => e.ID);
+                entity.Property(e => e.Name).IsRequired();
+                entity.HasIndex(e => e.Name)
+                    .IsUnique()
+                    .HasDatabaseName("IX_Categories_Name");
             });
 
             modelBuilder.Entity<Player>(entity =>

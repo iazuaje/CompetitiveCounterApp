@@ -1,10 +1,11 @@
-<?xml version="1.0" encoding="utf-8" ?>
+﻿<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:f="clr-namespace:Fonts"
              xmlns:controls="clr-namespace:CompetitiveCounterApp.Pages.Controls"
              xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
              xmlns:models="clr-namespace:CompetitiveCounterApp.Models;assembly=CompetitiveCounterApp.Data"
+             xmlns:appModels="clr-namespace:CompetitiveCounterApp.Models"
              xmlns:behaviors="clr-namespace:CompetitiveCounterApp.Behaviors"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="CompetitiveCounterApp.Pages.GamesPage"
@@ -29,18 +30,110 @@
     </ContentPage.Behaviors>
 
     <ContentPage.ToolbarItems>
-        <ToolbarItem Text="Opciones"
-                     Command="{Binding OpenOptionsCommand}"
-                     IconImageSource="{StaticResource IconSettingsShell}" />
+        <!-- Ícono y texto según la vista actual: los asigna el code-behind con el color de la barra. -->
+        <ToolbarItem x:Name="ViewToggleItem"
+                     Command="{Binding ToggleViewCommand}" />
+        <ToolbarItem Text="Ordenar por"
+                     Command="{Binding ChangeSortCommand}"
+                     IconImageSource="{StaticResource IconSortShell}" />
     </ContentPage.ToolbarItems>
 
-    <Grid>
-        <!-- Contenido -->
-        <RefreshView IsRefreshing="{Binding IsRefreshing}"
-                 Command="{Binding RefreshCommand}">
-            <ScrollView>
-                <VerticalStackLayout Padding="15">
-                    <FlexLayout Wrap="Wrap"
+    <Grid RowDefinitions="Auto,*">
+        <!-- Banda superior: continúa la barra con esquinas redondeadas. Búsqueda + filtros. -->
+        <Border StrokeThickness="0"
+                Padding="15,2,15,16"
+                Background="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                IsVisible="{Binding HasGames}">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="0,0,28,28" />
+            </Border.StrokeShape>
+            <VerticalStackLayout Spacing="12">
+                <!-- Búsqueda: nombre, descripción o categoría -->
+                <Border Padding="14,0"
+                        HeightRequest="48"
+                        StrokeThickness="0"
+                        StrokeShape="RoundRectangle 24"
+                        Background="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
+                    <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                        <Image HeightRequest="22" WidthRequest="22" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource Glyph="{x:Static f:FluentUI.search_24_regular}"
+                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                 Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                                 Size="22" />
+                            </Image.Source>
+                        </Image>
+                        <controls:BorderlessEntry Grid.Column="1"
+                                                  Text="{Binding SearchText}"
+                                                  Placeholder="Buscar juegos o categorías"
+                                                  ClearButtonVisibility="WhileEditing"
+                                                  ReturnType="Search"
+                                                  FontSize="15"
+                                                  VerticalOptions="Center"
+                                                  TextColor="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                                                  PlaceholderColor="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}" />
+                    </Grid>
+                </Border>
+
+                <!-- Filtros: estado y categorías (mantener presionada una categoría para renombrarla o eliminarla) -->
+                <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                    <HorizontalStackLayout Spacing="8" BindableLayout.ItemsSource="{Binding FilterChips}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="appModels:FilterChip">
+                                <controls:Chip Variant="OnPrimary"
+                                               Text="{Binding Label}"
+                                               Glyph="{Binding Glyph}"
+                                               IsSelected="{Binding IsSelected}"
+                                               behaviors:AnimatedTap.Command="{Binding ToggleFilterCommand, Source={RelativeSource AncestorType={x:Type pageModels:GamesPageModel}}, x:DataType=pageModels:GamesPageModel}"
+                                               behaviors:AnimatedTap.LongPressCommand="{Binding FilterOptionsCommand, Source={RelativeSource AncestorType={x:Type pageModels:GamesPageModel}}, x:DataType=pageModels:GamesPageModel}"
+                                               behaviors:AnimatedTap.CommandParameter="{Binding .}" />
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </HorizontalStackLayout>
+                </ScrollView>
+            </VerticalStackLayout>
+        </Border>
+
+        <!-- Lista: conteo, criterio de orden y grilla de juegos -->
+        <RefreshView Grid.Row="1"
+                     IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding RefreshCommand}">
+            <controls:ReorderScrollView x:Name="GamesScroll">
+                <VerticalStackLayout Padding="15" Spacing="12">
+
+                    <Grid ColumnDefinitions="*,Auto" IsVisible="{Binding HasGames}">
+                        <Label Text="{Binding GamesCountText}"
+                               FontSize="14"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                        <!-- Criterio de orden actual (tap: cambiarlo) -->
+                        <Border Grid.Column="1"
+                                Padding="12,6"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 16"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                Background="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+                                SemanticProperties.Description="{Binding SortLabel, StringFormat='Orden: {0}. Tocar para cambiar'}"
+                                behaviors:AnimatedTap.Command="{Binding ChangeSortCommand}">
+                            <Label FontSize="13" InputTransparent="True">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{x:Static f:FluentUI.arrow_sort_24_regular}"
+                                              FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                              FontSize="14"
+                                              TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                        <Span Text=" " />
+                                        <Span Text="{Binding SortLabel}" FontAttributes="Bold" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </Border>
+                    </Grid>
+                    <!-- Grilla: tap abre el juego; mantener presionado y arrastrar la reordena (LiveReorderController). -->
+                    <FlexLayout x:Name="GamesGrid"
+                                IsVisible="{Binding IsListView, Converter={StaticResource InvertedBoolConverter}}"
+                                Wrap="Wrap"
                                 Direction="Row"
                                 AlignItems="Stretch"
                                 JustifyContent="SpaceBetween"
@@ -63,6 +156,7 @@
                                     <Grid RowDefinitions="*,Auto,Auto,Auto" InputTransparent="True">
                                         <Grid>
                                             <Image Source="{Binding GameImage}"
+                                                   IsVisible="{Binding HasImage}"
                                                    Aspect="AspectFill" />
 
                                             <Border WidthRequest="64"
@@ -139,6 +233,123 @@
                         </BindableLayout.ItemTemplate>
                     </FlexLayout>
 
+                    <!-- Lista: una fila por juego (miniatura, nombre, líder y sesiones); mismo tap y arrastre que la grilla. -->
+                    <VerticalStackLayout x:Name="GamesList"
+                                         Spacing="10"
+                                         IsVisible="{Binding IsListView}"
+                                         BindableLayout.ItemsSource="{Binding Games}">
+                        <BindableLayout.ItemTemplate>
+                            <DataTemplate x:DataType="models:Game">
+                                <Border Padding="10"
+                                        StrokeThickness="0"
+                                        StrokeShape="RoundRectangle 18"
+                                        Background="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+                                        SemanticProperties.Description="{Binding Name}"
+                                        behaviors:AnimatedTap.Command="{Binding NavigateToGameCommand, Source={RelativeSource AncestorType={x:Type pageModels:GamesPageModel}}, x:DataType=pageModels:GamesPageModel}"
+                                        behaviors:AnimatedTap.CommandParameter="{Binding .}"
+                                        behaviors:AnimatedTap.PressedScale="0.98"
+                                        behaviors:AnimatedTap.PressedOpacity="0.92">
+                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" InputTransparent="True">
+                                        <!-- Miniatura: imagen del juego o su ícono sobre el color -->
+                                        <Border WidthRequest="64"
+                                                HeightRequest="64"
+                                                Padding="0"
+                                                StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 14"
+                                                Background="{Binding CurrentGameColor}">
+                                            <Grid>
+                                                <Image Source="{Binding GameImage}"
+                                                       IsVisible="{Binding HasImage}"
+                                                       Aspect="AspectFill" />
+                                                <Image HeightRequest="30"
+                                                       WidthRequest="30"
+                                                       HorizontalOptions="Center"
+                                                       VerticalOptions="Center"
+                                                       IsVisible="{Binding HasImage, Converter={StaticResource InvertedBoolConverter}}">
+                                                    <Image.Source>
+                                                        <FontImageSource Glyph="{Binding Icon}"
+                                                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                         Color="{Binding OnGameColor}"
+                                                                         Size="30" />
+                                                    </Image.Source>
+                                                </Image>
+                                            </Grid>
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                            <Label Text="{Binding Name}"
+                                                   FontSize="16"
+                                                   FontAttributes="Bold"
+                                                   LineBreakMode="TailTruncation"
+                                                   MaxLines="1" />
+                                            <Label IsVisible="{Binding HasLeader}"
+                                                   FontSize="13"
+                                                   MaxLines="1"
+                                                   LineBreakMode="TailTruncation"
+                                                   TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                                   SemanticProperties.Description="{Binding LeaderName, StringFormat='Va ganando {0}'}">
+                                                <Label.FormattedText>
+                                                    <FormattedString>
+                                                        <Span Text="{x:Static f:FluentUI.crown_24_regular}"
+                                                              FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                              FontSize="14"
+                                                              TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                                        <Span Text=" " />
+                                                        <Span Text="{Binding LeaderName}" FontAttributes="Bold" />
+                                                        <Span Text="{Binding LeaderSessionsWon, StringFormat=' · {0} '}" />
+                                                        <Span Text="{x:Static f:FluentUI.trophy_24_regular}"
+                                                              FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                              FontSize="13" />
+                                                    </FormattedString>
+                                                </Label.FormattedText>
+                                            </Label>
+                                            <!-- Sesiones y, si hay, categorías (separadas para no dejar un "·" suelto) -->
+                                            <Grid ColumnDefinitions="Auto,*">
+                                                <Label FontSize="12"
+                                                       Text="{Binding SessionCount, StringFormat='{}{0} sesión(es)'}"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                                <Label Grid.Column="1"
+                                                       FontSize="12"
+                                                       MaxLines="1"
+                                                       LineBreakMode="TailTruncation"
+                                                       IsVisible="{Binding HasCategories}"
+                                                       Text="{Binding CategoriesText, StringFormat=' · {0}'}"
+                                                       TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                                            </Grid>
+                                        </VerticalStackLayout>
+
+                                        <Image Grid.Column="2" HeightRequest="20" WidthRequest="20" VerticalOptions="Center">
+                                            <Image.Source>
+                                                <FontImageSource Glyph="{x:Static f:FluentUI.chevron_right_24_regular}"
+                                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                                 Color="{AppThemeBinding Light={StaticResource Gray400}, Dark={StaticResource Gray500}}"
+                                                                 Size="20" />
+                                            </Image.Source>
+                                        </Image>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </BindableLayout.ItemTemplate>
+                    </VerticalStackLayout>
+
+                    <!-- Hay juegos, pero ninguno coincide -->
+                    <VerticalStackLayout IsVisible="{Binding HasNoResults}" Spacing="10" Padding="20" HorizontalOptions="Center">
+                        <Label Text="Ningún juego coincide con la búsqueda o los filtros."
+                               FontSize="14"
+                               HorizontalTextAlignment="Center"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                        <Button Text="Limpiar filtros"
+                                Command="{Binding ClearFiltersCommand}"
+                                HorizontalOptions="Center"
+                                BorderWidth="0"
+                                CornerRadius="18"
+                                Padding="18,6"
+                                FontAttributes="Bold"
+                                BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                                TextColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}" />
+                    </VerticalStackLayout>
+
+                    <!-- Todavía no hay juegos -->
                     <VerticalStackLayout IsVisible="{Binding HasGames, Converter={StaticResource InvertedBoolConverter}}"
                                          VerticalOptions="Center"
                                          HorizontalOptions="Center"
@@ -163,10 +374,12 @@
                                HorizontalTextAlignment="Center" />
                     </VerticalStackLayout>
                 </VerticalStackLayout>
-            </ScrollView>
+            </controls:ReorderScrollView>
         </RefreshView>
+
         <!-- Botón flotante para agregar juegos -->
-        <controls:AddButton IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+        <controls:AddButton Grid.RowSpan="2"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
                             Command="{Binding AddGameCommand}"/>
     </Grid>
 </ContentPage>

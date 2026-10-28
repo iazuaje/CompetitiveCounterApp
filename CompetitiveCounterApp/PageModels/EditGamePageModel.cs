@@ -11,10 +11,11 @@ public partial class EditGamePageModel : GameFormPageModelBase, IQueryAttributab
     private readonly GameOperationsService _gameOperations;
 
     public EditGamePageModel(
-        GameRepository gameRepository, 
+        GameRepository gameRepository,
+        CategoryRepository categoryRepository,
         ModalErrorHandler errorHandler,
         GameOperationsService gameOperations)
-        : base(gameRepository, errorHandler)
+        : base(gameRepository, categoryRepository, errorHandler)
     {
         _gameOperations = gameOperations;
     }
@@ -49,6 +50,7 @@ public partial class EditGamePageModel : GameFormPageModelBase, IQueryAttributab
 
             ApplyGameData(_game);
             SetSelectedImageFromPath(_game.ImagePath);
+            await LoadCategoriesAsync(_game.Categories.Select(c => c.ID));
         }
         catch (Exception e)
         {
@@ -96,6 +98,7 @@ public partial class EditGamePageModel : GameFormPageModelBase, IQueryAttributab
             
             await _gameRepository.SaveItemAsync(_game);
             gameSaved = true;
+            await SaveCategoriesAsync(_game.ID);
 
             if (!string.IsNullOrEmpty(previousImagePath) && File.Exists(previousImagePath))
                 File.Delete(previousImagePath);

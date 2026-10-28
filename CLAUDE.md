@@ -40,6 +40,9 @@ dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net10.0-and
 - **Acción clara**: `Button` nativo, `Pressed` suave (`Scale` 0.96, `Opacity` 0.92), `BorderWidth="0"`.
 - **Card que no puede ser Button**: `behaviors:AnimatedTap.Command` sobre el `Border`, con el contenido `InputTransparent="True"`. No `TouchBehavior` ni `TapGestureRecognizer.Command` (navega antes de animar).
 - **Mantener presionado**: `behaviors:AnimatedTap.LongPressCommand` (mismo `CommandParameter`; ~500 ms, se cancela al mover el dedo). Reservado para acciones destructivas o secundarias; el tap simple sigue siendo la acción principal.
+- **Reordenar arrastrando**: `Helpers/LiveReorderController` sobre el layout dentro de un `controls:ReorderScrollView` (en Android `PointerGestureRecognizer` no informa movimientos táctiles; el toque se lee crudo en el ScrollView). Mantener presionado levanta la tarjeta, las demás se corren en vivo, al soltar confirma); no `DragGestureRecognizer` nativo ni modos aparte.
+- **Chips seleccionables** (filtros, categorías): `controls:Chip` con `AnimatedTap`; el modelo es `FilterChip`. Sobre la banda de color de Juegos, `Variant="OnPrimary"`.
+- **Campos dentro de una cápsula**: `controls:BorderlessEntry` (sin la línea nativa de Android).
 - **Listas con pulso**: `ScrollView` + `BindableLayout`. `CollectionView` solo si el ítem no se anima (en Android recicla celdas y pierde el comando o el pulso).
 - **Grilla de 2 columnas**: `FlexLayout` con `JustifyContent="SpaceBetween"` y `FlexLayout.Basis="48%"`, solo margen inferior.
 - **Háptica**: `HapticFeedbackHelper.Click()` al inicio de cada comando de usuario.
@@ -49,6 +52,8 @@ dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net10.0-and
 - Repositorios con `IDbContextFactory`: un contexto por operación, lecturas `AsNoTracking()`. Las reglas de negocio de sesión viven en `SessionRepository` y lanzan `InvalidOperationException` con mensaje en español.
 - `Session.ClosedAt`: `null` = activa. Máximo una activa por `GameID` (`IX_Sessions_GameID_Active`). `SessionPlayer` único por `(SessionID, PlayerID)`; métrica solo `Wins`, nunca menor a 0.
 - Ranking de un juego (podio, líder de la tarjeta de Juegos, puesto en estadísticas): sesiones ganadas (cerradas; empate en el máximo cuenta para todos), luego victorias, luego nombre. Siempre vía `PlayerGameStatsCalculator.RankPlayers`; no reimplementar el orden.
+- Categorías: muchos a muchos `Game` ↔ `Category` (tabla `GameCategories`), nombre único sin distinguir mayúsculas ni tildes (`CategoryRepository`). `GameRepository.SaveItemAsync` no guarda categorías: después de guardar el juego, `SetCategoriesAsync`.
+- Orden manual de juegos en `Game.SortOrder` (menor = primero; un juego nuevo va primero). El criterio de orden elegido en Juegos se guarda en `Preferences` (`games.sort`), y la vista grilla/lista en `games.view`.
 - Fechas en hora local (`DateTime.Now`, `LocalDateTimeConverter`), sin UTC.
 - Toda propiedad calculada nueva en una entidad va en `entity.Ignore(...)` de `AppDbContext`.
 - No generar ni editar migraciones EF: tras cambiar entidades o Fluent API, el desarrollador crea la migración a mano.

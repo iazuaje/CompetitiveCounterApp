@@ -12,7 +12,12 @@ namespace CompetitiveCounterApp.PageModels;
 public abstract partial class GameFormPageModelBase : ObservableObject
 {
     protected readonly GameRepository _gameRepository;
+    protected readonly CategoryRepository _categoryRepository;
     protected readonly ModalErrorHandler _errorHandler;
+
+    /// <summary>Todas las categorías como chips; las seleccionadas se guardan con el juego.</summary>
+    [ObservableProperty]
+    private ObservableCollection<FilterChip> _categoryChips = [];
 
     [ObservableProperty]
     private string _name = string.Empty;
@@ -42,9 +47,13 @@ public abstract partial class GameFormPageModelBase : ObservableObject
     [ObservableProperty]
     private bool _isBusy;
 
-    protected GameFormPageModelBase(GameRepository gameRepository, ModalErrorHandler errorHandler)
+    protected GameFormPageModelBase(
+        GameRepository gameRepository,
+        CategoryRepository categoryRepository,
+        ModalErrorHandler errorHandler)
     {
         _gameRepository = gameRepository;
+        _categoryRepository = categoryRepository;
         _errorHandler = errorHandler;
         _icons = new ObservableCollection<IconData>(GameDataService.GetIcons());
         _gameColors = GameDataService.GetGameColors();
@@ -156,6 +165,80 @@ public abstract partial class GameFormPageModelBase : ObservableObject
         }
         color.IsSelected = true;
         SelectedColor = color;
+    }
+
+    /// <summary>Carga todas las categorías marcando como seleccionadas las del juego.</summary>
+    protected async Task LoadCategoriesAsync(IEnumerable<int> selectedIds)
+    {
+        var selected = selectedIds.ToHashSet();
+        var categories = await _categoryRepository.ListAsync();
+        CategoryChips = new ObservableCollection<FilterChip>(
+            categories.Select(c => FilterChip.ForCategory(c, selected.Contains(c.ID))));
+    }
+
+    /// <summary>Guarda las categorías seleccionadas para el juego (ya persistido).</summary>
+    protected Task SaveCategoriesAsync(int gameId) =>
+        _gameRepository.SetCategoriesAsync(
+            gameId,
+            CategoryChips.Where(c => c.IsSelected && c.Category is not null).Select(c => c.Category!.ID));
+
+    [RelayCommand]
+    private void ToggleCategory(FilterChip chip)
+    {
+        HapticFeedbackHelper.Click();
+        chip.IsSelected = !chip.IsSelected;
+    }
+
+    [RelayCommand]
+    private async Task AddCategory()
+    {
+        HapticFeedbackHelper.Click();
+
+        try
+        {
+            var category = await CategoryPrompts.CreateAsync(_categoryRepository);
+            if (category is null)
+                return;
+
+            // Si ya existía, se selecciona su chip en vez de duplicarlo.
+            var existing = CategoryChips.FirstOrDefault(c => c.Category?.ID == category.ID);
+            if (existing is not null)
+            {
+                existing.IsSelected = true;
+                return;
+            }
+
+            CategoryChips.Add(FilterChip.ForCategory(category, isSelected: true));
+        }
+        catch (Exception e)
+        {
+            _errorHandler.HandleError(e);
+        }
+    }
+
+    /// <summary>Mantener presionado un chip: renombrar o eliminar la categoría.</summary>
+    [RelayCommand]
+    private async Task CategoryOptions(FilterChip chip)
+    {
+        if (chip.Category is null)
+            return;
+
+        try
+        {
+            switch (await CategoryPrompts.ShowOptionsAsync(chip.Category, _categoryRepository))
+            {
+                case CategoryChange.Renamed:
+                    chip.Label = chip.Category.Name;
+                    break;
+                case CategoryChange.Deleted:
+                    CategoryChips.Remove(chip);
+                    break;
+            }
+        }
+        catch (Exception e)
+        {
+            _errorHandler.HandleError(e);
+        }
     }
 
     protected bool ValidateForm()

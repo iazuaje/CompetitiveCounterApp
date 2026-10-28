@@ -6,9 +6,13 @@ namespace CompetitiveCounterApp.PageModels
 {
     public partial class CreateGamePageModel : GameFormPageModelBase
     {
-        public CreateGamePageModel(GameRepository gameRepository, ModalErrorHandler errorHandler)
-            : base(gameRepository, errorHandler)
+        public CreateGamePageModel(
+            GameRepository gameRepository,
+            CategoryRepository categoryRepository,
+            ModalErrorHandler errorHandler)
+            : base(gameRepository, categoryRepository, errorHandler)
         {
+            LoadCategoriesAsync([]).FireAndForgetSafeAsync(errorHandler);
         }
 
         [RelayCommand]
@@ -42,6 +46,7 @@ namespace CompetitiveCounterApp.PageModels
 
                 await _gameRepository.SaveItemAsync(game);
                 gameSaved = true;
+                await SaveCategoriesAsync(game.ID);
 
                 await Shell.Current.GoToAsync("..");
                 await AppShell.DisplayToastAsync("Juego creado exitosamente");

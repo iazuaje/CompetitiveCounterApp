@@ -19,6 +19,9 @@ namespace CompetitiveCounterApp
 #if IOS
     				handlers.AddHandler<Microsoft.Maui.Controls.CollectionView, Microsoft.Maui.Controls.Handlers.Items2.CollectionViewHandler2>();
 #endif
+#if ANDROID
+                    handlers.AddHandler<Pages.Controls.ReorderScrollView, Pages.Controls.ReorderScrollViewHandler>();
+#endif
                 })
                 .ConfigureFonts(fonts =>
                 {
@@ -44,6 +47,7 @@ namespace CompetitiveCounterApp
             builder.Services.AddSingleton<GameRepository>();
             builder.Services.AddSingleton<PlayerRepository>();
             builder.Services.AddSingleton<SessionRepository>();
+            builder.Services.AddSingleton<CategoryRepository>();
             builder.Services.AddSingleton<ModalErrorHandler>();
 
             builder.Services.AddSingleton<GamesPageModel>();
@@ -60,6 +64,16 @@ namespace CompetitiveCounterApp
             builder.Services.AddTransient<GeneralStatsPageModel>();
             builder.Services.AddTransientWithShellRoute<PlayerStatsPage, PlayerStatsPageModel>("playerstats");
             builder.Services.AddTransientWithShellRoute<PlayerGameStatsPage, PlayerGameStatsPageModel>("playergamestats");
+
+            // Campos dentro de una cápsula: sin la línea inferior nativa de Android.
+            Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("Borderless", (handler, view) =>
+            {
+#if ANDROID
+                if (view is CompetitiveCounterApp.Pages.Controls.BorderlessEntry)
+                    handler.PlatformView.BackgroundTintList =
+                        Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+#endif
+            });
 
             var app = builder.Build();
 
