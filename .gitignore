@@ -488,3 +488,5 @@ $RECYCLE.BIN/
 *.swp
 /git_changes.txt
 /CompetitiveCounterApp/git_changes.txt
+
+.publish
