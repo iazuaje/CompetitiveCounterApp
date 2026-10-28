@@ -48,6 +48,7 @@ namespace CompetitiveCounterApp
             builder.Services.AddSingleton<PlayerRepository>();
             builder.Services.AddSingleton<SessionRepository>();
             builder.Services.AddSingleton<CategoryRepository>();
+            builder.Services.AddSingleton<BackupService>();
             builder.Services.AddSingleton<ModalErrorHandler>();
 
             builder.Services.AddSingleton<GamesPageModel>();
@@ -62,6 +63,7 @@ namespace CompetitiveCounterApp
             builder.Services.AddTransientWithShellRoute<GameStatsPage, GameStatsPageModel>("gamestats");
             // Raíz del flyout (ruta "stats" en AppShell.xaml): sin ruta apilada propia.
             builder.Services.AddTransient<GeneralStatsPageModel>();
+            builder.Services.AddTransient<BackupPageModel>();
             builder.Services.AddTransientWithShellRoute<PlayerStatsPage, PlayerStatsPageModel>("playerstats");
             builder.Services.AddTransientWithShellRoute<PlayerGameStatsPage, PlayerGameStatsPageModel>("playergamestats");
 

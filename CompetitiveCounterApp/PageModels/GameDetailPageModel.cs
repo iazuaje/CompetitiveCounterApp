@@ -81,6 +81,14 @@ namespace CompetitiveCounterApp.PageModels
                 foreach (var entry in vm.Leaderboard)
                     entry.NotifyThemeChanged();
             });
+
+            // «Deshacer» de una sesión eliminada desde su detalle llega cuando ya se volvió a esta pantalla.
+            WeakReferenceMessenger.Default.Register<SessionsChangedMessage>(this, static (r, m) =>
+            {
+                var vm = (GameDetailPageModel)r;
+                if (vm._gameId == m.GameId)
+                    vm.LoadData(vm._gameId).FireAndForgetSafeAsync(vm._errorHandler);
+            });
         }
 
         public void ApplyQueryAttributes(IDictionary<string, object> query)
@@ -205,22 +213,31 @@ namespace CompetitiveCounterApp.PageModels
 
             HapticFeedbackHelper.Click();
 
-            if (HasActiveSession)
+            if (HasActiveSession && !await NewSessionPrompt.ConfirmReplaceActiveAsync(ActiveSession?.HasBestPlayer ?? false))
+                return;
+
+            // Revancha: si hubo una sesión con jugadores, se ofrece empezar con los mismos.
+            var lastWithPlayers = Sessions
+                .Where(s => s.SessionPlayers.Any(sp => sp.Player is { IsArchived: false }))
+                .OrderByDescending(s => s.SessionDate)
+                .FirstOrDefault();
+            List<int>? playerIds = null;
+
+            if (lastWithPlayers is not null)
             {
-                // Misma regla que SessionRepository.CreateAsync: sin victorias la activa se descarta.
-                var activeHasWins = ActiveSession?.HasBestPlayer ?? false;
-                var message = activeHasWins
-                    ? "Hay una sesión activa. Al crear una nueva se cerrará la actual. ¿Continuar?"
-                    : "Hay una sesión activa sin victorias. Al crear una nueva se descartará la actual. ¿Continuar?";
+                var players = lastWithPlayers.SessionPlayers
+                    .Where(sp => sp.Player is { IsArchived: false })
+                    .Select(sp => sp.Player!)
+                    .ToList();
+                var rematch = $"Revancha: {string.Join(", ", players.Select(p => p.Name))}";
+                const string empty = "Sesión vacía";
 
-                bool confirm = await Shell.Current.DisplayAlertAsync(
-                    "Nueva sesión",
-                    message,
-                    "Crear",
-                    "Cancelar");
-
-                if (!confirm)
+                var choice = await Shell.Current.DisplayActionSheetAsync("Nueva sesión", "Cancelar", null, rematch, empty);
+                if (choice != rematch && choice != empty)
                     return;
+
+                if (choice == rematch)
+                    playerIds = players.Select(p => p.ID).ToList();
             }
 
             var notes = await Shell.Current.DisplayPromptAsync(
@@ -238,7 +255,7 @@ namespace CompetitiveCounterApp.PageModels
             try
             {
                 IsBusy = true;
-                var session = await _sessionRepository.CreateAsync(Game.ID, notes);
+                var session = await _sessionRepository.CreateAsync(Game.ID, notes, playerIds);
                 await Shell.Current.GoToAsync($"sessiondetail?id={session.ID}");
             }
             catch (Exception e)
@@ -268,14 +285,23 @@ namespace CompetitiveCounterApp.PageModels
             if (session is null || session.ID == 0 || IsBusy)
                 return;
 
-            if (!await SessionDeletePrompt.ConfirmAsync(session.TotalWins))
-                return;
+            HapticFeedbackHelper.LongPress();
 
+            // Se elimina al instante; «Deshacer» la vuelve a crear con sus jugadores y victorias.
             try
             {
                 IsBusy = true;
                 await _sessionRepository.DeleteAsync(session.ID);
-                await AppShell.DisplayToastAsync("Sesión eliminada");
+                UndoSnackbar.ShowAsync(
+                    "Sesión eliminada",
+                    async () =>
+                    {
+                        await _sessionRepository.RestoreAsync(session, session.SessionPlayers);
+                        if (_gameId == session.GameID)
+                            await LoadData(_gameId);
+                    },
+                    _errorHandler,
+                    seconds: 6).FireAndForgetSafeAsync(_errorHandler);
             }
             catch (Exception e)
             {

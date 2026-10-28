@@ -62,6 +62,10 @@
     </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="Compartir resultado"
+                     Command="{Binding ShareResultCommand}"
+                     IconImageSource="{StaticResource IconShareShell}"
+                     IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}" />
         <ToolbarItem Text="Eliminar sesión"
                      Command="{Binding DeleteSessionCommand}"
                      IconImageSource="{StaticResource IconDeleteShell}"
@@ -213,6 +217,41 @@
                 </VerticalStackLayout>
             </ScrollView>
         </Grid>
+
+        <!-- Sesión cerrada: revancha con los mismos jugadores -->
+        <Border HorizontalOptions="End"
+                VerticalOptions="End"
+                Margin="20"
+                Padding="18,12"
+                StrokeThickness="0"
+                Background="{Binding Game.CurrentGameColor}"
+                IsVisible="{Binding IsActive, Converter={StaticResource InvertedBoolConverter}}"
+                IsEnabled="{Binding IsBusy, Converter={StaticResource InvertedBoolConverter}}"
+                SemanticProperties.Description="Revancha con los mismos jugadores"
+                behaviors:AnimatedTap.Command="{Binding RematchCommand}"
+                behaviors:AnimatedTap.PressedScale="0.97"
+                behaviors:AnimatedTap.PressedOpacity="0.92">
+            <Border.StrokeShape>
+                <RoundRectangle CornerRadius="28" />
+            </Border.StrokeShape>
+            <HorizontalStackLayout Spacing="8" VerticalOptions="Center" InputTransparent="True">
+                <Label Text="Revancha"
+                       TextColor="{Binding Game.OnGameColor}"
+                       FontSize="16"
+                       FontAttributes="Bold"
+                       VerticalOptions="Center" />
+                <Image HeightRequest="22"
+                       WidthRequest="22"
+                       VerticalOptions="Center">
+                    <Image.Source>
+                        <FontImageSource Glyph="{x:Static f:FluentUI.arrow_repeat_all_24_regular}"
+                                         FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                         Color="{Binding Game.OnGameColor}"
+                                         Size="22" />
+                    </Image.Source>
+                </Image>
+            </HorizontalStackLayout>
+        </Border>
 
         <Border HorizontalOptions="End"
                 VerticalOptions="End"

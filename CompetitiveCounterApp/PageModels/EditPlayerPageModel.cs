@@ -1,3 +1,4 @@
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Models;
@@ -7,6 +8,10 @@ namespace CompetitiveCounterApp.PageModels
     public partial class EditPlayerPageModel : PlayerFormPageModelBase, IQueryAttributable
     {
         private Player? _player;
+
+        /// <summary>Texto del botón de la barra según el estado del jugador.</summary>
+        [ObservableProperty]
+        private string _archiveText = "Archivar";
 
         public EditPlayerPageModel(PlayerRepository playerRepository, ModalErrorHandler errorHandler)
             : base(playerRepository, errorHandler)
@@ -41,6 +46,7 @@ namespace CompetitiveCounterApp.PageModels
                 }
 
                 ApplyPlayerData(_player);
+                ArchiveText = _player.IsArchived ? "Desarchivar" : "Archivar";
             }
             catch (Exception e)
             {
@@ -88,6 +94,45 @@ namespace CompetitiveCounterApp.PageModels
         }
 
         [RelayCommand]
+        private async Task ToggleArchive()
+        {
+            if (_player is null)
+                return;
+
+            HapticFeedbackHelper.Click();
+            var archive = !_player.IsArchived;
+
+            if (archive && !await Shell.Current.DisplayAlertAsync(
+                    "Archivar jugador",
+                    $"«{_player.Name}» se ocultará de la lista de jugadores y no se podrá agregar a sesiones nuevas. Sus estadísticas se conservan.",
+                    "Archivar",
+                    "Cancelar"))
+                return;
+
+            try
+            {
+                IsBusy = true;
+                await SetArchivedAsync(archive);
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleError(e);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        private async Task SetArchivedAsync(bool archive)
+        {
+            await _playerRepository.SetArchivedAsync(_player!.ID, archive);
+            _player.IsArchived = archive;
+            await Shell.Current.GoToAsync("..");
+            await AppShell.DisplayToastAsync(archive ? "Jugador archivado" : "Jugador restaurado");
+        }
+
+        [RelayCommand]
         private async Task Delete()
         {
             if (_player is null)
@@ -113,10 +158,18 @@ namespace CompetitiveCounterApp.PageModels
 
                 if (await _playerRepository.HasParticipationsAsync(_player.ID))
                 {
-                    await Shell.Current.DisplayAlertAsync(
-                        "No se puede eliminar",
-                        "El jugador participa en sesiones. Quitá esas participaciones o dejalo en el catálogo.",
-                        "OK");
+                    // Eliminarlo borraría historial ajeno: se ofrece archivarlo.
+                    if (!_player.IsArchived && await Shell.Current.DisplayAlertAsync(
+                            "No se puede eliminar",
+                            $"«{_player.Name}» participa en sesiones. ¿Quieres archivarlo? Se oculta de la lista y de las sesiones nuevas, y sus estadísticas se conservan.",
+                            "Archivar",
+                            "Cancelar"))
+                        await SetArchivedAsync(true);
+                    else if (_player.IsArchived)
+                        await Shell.Current.DisplayAlertAsync(
+                            "No se puede eliminar",
+                            $"«{_player.Name}» participa en sesiones, por eso queda archivado en lugar de eliminarse.",
+                            "OK");
                     return;
                 }
 

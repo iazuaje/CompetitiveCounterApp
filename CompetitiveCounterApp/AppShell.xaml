@@ -26,6 +26,12 @@
         ContentTemplate="{DataTemplate pages:GeneralStatsPage}"
         Route="stats" />
 
+    <ShellContent
+        Title="Respaldo"
+        Icon="{StaticResource IconBackup}"
+        ContentTemplate="{DataTemplate pages:BackupPage}"
+        Route="backup" />
+
     <Shell.FlyoutFooter>
         <Grid Padding="15">
             <sf:SfSegmentedControl x:Name="ThemeSegmentedControl"

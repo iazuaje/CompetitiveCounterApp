@@ -22,6 +22,9 @@
     </ContentPage.Resources>
 
     <ContentPage.ToolbarItems>
+        <ToolbarItem Text="{Binding ArchiveText}"
+                     Command="{Binding ToggleArchiveCommand}"
+                     IconImageSource="{StaticResource IconArchiveShell}" />
         <ToolbarItem Text="Eliminar"
 			         Command="{Binding DeleteCommand}"
 			         IconImageSource="{StaticResource IconDeleteShell}" />

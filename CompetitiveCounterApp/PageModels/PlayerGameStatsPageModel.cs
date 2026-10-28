@@ -23,6 +23,23 @@ public partial class PlayerGameStatsPageModel : ObservableObject, IQueryAttribut
     [ObservableProperty]
     private string _title = "Estadísticas";
 
+    /// <summary>Período de las estadísticas (compartido entre pantallas, ver <see cref="StatsPeriodPreference"/>).</summary>
+    [ObservableProperty]
+    private StatsPeriod _period = StatsPeriodPreference.Current;
+
+    [ObservableProperty]
+    private string _emptyText = string.Empty;
+
+    partial void OnPeriodChanged(StatsPeriod value)
+    {
+        // Al sincronizar con la preferencia (LoadData) no hay que recargar de nuevo.
+        if (value == StatsPeriodPreference.Current)
+            return;
+
+        StatsPeriodPreference.Current = value;
+        LoadData().FireAndForgetSafeAsync(_errorHandler);
+    }
+
     [ObservableProperty]
     private Player? _player;
 
@@ -195,8 +212,10 @@ public partial class PlayerGameStatsPageModel : ObservableObject, IQueryAttribut
             }
 
             Title = Player.Name;
+            Period = StatsPeriodPreference.Current;
+            EmptyText = StatsPeriodFilter.EmptyText(Period, "Todavía no jugó sesiones con victorias en este juego.");
 
-            var sessions = await _sessionRepository.ListAsync(_gameId);
+            var sessions = StatsPeriodFilter.Apply(await _sessionRepository.ListAsync(_gameId), Period, DateTime.Now);
             ApplyStats(PlayerGameStatsCalculator.Compute(sessions, _playerId));
             BuildBrushes();
         }

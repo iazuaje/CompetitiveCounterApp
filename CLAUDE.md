@@ -1,6 +1,10 @@
 # CompetitiveCounterApp
 
-App .NET MAUI 10 (MVVM con CommunityToolkit.MVVM, EF Core + SQLite) para registrar partidas competitivas. Dos proyectos: la app MAUI y `CompetitiveCounterApp.Data` (entidades, `AppDbContext`, migraciones). No hay tests.
+App .NET MAUI 10 (MVVM con CommunityToolkit.MVVM, EF Core + SQLite) para registrar partidas competitivas. Dos proyectos: la app MAUI y `CompetitiveCounterApp.Data` (entidades, `AppDbContext`, migraciones). `CompetitiveCounterApp.Tests` (xUnit, `net10.0`) prueba la lógica pura de estadísticas enlazando como fuente los `*Calculator.cs`, `StatsPeriodFilter.cs` y `Models/*Stats.cs` de la app (la app solo compila para Android). Lo que se quiera probar ahí no puede depender de APIs de MAUI/Android.
+
+```powershell
+dotnet test CompetitiveCounterApp.Tests\CompetitiveCounterApp.Tests.csproj
+```
 
 ## Mobile-first
 
@@ -46,6 +50,7 @@ dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net10.0-and
 - **Listas con pulso**: `ScrollView` + `BindableLayout`. `CollectionView` solo si el ítem no se anima (en Android recicla celdas y pierde el comando o el pulso).
 - **Grilla de 2 columnas**: `FlexLayout` con `JustifyContent="SpaceBetween"` y `FlexLayout.Basis="48%"`, solo margen inferior.
 - **Háptica**: `HapticFeedbackHelper.Click()` al inicio de cada comando de usuario.
+- **Deshacer en vez de confirmar**: borrar sesión, quitar jugador y cambiar victorias actúan al instante y muestran `UndoSnackbar.ShowAsync(mensaje, deshacer, _errorHandler)`. Confirmación (`DisplayAlert`) solo para lo que no se puede deshacer (borrar juego/jugador, restaurar respaldo, reemplazar la sesión activa vía `NewSessionPrompt`).
 
 ## Datos y sesiones
 
@@ -54,6 +59,10 @@ dotnet build "CompetitiveCounterApp\CompetitiveCounterApp.csproj" -f net10.0-and
 - Ranking de un juego (podio, líder de la tarjeta de Juegos, puesto en estadísticas): sesiones ganadas (cerradas; empate en el máximo cuenta para todos), luego victorias, luego nombre. Siempre vía `PlayerGameStatsCalculator.RankPlayers`; no reimplementar el orden.
 - Categorías: muchos a muchos `Game` ↔ `Category` (tabla `GameCategories`), nombre único sin distinguir mayúsculas ni tildes (`CategoryRepository`). `GameRepository.SaveItemAsync` no guarda categorías: después de guardar el juego, `SetCategoriesAsync`.
 - Orden manual de juegos en `Game.SortOrder` (menor = primero; un juego nuevo va primero). El criterio de orden elegido en Juegos se guarda en `Preferences` (`games.sort`), y la vista grilla/lista en `games.view`.
+- Archivar (`Game.IsArchived`, `Player.IsArchived`) solo oculta: no aparecen en listas ni para agregar a sesiones/revanchas, pero siguen contando en todas las estadísticas.
+- Filtro de período de estadísticas (Todo / Este año / Este mes, mes y año calendario): `StatsPeriodFilter.Apply` sobre las sesiones antes de los calculadores, compartido por todas las pantallas de stats vía `Preferences` (`stats.period`).
+- Al borrar o restaurar sesiones desde otra pantalla, enviar `SessionsChangedMessage(gameId)` para que `GameDetailPageModel` recargue.
+- Respaldo (`BackupService`): zip con `database.db3` (copia vía `BackupDatabase` de SQLite), `GameImages/` y `backup.json`. Restaurar reemplaza todo, aplica migraciones y reubica `ImagePath` a `Constants.GameImagesDirectory`. Si se agrega otro archivo persistente, incluirlo en el zip.
 - Fechas en hora local (`DateTime.Now`, `LocalDateTimeConverter`), sin UTC.
 - Toda propiedad calculada nueva en una entidad va en `entity.Ignore(...)` de `AppDbContext`.
 - No generar ni editar migraciones EF: tras cambiar entidades o Fluent API, el desarrollador crea la migración a mano.

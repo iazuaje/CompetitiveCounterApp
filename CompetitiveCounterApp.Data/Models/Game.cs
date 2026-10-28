@@ -16,6 +16,9 @@ namespace CompetitiveCounterApp.Models
         /// <summary>Posición en el orden manual de la lista de juegos (menor = primero).</summary>
         public int SortOrder { get; set; }
 
+        /// <summary>Oculto de la lista de juegos (filtro "Archivados"); sus sesiones siguen en las estadísticas.</summary>
+        public bool IsArchived { get; set; }
+
         /// <summary>Etiquetas del juego (muchos a muchos vía GameCategories).</summary>
         public List<Category> Categories { get; set; } = [];
 

@@ -56,9 +56,10 @@ namespace CompetitiveCounterApp.Data
         }
 
         /// <summary>
-        /// Cierra la sesión activa del juego (si existe; sin victorias se descarta) y crea una nueva.
+        /// Cierra la sesión activa del juego (si existe; sin victorias se descarta) y crea una nueva,
+        /// opcionalmente ya con jugadores (en 0 victorias).
         /// </summary>
-        public async Task<Session> CreateAsync(int gameId, string? notes = null)
+        public async Task<Session> CreateAsync(int gameId, string? notes = null, IReadOnlyCollection<int>? playerIds = null)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
             await using var transaction = await db.Database.BeginTransactionAsync();
@@ -75,7 +76,8 @@ namespace CompetitiveCounterApp.Data
                 GameID = gameId,
                 SessionDate = DateTime.Now,
                 Notes = notes?.Trim() ?? string.Empty,
-                ClosedAt = null
+                ClosedAt = null,
+                SessionPlayers = (playerIds ?? []).Distinct().Select(id => new SessionPlayer { PlayerID = id }).ToList()
             };
 
             db.Sessions.Add(session);
@@ -83,6 +85,60 @@ namespace CompetitiveCounterApp.Data
             await transaction.CommitAsync();
 
             return (await GetAsync(session.ID))!;
+        }
+
+        /// <summary>
+        /// Revancha: sesión nueva del mismo juego con los jugadores de <paramref name="sessionId"/>
+        /// (sin los archivados). Cierra o descarta la activa como <see cref="CreateAsync"/>.
+        /// </summary>
+        public async Task<Session> CreateRematchAsync(int sessionId)
+        {
+            int gameId;
+            List<int> playerIds;
+
+            await using (var db = await _dbContextFactory.CreateDbContextAsync())
+            {
+                var source = await db.Sessions
+                    .AsNoTracking()
+                    .Include(s => s.SessionPlayers)
+                        .ThenInclude(sp => sp.Player)
+                    .FirstOrDefaultAsync(s => s.ID == sessionId)
+                    ?? throw new InvalidOperationException("La sesión no existe.");
+
+                gameId = source.GameID;
+                playerIds = source.SessionPlayers
+                    .Where(sp => sp.Player is { IsArchived: false })
+                    .Select(sp => sp.PlayerID)
+                    .ToList();
+            }
+
+            return await CreateAsync(gameId, playerIds: playerIds);
+        }
+
+        /// <summary>
+        /// Vuelve a crear una sesión eliminada («Deshacer»): mismos datos, jugadores y victorias (con otro ID).
+        /// </summary>
+        public async Task<Session> RestoreAsync(Session deleted, IEnumerable<SessionPlayer> players)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+
+            if (deleted.ClosedAt is null && await db.Sessions.AnyAsync(s => s.GameID == deleted.GameID && s.ClosedAt == null))
+                throw new InvalidOperationException("No se puede restaurar: el juego ya tiene otra sesión activa.");
+
+            var session = new Session
+            {
+                GameID = deleted.GameID,
+                SessionDate = deleted.SessionDate,
+                Notes = deleted.Notes ?? string.Empty,
+                ClosedAt = deleted.ClosedAt,
+                SessionPlayers = players
+                    .Select(sp => new SessionPlayer { PlayerID = sp.PlayerID, Wins = Math.Max(0, sp.Wins) })
+                    .ToList()
+            };
+
+            db.Sessions.Add(session);
+            await db.SaveChangesAsync();
+            return session;
         }
 
         /// <summary>
@@ -119,7 +175,8 @@ namespace CompetitiveCounterApp.Data
             return false;
         }
 
-        public async Task<SessionPlayer> AddPlayerAsync(int sessionId, int playerId)
+        /// <param name="wins">Victorias iniciales: distinto de 0 solo al deshacer «quitar jugador».</param>
+        public async Task<SessionPlayer> AddPlayerAsync(int sessionId, int playerId, int wins = 0)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();
 
@@ -143,7 +200,7 @@ namespace CompetitiveCounterApp.Data
             {
                 SessionID = sessionId,
                 PlayerID = playerId,
-                Wins = 0
+                Wins = Math.Max(0, wins)
             };
 
             db.SessionPlayers.Add(sessionPlayer);

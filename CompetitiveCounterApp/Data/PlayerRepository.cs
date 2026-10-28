@@ -36,7 +36,7 @@ namespace CompetitiveCounterApp.Data
         }
 
         /// <summary>
-        /// Jugadores del catálogo que aún no están en la sesión.
+        /// Jugadores del catálogo (sin archivados) que aún no están en la sesión.
         /// </summary>
         public async Task<List<Player>> ListAvailableForSessionAsync(int sessionId)
         {
@@ -48,7 +48,7 @@ namespace CompetitiveCounterApp.Data
 
             return await db.Players
                 .AsNoTracking()
-                .Where(p => !inSession.Contains(p.ID))
+                .Where(p => !p.IsArchived && !inSession.Contains(p.ID))
                 .OrderBy(p => p.Name)
                 .ToListAsync();
         }
@@ -63,6 +63,14 @@ namespace CompetitiveCounterApp.Data
                 db.Players.Update(player);
 
             await db.SaveChangesAsync();
+        }
+
+        public async Task SetArchivedAsync(int playerId, bool archived)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            await db.Players
+                .Where(p => p.ID == playerId)
+                .ExecuteUpdateAsync(s => s.SetProperty(p => p.IsArchived, archived));
         }
 
         public async Task DeleteItemAsync(Player player)

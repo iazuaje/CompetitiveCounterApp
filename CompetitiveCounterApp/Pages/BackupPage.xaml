@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:f="clr-namespace:Fonts"
+             xmlns:pageModels="clr-namespace:CompetitiveCounterApp.PageModels"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             x:Class="CompetitiveCounterApp.Pages.BackupPage"
+             x:DataType="pageModels:BackupPageModel"
+             x:Name="BackupPageRoot"
+             Title="Respaldo"
+             Shell.BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+             Shell.ForegroundColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
+             Shell.TitleColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior
+            BindingContext="{Binding Path=BindingContext, Source={x:Reference BackupPageRoot}, x:DataType=ContentPage}"
+            EventName="Appearing"
+            Command="{Binding AppearingCommand}" />
+    </ContentPage.Behaviors>
+
+    <ScrollView BackgroundColor="{AppThemeBinding Light={StaticResource LightBackground}, Dark={StaticResource DarkBackground}}">
+        <VerticalStackLayout Padding="15" Spacing="12">
+
+            <!-- Qué hay para respaldar y cuándo fue el último respaldo -->
+            <Border Style="{StaticResource StatsCard}">
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="14">
+                    <Border WidthRequest="52" HeightRequest="52" Padding="0" StrokeThickness="0" StrokeShape="Ellipse"
+                            VerticalOptions="Center"
+                            Background="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}">
+                        <Image HeightRequest="26" WidthRequest="26" HorizontalOptions="Center" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource Glyph="{x:Static f:FluentUI.database_24_regular}"
+                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                 Color="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}"
+                                                 Size="26" />
+                            </Image.Source>
+                        </Image>
+                    </Border>
+                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                        <Label Text="Tus datos" FontSize="18" FontAttributes="Bold" />
+                        <Label Text="{Binding SummaryText}" FontSize="14" />
+                        <Label Text="{Binding LastBackupText}"
+                               FontSize="13"
+                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}" />
+                    </VerticalStackLayout>
+                </Grid>
+            </Border>
+
+            <!-- Crear -->
+            <Border Style="{StaticResource StatsCard}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Crear respaldo" FontSize="16" FontAttributes="Bold" />
+                    <Label FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                           Text="Guarda en un archivo .zip todos los juegos, jugadores, sesiones e imágenes. Guárdalo en el teléfono o compártelo a Drive o WhatsApp para no perder tu historial si cambias de teléfono." />
+                    <Button Text="Crear respaldo"
+                            Command="{Binding CreateBackupCommand}"
+                            IsEnabled="{Binding IsIdle}"
+                            BorderWidth="0"
+                            CornerRadius="22"
+                            HeightRequest="44"
+                            FontAttributes="Bold"
+                            BackgroundColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            TextColor="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource PrimaryDarkText}}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <!-- Restaurar -->
+            <Border Style="{StaticResource StatsCard}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Restaurar respaldo" FontSize="16" FontAttributes="Bold" />
+                    <Label FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                           Text="Reemplaza todos los datos actuales por los de un respaldo. Se pide confirmación antes de reemplazar nada." />
+                    <Button Text="Elegir respaldo"
+                            Command="{Binding RestoreBackupCommand}"
+                            IsEnabled="{Binding IsIdle}"
+                            BorderWidth="1"
+                            CornerRadius="22"
+                            HeightRequest="44"
+                            FontAttributes="Bold"
+                            BorderColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                </VerticalStackLayout>
+            </Border>
+
+            <ActivityIndicator IsRunning="{Binding IsBusy}"
+                               IsVisible="{Binding IsBusy}"
+                               Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

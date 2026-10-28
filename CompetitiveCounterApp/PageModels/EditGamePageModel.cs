@@ -49,6 +49,7 @@ public partial class EditGamePageModel : GameFormPageModelBase, IQueryAttributab
             }
 
             ApplyGameData(_game);
+            ArchiveText = _game.IsArchived ? "Desarchivar" : "Archivar";
             SetSelectedImageFromPath(_game.ImagePath);
             await LoadCategoriesAsync(_game.Categories.Select(c => c.ID));
         }
@@ -116,6 +117,44 @@ public partial class EditGamePageModel : GameFormPageModelBase, IQueryAttributab
                 SetSelectedImageFromPath(previousImagePath);
             }
 
+            _errorHandler.HandleError(e);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    /// <summary>Texto del botón de la barra según el estado del juego.</summary>
+    [ObservableProperty]
+    private string _archiveText = "Archivar";
+
+    [RelayCommand]
+    private async Task ToggleArchive()
+    {
+        if (_game is null)
+            return;
+
+        HapticFeedbackHelper.Click();
+        var archive = !_game.IsArchived;
+
+        if (archive && !await Shell.Current.DisplayAlertAsync(
+                "Archivar juego",
+                $"«{_game.Name}» se ocultará de la lista de juegos. Sus sesiones siguen contando en las estadísticas y puedes verlo con el filtro «Archivados».",
+                "Archivar",
+                "Cancelar"))
+            return;
+
+        try
+        {
+            IsBusy = true;
+            await _gameRepository.SetArchivedAsync(_game.ID, archive);
+            _game.IsArchived = archive;
+            await Shell.Current.GoToAsync("..");
+            await AppShell.DisplayToastAsync(archive ? "Juego archivado" : "Juego restaurado");
+        }
+        catch (Exception e)
+        {
             _errorHandler.HandleError(e);
         }
         finally

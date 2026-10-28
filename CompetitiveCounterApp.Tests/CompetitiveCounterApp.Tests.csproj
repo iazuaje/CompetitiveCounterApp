@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+    <PackageReference Include="Microsoft.Maui.Controls" Version="10.0.90" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+    <Using Include="Fonts" />
+    <Using Include="CompetitiveCounterApp.Services" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\CompetitiveCounterApp.Data\CompetitiveCounterApp.Data.csproj" />
+  </ItemGroup>
+
+  <!--
+    La app solo compila para Android: la lógica pura de estadísticas se enlaza como fuente
+    para probarla en net10.0 sin mover los archivos.
+  -->
+  <ItemGroup>
+    <Compile Include="..\CompetitiveCounterApp\Services\*Calculator.cs" LinkBase="Linked\Services" />
+    <Compile Include="..\CompetitiveCounterApp\Services\StatsPeriodFilter.cs" LinkBase="Linked\Services" />
+    <Compile Include="..\CompetitiveCounterApp\Models\*Stats.cs" LinkBase="Linked\Models" />
+    <Compile Include="..\CompetitiveCounterApp\Resources\Fonts\FluentUI.cs" LinkBase="Linked\Fonts" />
+  </ItemGroup>
+
+</Project>

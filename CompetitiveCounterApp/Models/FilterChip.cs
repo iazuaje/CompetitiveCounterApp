@@ -6,10 +6,13 @@ public enum FilterChipKind
 {
     Category,
     ActiveSession,
-    Unplayed
+    Unplayed,
+
+    /// <summary>Muestra solo los archivados (sin elegirlo, quedan ocultos).</summary>
+    Archived
 }
 
-/// <summary>Chip seleccionable: una categoría o un filtro de estado (sesión activa, sin jugar).</summary>
+/// <summary>Chip seleccionable: una categoría o un filtro de estado (sesión activa, sin jugar, archivados).</summary>
 public partial class FilterChip : ObservableObject
 {
     public FilterChipKind Kind { get; init; }

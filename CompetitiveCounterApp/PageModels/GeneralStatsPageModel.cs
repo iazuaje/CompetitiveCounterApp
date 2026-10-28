@@ -17,6 +17,23 @@ public partial class GeneralStatsPageModel : ObservableObject
     [ObservableProperty]
     private string _title = "Estadísticas";
 
+    /// <summary>Período de las estadísticas (compartido entre pantallas, ver <see cref="StatsPeriodPreference"/>).</summary>
+    [ObservableProperty]
+    private StatsPeriod _period = StatsPeriodPreference.Current;
+
+    [ObservableProperty]
+    private string _emptyText = string.Empty;
+
+    partial void OnPeriodChanged(StatsPeriod value)
+    {
+        // Al sincronizar con la preferencia (LoadData) no hay que recargar de nuevo.
+        if (value == StatsPeriodPreference.Current)
+            return;
+
+        StatsPeriodPreference.Current = value;
+        LoadData().FireAndForgetSafeAsync(_errorHandler);
+    }
+
     [ObservableProperty]
     private GeneralStats? _stats;
 
@@ -62,12 +79,17 @@ public partial class GeneralStatsPageModel : ObservableObject
 
     // Raíz del flyout: se recarga cada vez que se muestra para reflejar sesiones nuevas.
     [RelayCommand]
-    private async Task Appearing()
+    private Task Appearing() => LoadData();
+
+    private async Task LoadData()
     {
         try
         {
+            Period = StatsPeriodPreference.Current;
+            EmptyText = StatsPeriodFilter.EmptyText(Period, "Todavía no hay sesiones con victorias.");
+
             var games = await _gameRepository.ListAsync();
-            var sessions = await _sessionRepository.ListAsync();
+            var sessions = StatsPeriodFilter.Apply(await _sessionRepository.ListAsync(), Period, DateTime.Now);
             ApplyStats(GeneralStatsCalculator.Compute(games, sessions, DateTime.Now));
         }
         catch (Exception e)

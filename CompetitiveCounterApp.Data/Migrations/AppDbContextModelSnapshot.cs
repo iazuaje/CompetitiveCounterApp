@@ -75,6 +75,9 @@ namespace CompetitiveCounterApp.Data.Migrations
                         .HasColumnType("TEXT")
                         .HasDefaultValue("");
 
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -110,6 +113,9 @@ namespace CompetitiveCounterApp.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("TEXT")
                         .HasDefaultValue("");
+
+                    b.Property<bool>("IsArchived")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()

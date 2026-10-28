@@ -100,6 +100,14 @@ namespace CompetitiveCounterApp.Data
             await db.SaveChangesAsync();
         }
 
+        public async Task SetArchivedAsync(int gameId, bool archived)
+        {
+            await using var db = await _dbContextFactory.CreateDbContextAsync();
+            await db.Games
+                .Where(g => g.ID == gameId)
+                .ExecuteUpdateAsync(s => s.SetProperty(g => g.IsArchived, archived));
+        }
+
         public async Task DeleteItemAsync(Game game)
         {
             await using var db = await _dbContextFactory.CreateDbContextAsync();

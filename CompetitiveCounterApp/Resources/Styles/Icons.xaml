@@ -23,6 +23,12 @@
                      Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
                      Size="{StaticResource IconSize}" />
 
+    <FontImageSource x:Key="IconBackup"
+                     Glyph="{x:Static f:FluentUI.database_24_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{AppThemeBinding Light={StaticResource DarkOnLightBackground}, Dark={StaticResource LightOnDarkBackground}}"
+                     Size="{StaticResource IconSize}" />
+
     <FontImageSource x:Key="IconStar"
                      Glyph="{x:Static f:FluentUI.star_24_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
@@ -61,6 +67,18 @@
 
     <FontImageSource x:Key="IconStatsShell"
                      Glyph="{x:Static f:FluentUI.data_histogram_24_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{StaticResource White}"
+                     Size="{StaticResource IconSize}" />
+
+    <FontImageSource x:Key="IconArchiveShell"
+                     Glyph="{x:Static f:FluentUI.archive_24_regular}"
+                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                     Color="{StaticResource White}"
+                     Size="{StaticResource IconSize}" />
+
+    <FontImageSource x:Key="IconShareShell"
+                     Glyph="{x:Static f:FluentUI.share_android_24_regular}"
                      FontFamily="{x:Static f:FluentUI.FontFamily}"
                      Color="{StaticResource White}"
                      Size="{StaticResource IconSize}" />

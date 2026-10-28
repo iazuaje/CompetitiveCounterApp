@@ -174,6 +174,10 @@ namespace CompetitiveCounterApp.PageModels
             };
             chips.AddRange(categories.Select(c => FilterChip.ForCategory(c, selectedCategories.Contains(c.ID))));
 
+            // Al final y solo si hay archivados: es un filtro de consulta ocasional.
+            if (_allGames.Any(g => g.IsArchived))
+                chips.Add(new() { Kind = FilterChipKind.Archived, Label = "Archivados", Glyph = FluentUI.archive_24_regular, IsSelected = selectedKinds.Contains(FilterChipKind.Archived) });
+
             FilterChips = new ObservableCollection<FilterChip>(chips);
         }
 
@@ -186,12 +190,16 @@ namespace CompetitiveCounterApp.PageModels
             var query = SearchText?.Trim() ?? string.Empty;
             var onlyActive = FilterChips.Any(c => c.Kind == FilterChipKind.ActiveSession && c.IsSelected);
             var onlyUnplayed = FilterChips.Any(c => c.Kind == FilterChipKind.Unplayed && c.IsSelected);
+            var onlyArchived = FilterChips.Any(c => c.Kind == FilterChipKind.Archived && c.IsSelected);
+
+            // Los archivados no se ven salvo con su filtro, y entonces se ven solo ellos.
+            var pool = _allGames.Where(g => g.IsArchived == onlyArchived).ToList();
             var categoryIds = FilterChips
                 .Where(c => c.IsSelected && c.Category is not null)
                 .Select(c => c.Category!.ID)
                 .ToHashSet();
 
-            var filtered = _allGames.Where(g =>
+            var filtered = pool.Where(g =>
                 (query.Length == 0
                     || Contains(g.Name, query)
                     || Contains(g.Description, query)
@@ -209,12 +217,13 @@ namespace CompetitiveCounterApp.PageModels
                 GamesSortMode.MostSessions => filtered
                     .OrderByDescending(g => g.SessionCount)
                     .ThenBy(g => g.Name, StringComparer.CurrentCultureIgnoreCase),
-                _ => filtered // _allGames ya viene en orden manual.
+                _ => filtered // pool (de _allGames) ya viene en orden manual.
             }).ToList();
 
             HasNoResults = HasGames && Games.Count == 0;
-            var total = _allGames.Count == 1 ? "1 juego" : $"{_allGames.Count} juegos";
-            GamesCountText = Games.Count == _allGames.Count ? total : $"{Games.Count} de {total}";
+            var noun = onlyArchived ? (pool.Count == 1 ? "archivado" : "archivados") : (pool.Count == 1 ? "juego" : "juegos");
+            var total = $"{pool.Count} {noun}";
+            GamesCountText = Games.Count == pool.Count ? total : $"{Games.Count} de {total}";
         }
 
         static bool Contains(string? source, string value) =>
@@ -335,12 +344,14 @@ namespace CompetitiveCounterApp.PageModels
             var game = games[from];
             games.RemoveAt(from);
             games.Insert(to, game);
-            _allGames = games;
-            Games = games.ToList();
+
+            // Los archivados (ocultos) conservan su orden relativo, después de los visibles.
+            _allGames = games.Concat(_allGames.Where(g => g.IsArchived)).ToList();
+            Games = games;
 
             try
             {
-                await _gameRepository.SaveOrderAsync(games.Select(g => g.ID).ToList());
+                await _gameRepository.SaveOrderAsync(_allGames.Select(g => g.ID).ToList());
             }
             catch (Exception e)
             {

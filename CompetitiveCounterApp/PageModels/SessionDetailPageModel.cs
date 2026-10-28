@@ -233,26 +233,27 @@ namespace CompetitiveCounterApp.PageModels
                 return;
             }
 
-            var winsWarning = sessionPlayer.Wins > 0
-                ? $" Se perderán sus {sessionPlayer.Wins} victorias en esta sesión."
-                : string.Empty;
-
-            bool confirm = await Shell.Current.DisplayAlertAsync(
-                "Quitar jugador",
-                $"¿Quitar a {sessionPlayer.Player?.Name} de la sesión?{winsWarning}",
-                "Quitar",
-                "Cancelar");
-
-            if (!confirm)
-                return;
+            // Sin confirmación: se aplica al instante y se puede deshacer (con sus victorias).
+            var sessionId = Session.ID;
+            var playerId = sessionPlayer.PlayerID;
+            var wins = sessionPlayer.Wins;
 
             try
             {
                 IsBusy = true;
-                await _sessionRepository.RemovePlayerAsync(Session.ID, sessionPlayer.PlayerID);
+                await _sessionRepository.RemovePlayerAsync(sessionId, playerId);
                 Leaderboard.Remove(sessionPlayer);
                 OnPropertyChanged(nameof(HasPlayers));
-                await AppShell.DisplayToastAsync("Jugador quitado de la sesión");
+
+                await UndoSnackbar.ShowAsync(
+                    $"{sessionPlayer.Player?.Name} quitado de la sesión",
+                    async () =>
+                    {
+                        await _sessionRepository.AddPlayerAsync(sessionId, playerId, wins);
+                        if (Session?.ID == sessionId)
+                            await LoadData(sessionId);
+                    },
+                    _errorHandler);
             }
             catch (Exception e)
             {
@@ -298,8 +299,10 @@ namespace CompetitiveCounterApp.PageModels
             try
             {
                 IsBusy = true;
+                var previous = sessionPlayer.Wins;
                 var newWins = await _sessionRepository.SetWinsAsync(Session.ID, sessionPlayer.PlayerID, wins);
                 await ApplyWinsAndReorderAsync(sessionPlayer, newWins);
+                ShowWinsUndo(sessionPlayer, previous);
             }
             catch (Exception e)
             {
@@ -320,8 +323,10 @@ namespace CompetitiveCounterApp.PageModels
             {
                 HapticFeedbackHelper.Click();
                 IsBusy = true;
+                var previous = sessionPlayer.Wins;
                 var newWins = await _sessionRepository.AdjustWinsAsync(Session.ID, sessionPlayer.PlayerID, delta);
                 await ApplyWinsAndReorderAsync(sessionPlayer, newWins);
+                ShowWinsUndo(sessionPlayer, previous);
             }
             catch (Exception e)
             {
@@ -331,6 +336,26 @@ namespace CompetitiveCounterApp.PageModels
             {
                 IsBusy = false;
             }
+        }
+
+        /// <summary>Aviso corto con el nuevo valor; «Deshacer» vuelve al anterior (un toque de más es el error típico).</summary>
+        private void ShowWinsUndo(SessionPlayer sessionPlayer, int previous)
+        {
+            if (Session is null || sessionPlayer.Wins == previous)
+                return;
+
+            var sessionId = Session.ID;
+            var wins = sessionPlayer.Wins;
+            UndoSnackbar.ShowAsync(
+                $"{sessionPlayer.Player?.Name}: {wins} {(wins == 1 ? "victoria" : "victorias")}",
+                async () =>
+                {
+                    var restored = await _sessionRepository.SetWinsAsync(sessionId, sessionPlayer.PlayerID, previous);
+                    if (Session?.ID == sessionId)
+                        await ApplyWinsAndReorderAsync(sessionPlayer, restored);
+                },
+                _errorHandler,
+                seconds: 3).FireAndForgetSafeAsync(_errorHandler);
         }
 
         private async Task ApplyWinsAndReorderAsync(SessionPlayer sessionPlayer, int newWins)
@@ -393,6 +418,72 @@ namespace CompetitiveCounterApp.PageModels
             }
         }
 
+        /// <summary>Sesión nueva del mismo juego con estos jugadores (en 0); solo desde una sesión cerrada.</summary>
+        [RelayCommand]
+        private async Task Rematch()
+        {
+            if (Session is null || IsActive || IsBusy)
+                return;
+
+            HapticFeedbackHelper.Click();
+
+            try
+            {
+                IsBusy = true;
+
+                var active = await _sessionRepository.GetActiveByGameIdAsync(Session.GameID);
+                if (active is not null && !await NewSessionPrompt.ConfirmReplaceActiveAsync(active.HasBestPlayer, "Revancha"))
+                    return;
+
+                var rematch = await _sessionRepository.CreateRematchAsync(Session.ID);
+                // Reemplaza esta pantalla: volver lleva al detalle del juego, no a la sesión vieja.
+                await Shell.Current.GoToAsync($"../sessiondetail?id={rematch.ID}");
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleError(e);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
+        /// <summary>Imagen del resultado para mandar al grupo (solo a pedido, desde la barra).</summary>
+        [RelayCommand]
+        private async Task ShareResult()
+        {
+            if (Session is null || IsBusy)
+                return;
+
+            HapticFeedbackHelper.Click();
+
+            if (!Leaderboard.Any(sp => sp.Wins > 0))
+            {
+                await AppShell.DisplayToastAsync("Todavía no hay victorias para compartir");
+                return;
+            }
+
+            try
+            {
+                IsBusy = true;
+                var path = await SessionShareImage.CreateAsync(Session, Leaderboard.ToList());
+                await Share.Default.RequestAsync(new ShareFileRequest
+                {
+                    Title = "Resultado de la sesión",
+                    File = new ShareFile(path, "image/png")
+                });
+            }
+            catch (Exception e)
+            {
+                _errorHandler.HandleError(e);
+            }
+            finally
+            {
+                IsBusy = false;
+            }
+        }
+
         [RelayCommand]
         private async Task DeleteSession()
         {
@@ -401,15 +492,24 @@ namespace CompetitiveCounterApp.PageModels
 
             HapticFeedbackHelper.Click();
 
-            if (!await SessionDeletePrompt.ConfirmAsync(Leaderboard.Sum(sp => sp.Wins)))
-                return;
+            // Se elimina al instante; «Deshacer» la vuelve a crear con sus jugadores y victorias.
+            var deleted = Session;
+            var players = Leaderboard.ToList();
 
             try
             {
                 IsBusy = true;
-                await _sessionRepository.DeleteAsync(Session.ID);
+                await _sessionRepository.DeleteAsync(deleted.ID);
                 await Shell.Current.GoToAsync("..");
-                await AppShell.DisplayToastAsync("Sesión eliminada");
+                await UndoSnackbar.ShowAsync(
+                    "Sesión eliminada",
+                    async () =>
+                    {
+                        await _sessionRepository.RestoreAsync(deleted, players);
+                        WeakReferenceMessenger.Default.Send(new SessionsChangedMessage(deleted.GameID));
+                    },
+                    _errorHandler,
+                    seconds: 6);
             }
             catch (Exception e)
             {

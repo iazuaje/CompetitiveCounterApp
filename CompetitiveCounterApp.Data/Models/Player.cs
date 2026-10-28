@@ -10,6 +10,12 @@ namespace CompetitiveCounterApp.Models
         public string ColorLight { get; set; } = "#C62828";
         public string ColorDark { get; set; } = "#EF9A9A";
 
+        /// <summary>
+        /// Oculto de la lista de jugadores y de las sesiones nuevas; sus sesiones siguen en las estadísticas.
+        /// Alternativa a eliminar un jugador que ya participó en sesiones.
+        /// </summary>
+        public bool IsArchived { get; set; }
+
         public ThemeColorPair ThemeColors => new(ColorLight, ColorDark);
         public Color CurrentColor => ThemeColors.CurrentColor;
         public Color OnColor => ThemeColors.OnColor;

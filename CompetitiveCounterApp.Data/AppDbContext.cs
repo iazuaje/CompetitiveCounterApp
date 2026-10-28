@@ -33,6 +33,7 @@ namespace CompetitiveCounterApp.Data
                 entity.Property(e => e.ImagePath).HasDefaultValue(string.Empty);
                 entity.Property(e => e.CreatedDate);
                 entity.Property(e => e.SortOrder);
+                entity.Property(e => e.IsArchived);
 
                 // Etiquetas: muchos a muchos; borrar un juego o una categoría borra solo la relación.
                 entity.HasMany(e => e.Categories)
@@ -88,6 +89,7 @@ namespace CompetitiveCounterApp.Data
                 entity.Property(e => e.Icon).HasDefaultValue(string.Empty);
                 entity.Property(e => e.ColorLight).HasDefaultValue("#C62828");
                 entity.Property(e => e.ColorDark).HasDefaultValue("#EF9A9A");
+                entity.Property(e => e.IsArchived);
                 entity.Ignore(e => e.ThemeColors);
                 entity.Ignore(e => e.CurrentColor);
                 entity.Ignore(e => e.OnColor);

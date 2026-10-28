@@ -121,7 +121,7 @@ public abstract partial class GameFormPageModelBase : ObservableObject
         if (string.IsNullOrEmpty(_temporaryImagePath) || !File.Exists(_temporaryImagePath))
             return null;
 
-        var imagesDirectory = Path.Combine(FileSystem.AppDataDirectory, "GameImages");
+        var imagesDirectory = Constants.GameImagesDirectory;
         Directory.CreateDirectory(imagesDirectory);
 
         var fileName = $"game_{Guid.NewGuid()}{Path.GetExtension(_temporaryImagePath)}";

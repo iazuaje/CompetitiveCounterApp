@@ -25,6 +25,49 @@
     <ContentPage.Resources>
         <ResourceDictionary>
             <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+
+            <!-- Fila de jugador: tap abre sus estadísticas. -->
+            <DataTemplate x:Key="PlayerRowTemplate" x:DataType="models:Player">
+                <Border behaviors:AnimatedTap.Command="{Binding NavigateToPlayerCommand, Source={RelativeSource AncestorType={x:Type pageModels:PlayersPageModel}}, x:DataType=pageModels:PlayersPageModel}"
+                        behaviors:AnimatedTap.CommandParameter="{Binding .}"
+                        behaviors:AnimatedTap.PressedScale="0.97"
+                        behaviors:AnimatedTap.PressedOpacity="0.92">
+                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" InputTransparent="True">
+                        <Border WidthRequest="40"
+                                HeightRequest="40"
+                                StrokeThickness="2"
+                                Stroke="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray100}}"
+                                Background="{Binding CurrentColor}"
+                                StrokeShape="Ellipse"
+                                Padding="0">
+                            <Image HeightRequest="22" WidthRequest="22"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center">
+                                <Image.Source>
+                                    <FontImageSource Glyph="{Binding Icon}"
+                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                     Color="{Binding OnColor}"
+                                                     Size="22" />
+                                </Image.Source>
+                            </Image>
+                        </Border>
+                        <Label Grid.Column="1"
+                               Text="{Binding Name}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               VerticalOptions="Center"
+                               LineBreakMode="TailTruncation" />
+                        <Image Grid.Column="2" VerticalOptions="Center">
+                            <Image.Source>
+                                <FontImageSource Glyph="{x:Static f:FluentUI.chevron_right_24_regular}"
+                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                                 Color="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
+                                                 Size="20" />
+                            </Image.Source>
+                        </Image>
+                    </Grid>
+                </Border>
+            </DataTemplate>
         </ResourceDictionary>
     </ContentPage.Resources>
 
@@ -40,50 +83,36 @@
             <ScrollView>
                 <VerticalStackLayout Padding="15" Spacing="10">
                     <VerticalStackLayout BindableLayout.ItemsSource="{Binding Players}"
-                                         Spacing="10">
-                        <BindableLayout.ItemTemplate>
-                            <DataTemplate x:DataType="models:Player">
-                                <Border behaviors:AnimatedTap.Command="{Binding NavigateToPlayerCommand, Source={RelativeSource AncestorType={x:Type pageModels:PlayersPageModel}}, x:DataType=pageModels:PlayersPageModel}"
-                                        behaviors:AnimatedTap.CommandParameter="{Binding .}"
-                                        behaviors:AnimatedTap.PressedScale="0.97"
-                                        behaviors:AnimatedTap.PressedOpacity="0.92">
-                                    <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12" InputTransparent="True">
-                                        <Border WidthRequest="40"
-                                                HeightRequest="40"
-                                                StrokeThickness="2"
-                                                Stroke="{AppThemeBinding Light={StaticResource White}, Dark={StaticResource Gray100}}"
-                                                Background="{Binding CurrentColor}"
-                                                StrokeShape="Ellipse"
-                                                Padding="0">
-                                            <Image HeightRequest="22" WidthRequest="22"
-                                                   HorizontalOptions="Center"
-                                                   VerticalOptions="Center">
-                                                <Image.Source>
-                                                    <FontImageSource Glyph="{Binding Icon}"
-                                                                     FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                                     Color="{Binding OnColor}"
-                                                                     Size="22" />
-                                                </Image.Source>
-                                            </Image>
-                                        </Border>
-                                        <Label Grid.Column="1"
-                                               Text="{Binding Name}"
-                                               FontSize="18"
-                                               FontAttributes="Bold"
-                                               VerticalOptions="Center"
-                                               LineBreakMode="TailTruncation" />
-                                        <Image Grid.Column="2" VerticalOptions="Center">
-                                            <Image.Source>
-                                                <FontImageSource Glyph="{x:Static f:FluentUI.chevron_right_24_regular}"
-                                                                 FontFamily="{x:Static f:FluentUI.FontFamily}"
-                                                                 Color="{AppThemeBinding Light={StaticResource Gray500}, Dark={StaticResource Gray400}}"
-                                                                 Size="20" />
-                                            </Image.Source>
-                                        </Image>
-                                    </Grid>
-                                </Border>
-                            </DataTemplate>
-                        </BindableLayout.ItemTemplate>
+                                         BindableLayout.ItemTemplate="{StaticResource PlayerRowTemplate}"
+                                         Spacing="10" />
+
+                    <!-- Archivados: plegados al final; se abren para consultarlos o restaurarlos (desde Editar). -->
+                    <VerticalStackLayout Spacing="10" IsVisible="{Binding HasArchived}">
+                        <Border Padding="12,6"
+                                HorizontalOptions="Start"
+                                StrokeThickness="1"
+                                StrokeShape="RoundRectangle 16"
+                                Stroke="{AppThemeBinding Light={StaticResource Gray300}, Dark={StaticResource Gray600}}"
+                                Background="{AppThemeBinding Light={StaticResource LightSecondaryBackground}, Dark={StaticResource DarkSecondaryBackground}}"
+                                behaviors:AnimatedTap.Command="{Binding ToggleArchivedCommand}">
+                            <Label FontSize="13" InputTransparent="True">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{x:Static f:FluentUI.archive_24_regular}"
+                                              FontFamily="{x:Static f:FluentUI.FontFamily}"
+                                              FontSize="14"
+                                              TextColor="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />
+                                        <Span Text=" " />
+                                        <Span Text="{Binding ArchivedToggleText}" FontAttributes="Bold" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                        </Border>
+                        <VerticalStackLayout BindableLayout.ItemsSource="{Binding ArchivedPlayers}"
+                                             BindableLayout.ItemTemplate="{StaticResource PlayerRowTemplate}"
+                                             IsVisible="{Binding ShowArchived}"
+                                             Opacity="0.65"
+                                             Spacing="10" />
                     </VerticalStackLayout>
 
                     <VerticalStackLayout IsVisible="{Binding HasPlayers, Converter={StaticResource InvertedBoolConverter}}"

@@ -15,10 +15,34 @@ namespace CompetitiveCounterApp.PageModels
         [ObservableProperty]
         private List<Player> _players = [];
 
-        public bool HasPlayers => Players.Count > 0;
+        /// <summary>Archivados: ocultos de la lista principal, en una sección plegable al final.</summary>
+        [ObservableProperty]
+        private List<Player> _archivedPlayers = [];
+
+        [ObservableProperty]
+        private bool _showArchived;
+
+        [ObservableProperty]
+        private string _archivedToggleText = string.Empty;
+
+        public bool HasPlayers => Players.Count > 0 || ArchivedPlayers.Count > 0;
+
+        public bool HasArchived => ArchivedPlayers.Count > 0;
 
         partial void OnPlayersChanged(List<Player> value) =>
             OnPropertyChanged(nameof(HasPlayers));
+
+        partial void OnArchivedPlayersChanged(List<Player> value)
+        {
+            OnPropertyChanged(nameof(HasPlayers));
+            OnPropertyChanged(nameof(HasArchived));
+            UpdateArchivedToggleText();
+        }
+
+        partial void OnShowArchivedChanged(bool value) => UpdateArchivedToggleText();
+
+        private void UpdateArchivedToggleText() =>
+            ArchivedToggleText = $"{(ShowArchived ? "Ocultar" : "Ver")} archivados ({ArchivedPlayers.Count})";
 
         [ObservableProperty]
         private bool _isBusy;
@@ -33,7 +57,8 @@ namespace CompetitiveCounterApp.PageModels
 
             WeakReferenceMessenger.Default.Register<AppThemeChangedMessage>(this, static (r, _) =>
             {
-                foreach (var player in ((PlayersPageModel)r).Players)
+                var vm = (PlayersPageModel)r;
+                foreach (var player in vm.Players.Concat(vm.ArchivedPlayers))
                     player.NotifyThemeChanged();
             });
         }
@@ -63,7 +88,9 @@ namespace CompetitiveCounterApp.PageModels
             try
             {
                 IsBusy = true;
-                Players = await _playerRepository.ListAsync();
+                var players = await _playerRepository.ListAsync();
+                Players = players.Where(p => !p.IsArchived).ToList();
+                ArchivedPlayers = players.Where(p => p.IsArchived).ToList();
             }
             catch (Exception e)
             {
@@ -73,6 +100,13 @@ namespace CompetitiveCounterApp.PageModels
             {
                 IsBusy = false;
             }
+        }
+
+        [RelayCommand]
+        private void ToggleArchived()
+        {
+            HapticFeedbackHelper.Click();
+            ShowArchived = !ShowArchived;
         }
 
         [RelayCommand]
