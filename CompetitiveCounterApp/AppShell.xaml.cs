@@ -2,6 +2,7 @@ using System.ComponentModel;
 using CommunityToolkit.Maui.Alerts;
 using CommunityToolkit.Maui.Core;
 using CommunityToolkit.Maui.Core.Platform;
+using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Models;
 
 namespace CompetitiveCounterApp
@@ -9,12 +10,16 @@ namespace CompetitiveCounterApp
     public partial class AppShell : Shell
     {
         private Page? _statusBarPage;
+        private bool _syncingThemeSelector;
 
         public AppShell()
         {
             InitializeComponent();
-            var currentTheme = Application.Current!.RequestedTheme;
-            ThemeSegmentedControl.SelectedIndex = currentTheme == AppTheme.Light ? 0 : 1;
+
+            // Refleja el tema vigente (el guardado o, sin elección, el del sistema) sin guardarlo como elección.
+            _syncingThemeSelector = true;
+            ThemeSegmentedControl.SelectedIndex = Application.Current!.RequestedTheme == AppTheme.Light ? 0 : 1;
+            _syncingThemeSelector = false;
         }
 
         public static async Task DisplayToastAsync(string message)
@@ -27,7 +32,12 @@ namespace CompetitiveCounterApp
 
         private void SfSegmentedControl_SelectionChanged(object sender, Syncfusion.Maui.Toolkit.SegmentedControl.SelectionChangedEventArgs e)
         {
-            Application.Current!.UserAppTheme = e.NewIndex == 0 ? AppTheme.Light : AppTheme.Dark;
+            if (_syncingThemeSelector)
+                return;
+
+            var theme = e.NewIndex == 0 ? AppTheme.Light : AppTheme.Dark;
+            Application.Current!.UserAppTheme = theme;
+            ThemePreference.Current = theme;
         }
 
         protected override void OnNavigated(ShellNavigatedEventArgs args)

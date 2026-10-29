@@ -5,7 +5,7 @@ using CompetitiveCounterApp.Helpers;
 
 namespace CompetitiveCounterApp.PageModels;
 
-/// <summary>Respaldo y restauración de todos los datos (sección "Respaldo" del flyout).</summary>
+/// <summary>Respaldo, restauración y borrado de todos los datos (sección "Respaldo" del flyout).</summary>
 public partial class BackupPageModel : ObservableObject
 {
     const string LastBackupKey = "backup.last";
@@ -156,6 +156,37 @@ public partial class BackupPageModel : ObservableObject
 
             await LoadSummary();
             await AppShell.DisplayToastAsync("Respaldo restaurado");
+        }
+        catch (Exception e)
+        {
+            _errorHandler.HandleError(e);
+        }
+        finally
+        {
+            IsBusy = false;
+        }
+    }
+
+    [RelayCommand]
+    private async Task DeleteAllData()
+    {
+        HapticFeedbackHelper.Click();
+
+        try
+        {
+            var confirm = await Shell.Current.DisplayAlertAsync(
+                "Borrar todos los datos",
+                $"Se borrarán todos los juegos, jugadores, sesiones e imágenes ({SummaryText}). No se puede deshacer: si quieres conservarlos, crea un respaldo antes.",
+                "Borrar todo",
+                "Cancelar");
+            if (!confirm)
+                return;
+
+            IsBusy = true;
+            await _backupService.DeleteAllAsync();
+
+            await LoadSummary();
+            await AppShell.DisplayToastAsync("Datos borrados");
         }
         catch (Exception e)
         {

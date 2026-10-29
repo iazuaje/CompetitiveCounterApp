@@ -118,6 +118,24 @@
                 </VerticalStackLayout>
             </Border>
 
+            <!-- Borrar todo -->
+            <Border Style="{StaticResource StatsCard}">
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Borrar todos los datos" FontSize="16" FontAttributes="Bold" />
+                    <Label FontSize="14"
+                           TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                           Text="Elimina todos los juegos, jugadores, sesiones e imágenes y deja la app como recién instalada. No se puede deshacer." />
+                    <Button Text="Borrar todo"
+                            Style="{StaticResource BackupButton}"
+                            Command="{Binding DeleteAllDataCommand}"
+                            IsEnabled="{Binding IsIdle}"
+                            BorderWidth="1.5"
+                            BorderColor="{AppThemeBinding Light={StaticResource GameColorRed}, Dark={StaticResource GameColorRedDark}}"
+                            BackgroundColor="Transparent"
+                            TextColor="{AppThemeBinding Light={StaticResource GameColorRed}, Dark={StaticResource GameColorRedDark}}" />
+                </VerticalStackLayout>
+            </Border>
+
             <ActivityIndicator IsRunning="{Binding IsBusy}"
                                IsVisible="{Binding IsBusy}"
                                Color="{AppThemeBinding Light={StaticResource Primary}, Dark={StaticResource PrimaryDark}}" />

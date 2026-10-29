@@ -115,6 +115,24 @@ public class BackupService
         await db.SaveChangesAsync();
     }
 
+    /// <summary>Borra la base y las imágenes de los juegos, y deja la app con una base vacía y migrada.</summary>
+    public async Task DeleteAllAsync()
+    {
+        await Task.Run(() =>
+        {
+            SqliteConnection.ClearAllPools();
+            DeleteIfExists(Constants.DatabaseFilePath);
+            DeleteIfExists(Constants.DatabaseFilePath + "-wal");
+            DeleteIfExists(Constants.DatabaseFilePath + "-shm");
+
+            if (Directory.Exists(Constants.GameImagesDirectory))
+                Directory.Delete(Constants.GameImagesDirectory, recursive: true);
+        });
+
+        await using var db = await _dbContextFactory.CreateDbContextAsync();
+        await db.Database.MigrateAsync();
+    }
+
     static void ValidateDatabase(string path)
     {
         try

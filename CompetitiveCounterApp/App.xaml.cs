@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Mvvm.Messaging;
+using CompetitiveCounterApp.Helpers;
 using CompetitiveCounterApp.Messages;
 
 namespace CompetitiveCounterApp
@@ -8,6 +9,7 @@ namespace CompetitiveCounterApp
         public App()
         {
             InitializeComponent();
+            UserAppTheme = ThemePreference.Current;
             RequestedThemeChanged += OnRequestedThemeChanged;
         }
 

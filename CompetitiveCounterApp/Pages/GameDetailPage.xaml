@@ -272,18 +272,25 @@
                                         behaviors:AnimatedTap.CommandParameter="{Binding .}"
                                         behaviors:AnimatedTap.PressedScale="0.97"
                                         behaviors:AnimatedTap.PressedOpacity="0.92">
+                                    <!-- Cada texto ocupa un solo renglón: FlexLayout mide la tarjeta sin el ancho de la
+                                         columna, así que un texto que se parte en dos renglones quedaba cortado abajo. -->
                                     <VerticalStackLayout Spacing="2" InputTransparent="True">
                                         <Label FontSize="14"
                                                FontAttributes="Bold"
                                                LineBreakMode="TailTruncation"
-                                               MaxLines="2"
-                                               Text="{Binding SessionDateLocal, StringFormat='{}{0:dd/MM/yy HH:mm}'}">
+                                               MaxLines="1"
+                                               Text="{Binding SessionDateLocal, StringFormat='{}{0:dd/MM/yy}'}">
                                             <Label.Triggers>
                                                 <DataTrigger TargetType="Label" Binding="{Binding IsActive}" Value="True">
                                                     <Setter Property="TextColor" Value="{Binding ListCardIconColor}" />
                                                 </DataTrigger>
                                             </Label.Triggers>
                                         </Label>
+                                        <Label FontSize="13"
+                                               LineBreakMode="TailTruncation"
+                                               MaxLines="1"
+                                               TextColor="{AppThemeBinding Light={StaticResource Gray600}, Dark={StaticResource Gray400}}"
+                                               Text="{Binding SessionDateLocal, StringFormat='{}{0:HH:mm}'}" />
 
                                         <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
                                             <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center">
@@ -320,7 +327,8 @@
                                         </HorizontalStackLayout>
 
                                         <!-- Mejor jugador: solo si alguien ganó al menos una partida. -->
-                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center" IsVisible="{Binding HasBestPlayer}">
+                                        <!-- Grid y no HorizontalStackLayout: el nombre recibe el ancho restante y se trunca con "…". -->
+                                        <Grid ColumnDefinitions="Auto,*" ColumnSpacing="4" IsVisible="{Binding HasBestPlayer}">
                                             <Image HeightRequest="16" WidthRequest="16" VerticalOptions="Center">
                                                 <Image.Source>
                                                     <FontImageSource Glyph="{x:Static f:FluentUI.crown_24_regular}"
@@ -329,8 +337,10 @@
                                                                      Size="18" />
                                                 </Image.Source>
                                             </Image>
-                                            <Label FontSize="14" 
-                                                   MaxLines="2"
+                                            <Label Grid.Column="1"
+                                                   FontSize="14"
+                                                   VerticalOptions="Center"
+                                                   MaxLines="1"
                                                    LineBreakMode="TailTruncation"
                                                    FontAttributes="Bold"
                                                    Text="{Binding BestPlayer.Player, StringFormat='{0}'}">
@@ -340,7 +350,7 @@
                                                     </DataTrigger>
                                                 </Label.Triggers>
                                             </Label>
-                                        </HorizontalStackLayout>
+                                        </Grid>
 
                                         <Label Text="Activa"
                                                IsVisible="{Binding IsActive}"
